@@ -1,16 +1,43 @@
+// --- INÍCIO: Novos requires e configuração do Cloudinary ---
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { Pool } = require('pg');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
+
+// Cloudinary SDK
+const cloudinary = require('cloudinary').v2;
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+// --- FIM: Novos requires e configuração do Cloudinary ---
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
+// --- INÍCIO: CORS seguro ---
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:5173',
+];
+app.use(cors({
+  origin: function (origin, callback) {
+    // Permite requests sem origin (ex: Postman) ou se está na lista
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
+// --- FIM: CORS seguro ---
+
 app.use(bodyParser.json());
 
 // PostgreSQL connection
@@ -49,43 +76,67 @@ pool.connect((err, client, release) => {
     }
 });
 
-// Configure multer for file uploads
-const upload = multer({
-    storage: multer.diskStorage({
-        destination: (req, file, cb) => {
-            cb(null, 'uploads/'); // Diretório onde os arquivos serão salvos
-        },
-        filename: (req, file, cb) => {
-            cb(null, `${Date.now()}-${file.originalname}`); // Nome único para o arquivo
-        },
-    }),
-});
+// --- INÍCIO: Configuração do multer para memória (não salva mais no disco) ---
+const upload = multer({ storage: multer.memoryStorage() });
+// --- FIM: Configuração do multer para memória ---
 
-// Servir a pasta uploads como estática
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// --- REMOVIDO: Não serve mais uploads locais ---
 
 // Routes
 app.get('/', (req, res) => {
     res.send('Backend is running');
 });
 
-// Rotas para a tabela usuario
-// Update the user registration route to handle image uploads
+// --- INÍCIO: Rota de cadastro de usuário com upload para Cloudinary ---
 app.post('/usuarios', upload.single('foto_perfil'), async (req, res) => {
     const { nome, email, senha, tipo, github, google_drive } = req.body;
-    // Salva apenas o caminho relativo, igual ao PortfolioPage
-    const fotoPerfilPath = req.file ? `uploads/${req.file.filename.replace(/\\/g, '/')}` : null;
-    try {
-        const result = await pool.query(
-            'INSERT INTO usuario (nome, email, senha, tipo, github, google_drive, foto_perfil) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-            [nome, email, senha, tipo, github, google_drive, fotoPerfilPath]
-        );
-        res.status(201).json(result.rows[0]);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Erro ao criar usuário' });
+    let fotoPerfilUrl = null;
+    if (req.file) {
+        try {
+            // Upload para Cloudinary
+            const uploadResult = await cloudinary.uploader.upload_stream(
+                { folder: 'conecta/usuarios', resource_type: 'image' },
+                (error, result) => {
+                    if (error) throw error;
+                    fotoPerfilUrl = result.secure_url;
+                }
+            );
+            // Usando stream para enviar buffer
+            const stream = cloudinary.uploader.upload_stream(
+                { folder: 'conecta/usuarios', resource_type: 'image' },
+                (error, result) => {
+                    if (error) {
+                        console.error('Erro ao enviar para Cloudinary:', error);
+                        return res.status(500).json({ error: 'Erro ao enviar imagem para Cloudinary' });
+                    }
+                    fotoPerfilUrl = result.secure_url;
+                    inserirUsuario();
+                }
+            );
+            stream.end(req.file.buffer);
+            return; // A resposta será enviada em inserirUsuario()
+        } catch (err) {
+            console.error('Erro Cloudinary:', err);
+            return res.status(500).json({ error: 'Erro ao enviar imagem para Cloudinary' });
+        }
+    } else {
+        await inserirUsuario();
+    }
+
+    async function inserirUsuario() {
+        try {
+            const result = await pool.query(
+                'INSERT INTO usuario (nome, email, senha, tipo, github, google_drive, foto_perfil) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+                [nome, email, senha, tipo, github, google_drive, fotoPerfilUrl]
+            );
+            res.status(201).json(result.rows[0]);
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Erro ao criar usuário' });
+        }
     }
 });
+// --- FIM: Rota de cadastro de usuário com upload para Cloudinary ---
 
 app.get('/usuarios', async (req, res) => {
     try {
@@ -164,29 +215,48 @@ app.get('/briefings', async (req, res) => {
 
 // Rotas para a tabela projeto
 app.post('/projetos', upload.single('imagem_capa'), async (req, res) => {
-    console.log('Dados recebidos no body:', req.body); // Log para verificar o body
-    console.log('Arquivo recebido:', req.file); // Log para verificar o arquivo
-
     const { titulo, descricao, link_figma, link_github, link_drive, briefing_id, usuario_id } = req.body;
-    // Salva apenas o caminho relativo, igual ao PortfolioPage
-    const imagemCapaPath = req.file ? `uploads/${req.file.filename.replace(/\\/g, '/')}` : null;
+    let imagemCapaUrl = null;
+    if (req.file) {
+        try {
+            const stream = cloudinary.uploader.upload_stream(
+                { folder: 'conecta/projetos', resource_type: 'image' },
+                async (error, result) => {
+                    if (error) {
+                        console.error('Erro ao enviar para Cloudinary:', error);
+                        return res.status(500).json({ error: 'Erro ao enviar imagem para Cloudinary' });
+                    }
+                    imagemCapaUrl = result.secure_url;
+                    await inserirProjeto();
+                }
+            );
+            stream.end(req.file.buffer);
+            return; // A resposta será enviada em inserirProjeto()
+        } catch (err) {
+            console.error('Erro Cloudinary:', err);
+            return res.status(500).json({ error: 'Erro ao enviar imagem para Cloudinary' });
+        }
+    } else {
+        await inserirProjeto();
+    }
 
-    // Converta briefing_id vazio para NULL
-    const briefingIdValue = briefing_id === '' ? null : briefing_id;
-    const usuarioIdValue = usuario_id === '' ? null : usuario_id;
-
-    try {
-        const result = await pool.query(
-            'INSERT INTO projeto (titulo, descricao, imagem_capa, link_figma, link_github, link_drive, briefing_id, usuario_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-            [titulo, descricao, imagemCapaPath, link_figma, link_github, link_drive, briefingIdValue, usuarioIdValue]
-        );
-        console.log('Projeto criado com sucesso:', result.rows[0]);
-        res.status(201).json(result.rows[0]);
-    } catch (err) {
-        console.error('Erro ao criar projeto:', err);
-        res.status(500).json({ error: 'Erro ao criar projeto' });
+    async function inserirProjeto() {
+        // Converta briefing_id vazio para NULL
+        const briefingIdValue = briefing_id === '' ? null : briefing_id;
+        const usuarioIdValue = usuario_id === '' ? null : usuario_id;
+        try {
+            const result = await pool.query(
+                'INSERT INTO projeto (titulo, descricao, imagem_capa, link_figma, link_github, link_drive, briefing_id, usuario_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+                [titulo, descricao, imagemCapaUrl, link_figma, link_github, link_drive, briefingIdValue, usuarioIdValue]
+            );
+            res.status(201).json(result.rows[0]);
+        } catch (err) {
+            console.error('Erro ao criar projeto:', err);
+            res.status(500).json({ error: 'Erro ao criar projeto' });
+        }
     }
 });
+// --- FIM: Rota de cadastro de projeto com upload para Cloudinary ---
 
 app.get('/projetos', async (req, res) => {
     try {
@@ -228,41 +298,46 @@ app.get('/projetos/busca', async (req, res) => {
     }
 });
 
-// Rota para adicionar imagens a um projeto existente
+// --- INÍCIO: Rota de upload de imagens extras para projeto usando Cloudinary ---
 app.post('/projetos/:id/imagens', upload.array('imagens'), async (req, res) => {
     const { id } = req.params;
-
     if (!req.files || req.files.length === 0) {
         return res.status(400).json({ error: 'Nenhuma imagem foi enviada' });
     }
-
     try {
+        // Upload todas as imagens para Cloudinary
+        const uploadPromises = req.files.map(file =>
+            new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: 'conecta/projetos', resource_type: 'image' },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result.secure_url);
+                    }
+                );
+                stream.end(file.buffer);
+            })
+        );
+        const novasImagens = await Promise.all(uploadPromises);
         // Busca as imagens existentes do projeto
         const projetoResult = await pool.query('SELECT imagens FROM projeto WHERE projeto_id = $1', [id]);
-
         if (projetoResult.rows.length === 0) {
             return res.status(404).json({ error: 'Projeto não encontrado' });
         }
-
-        // Prepara o array de novas imagens
-        const novasImagens = req.files.map(file => `uploads/${file.filename.replace(/\\/g, '/')}`);
-
-        // Combina as imagens existentes com as novas
         const imagensExistentes = projetoResult.rows[0].imagens || [];
         const todasImagens = [...imagensExistentes, ...novasImagens];
-
         // Atualiza o projeto com todas as imagens
         const updateResult = await pool.query(
             'UPDATE projeto SET imagens = $1 WHERE projeto_id = $2 RETURNING *',
             [todasImagens, id]
         );
-
         res.status(200).json(updateResult.rows[0]);
     } catch (err) {
         console.error('Erro ao adicionar imagens ao projeto:', err);
         res.status(500).json({ error: 'Erro ao adicionar imagens ao projeto' });
     }
 });
+// --- FIM: Rota de upload de imagens extras para projeto usando Cloudinary ---
 
 // Rotas para a tabela usuario_projeto
 app.post('/usuario-projeto', async (req, res) => {
@@ -625,68 +700,118 @@ app.post('/vagas', upload.single('logo_empresa'), async (req, res) => {
             });
         }
 
-        const logoEmpresaPath = req.file ? `uploads/${req.file.filename.replace(/\\/g, '/')}` : null;
-        console.log('Logo empresa path:', logoEmpresaPath);
-
-        // Tratamento dos arrays como JSONB
-        let requisitosArray = [];
-        let diferenciaisArray = [];
-
-        try {
-            if (requisitos && requisitos.trim()) {
-                console.log('Processando requisitos:', requisitos);
-                const parsedRequisitos = JSON.parse(requisitos);
-                requisitosArray = Array.isArray(parsedRequisitos)
-                    ? parsedRequisitos.filter(req => req && req.trim())
-                    : [requisitos].filter(Boolean);
+        let logoEmpresaUrl = null;
+        if (req.file) {
+            try {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: 'conecta/vagas', resource_type: 'image' },
+                    async (error, result) => {
+                        if (error) {
+                            console.error('Erro ao enviar para Cloudinary:', error);
+                            return res.status(500).json({ error: 'Erro ao enviar imagem para Cloudinary' });
+                        }
+                        logoEmpresaUrl = result.secure_url;
+                        await inserirVaga();
+                    }
+                );
+                stream.end(req.file.buffer);
+                return; // A resposta será enviada em inserirVaga()
+            } catch (err) {
+                console.error('Erro Cloudinary:', err);
+                return res.status(500).json({ error: 'Erro ao enviar imagem para Cloudinary' });
             }
-        } catch (error) {
-            console.error('Erro ao processar requisitos:', error);
-            requisitosArray = requisitos ? [requisitos].filter(Boolean) : [];
+        } else {
+            await inserirVaga();
         }
 
-        try {
-            if (diferenciais && diferenciais.trim()) {
-                console.log('Processando diferenciais:', diferenciais);
-                const parsedDiferenciais = JSON.parse(diferenciais);
-                diferenciaisArray = Array.isArray(parsedDiferenciais)
-                    ? parsedDiferenciais.filter(dif => dif && dif.trim())
-                    : [diferenciais].filter(Boolean);
+        async function inserirVaga() {
+            // Tratamento dos arrays como JSONB
+            let requisitosArray = [];
+            let diferenciaisArray = [];
+
+            try {
+                if (requisitos && requisitos.trim()) {
+                    console.log('Processando requisitos:', requisitos);
+                    const parsedRequisitos = JSON.parse(requisitos);
+                    requisitosArray = Array.isArray(parsedRequisitos)
+                        ? parsedRequisitos.filter(req => req && req.trim())
+                        : [requisitos].filter(Boolean);
+                }
+            } catch (error) {
+                console.error('Erro ao processar requisitos:', error);
+                requisitosArray = requisitos ? [requisitos].filter(Boolean) : [];
             }
-        } catch (error) {
-            console.error('Erro ao processar diferenciais:', error);
-            diferenciaisArray = diferenciais ? [diferenciais].filter(Boolean) : [];
+
+            try {
+                if (diferenciais && diferenciais.trim()) {
+                    console.log('Processando diferenciais:', diferenciais);
+                    const parsedDiferenciais = JSON.parse(diferenciais);
+                    diferenciaisArray = Array.isArray(parsedDiferenciais)
+                        ? parsedDiferenciais.filter(dif => dif && dif.trim())
+                        : [diferenciais].filter(Boolean);
+                }
+            } catch (error) {
+                console.error('Erro ao processar diferenciais:', error);
+                diferenciaisArray = diferenciais ? [diferenciais].filter(Boolean) : [];
+            }
+
+            console.log('Arrays processados:', {
+                requisitosArray,
+                diferenciaisArray
+            });
+
+            try {
+                const result = await pool.query(
+                    `INSERT INTO vagas (
+                        titulo, empresa, logo_empresa, descricao, 
+                        tipo_trabalho, prazo, requisitos, usuario_id,
+                        formato_trabalho, duracao_projeto, remuneracao, diferenciais
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8, $9, $10, $11, $12::jsonb) RETURNING *`,
+                    [
+                        titulo.trim(),
+                        empresa.trim(),
+                        logoEmpresaUrl,
+                        descricao.trim(),
+                        tipo_trabalho.trim(),
+                        prazo.trim(),
+                        JSON.stringify(requisitosArray),
+                        usuario_id,
+                        formato_trabalho ? formato_trabalho.trim() : null,
+                        duracao_projeto ? duracao_projeto.trim() : null,
+                        remuneracao ? remuneracao.trim() : null,
+                        JSON.stringify(diferenciaisArray)
+                    ]
+                );
+
+                console.log('Vaga criada com sucesso:', result.rows[0]);
+                res.status(201).json(result.rows[0]);
+            } catch (err) {
+                console.error('Erro detalhado ao criar vaga:', {
+                    message: err.message,
+                    stack: err.stack,
+                    code: err.code,
+                    detail: err.detail,
+                    table: err.table,
+                    constraint: err.constraint
+                });
+
+                // Tenta identificar o tipo de erro
+                let errorMessage = 'Erro ao criar vaga';
+                if (err.code === '23505') {
+                    errorMessage = 'Já existe uma vaga com essas informações';
+                } else if (err.code === '23503') {
+                    errorMessage = 'Usuário não encontrado';
+                } else if (err.code === '22P02') {
+                    errorMessage = 'Erro ao processar os dados. Por favor, tente novamente.';
+                }
+
+                res.status(500).json({
+                    error: errorMessage,
+                    details: err.message,
+                    code: err.code
+                });
+            }
         }
-
-        console.log('Arrays processados:', {
-            requisitosArray,
-            diferenciaisArray
-        });
-
-        const result = await pool.query(
-            `INSERT INTO vagas (
-                titulo, empresa, logo_empresa, descricao, 
-                tipo_trabalho, prazo, requisitos, usuario_id,
-                formato_trabalho, duracao_projeto, remuneracao, diferenciais
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8, $9, $10, $11, $12::jsonb) RETURNING *`,
-            [
-                titulo.trim(),
-                empresa.trim(),
-                logoEmpresaPath,
-                descricao.trim(),
-                tipo_trabalho.trim(),
-                prazo.trim(),
-                JSON.stringify(requisitosArray),
-                usuario_id,
-                formato_trabalho ? formato_trabalho.trim() : null,
-                duracao_projeto ? duracao_projeto.trim() : null,
-                remuneracao ? remuneracao.trim() : null,
-                JSON.stringify(diferenciaisArray)
-            ]
-        );
-
-        console.log('Vaga criada com sucesso:', result.rows[0]);
-        res.status(201).json(result.rows[0]);
     } catch (err) {
         console.error('Erro detalhado ao criar vaga:', {
             message: err.message,
