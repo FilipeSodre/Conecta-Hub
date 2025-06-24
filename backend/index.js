@@ -94,14 +94,6 @@ app.post('/usuarios', upload.single('foto_perfil'), async (req, res) => {
     if (req.file) {
         try {
             // Upload para Cloudinary
-            const uploadResult = await cloudinary.uploader.upload_stream(
-                { folder: 'conecta/usuarios', resource_type: 'image' },
-                (error, result) => {
-                    if (error) throw error;
-                    fotoPerfilUrl = result.secure_url;
-                }
-            );
-            // Usando stream para enviar buffer
             const stream = cloudinary.uploader.upload_stream(
                 { folder: 'conecta/usuarios', resource_type: 'image' },
                 (error, result) => {
@@ -213,7 +205,7 @@ app.get('/briefings', async (req, res) => {
     }
 });
 
-// Rotas para a tabela projeto
+// --- INÍCIO: Rota de cadastro de projeto com upload para Cloudinary ---
 app.post('/projetos', upload.single('imagem_capa'), async (req, res) => {
     const { titulo, descricao, link_figma, link_github, link_drive, briefing_id, usuario_id } = req.body;
     let imagemCapaUrl = null;
