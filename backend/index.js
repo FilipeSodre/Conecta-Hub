@@ -11,9 +11,9 @@ require('dotenv').config();
 // Cloudinary SDK
 const cloudinary = require('cloudinary').v2;
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 // --- FIM: Novos requires e configuração do Cloudinary ---
 
@@ -22,19 +22,19 @@ const port = process.env.PORT || 5000;
 
 // --- INÍCIO: CORS seguro ---
 const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  'http://localhost:5173',
+    process.env.FRONTEND_URL,
+    'http://localhost:5173',
 ];
 app.use(cors({
-  origin: function (origin, callback) {
-    // Permite requests sem origin (ex: Postman) ou se está na lista
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
+    origin: function (origin, callback) {
+        // Permite requests sem origin (ex: Postman) ou se está na lista
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
 }));
 // --- FIM: CORS seguro ---
 

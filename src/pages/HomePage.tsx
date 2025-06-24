@@ -27,6 +27,17 @@ const mockAmigosPostando = [
   { id: 7, user: "Nathalia Vales Ficher", userImg: "/src/assets/images/avatar-nathalia-f.png", projectTitle: "Campanha de divulgação", projectDesc: "Campanha para marca de moda.", projectImg: "/src/assets/images/project-fashion-camp.png" },
 ];
 
+// Utilitário para padronizar exibição de imagens (Cloudinary, local ou placeholder)
+const getProjectImageUrl = (imgPath?: string) => {
+  if (!imgPath) return '/default-profile.png'; // placeholder global
+  if (imgPath.startsWith('http')) return imgPath;
+  if (imgPath.startsWith('/src/assets/')) return imgPath.replace('/src/assets', '');
+  if (imgPath.startsWith('/public/')) return imgPath.replace('/public', '');
+  if (imgPath.startsWith('/uploads/')) return imgPath; // backend local
+  if (imgPath.startsWith('/')) return imgPath; // já relativo ao public
+  return `/${imgPath}`;
+};
+
 const HomePage: React.FC = () => {
   const [sliderRefNovidades] = useKeenSlider<HTMLDivElement>({
     loop: true,
@@ -80,7 +91,7 @@ const HomePage: React.FC = () => {
         <div ref={sliderRefNovidades} className="keen-slider">
           {mockNovidades.map((novidade) => (
             <div key={novidade.id} className={`keen-slider__slide ${novidade.bgColor} text-white p-6 rounded-xl shadow-card`}>
-              <img src={novidade.img} alt={novidade.title} className="w-16 h-16 mb-4 object-contain" />
+              <img src={getProjectImageUrl(novidade.img)} alt={novidade.title} className="w-16 h-16 mb-4 object-contain" />
               <h3 className="text-xl font-semibold mb-2">{novidade.title}</h3>
               <p className="text-sm opacity-80">{novidade.desc}</p>
             </div>
@@ -188,10 +199,10 @@ const HomePage: React.FC = () => {
         <div ref={sliderRefAmigos} className="keen-slider">
           {mockAmigosPostando.map(post => (
             <div key={post.id} className="keen-slider__slide bg-white rounded-xl shadow-card overflow-hidden">
-              <img src={post.projectImg} alt={post.projectTitle} className="w-full h-40 object-cover" />
+              <img src={getProjectImageUrl(post.projectImg)} alt={post.projectTitle} className="w-full h-40 object-cover" />
               <div className="p-4">
                 <div className="flex items-center mb-2">
-                  <img src={post.userImg} alt={post.user} className="w-8 h-8 rounded-full mr-2 object-cover" />
+                  <img src={getProjectImageUrl(post.userImg)} alt={post.user} className="w-8 h-8 rounded-full mr-2 object-cover" />
                   <span className="text-sm font-semibold text-brand-purple-dark">{post.user}</span>
                 </div>
                 <h3 className="font-semibold text-brand-text mb-1 truncate">{post.projectTitle}</h3>
@@ -218,7 +229,7 @@ const HomePage: React.FC = () => {
             ].map(conexao => (
               <Link key={conexao.img} to={`/perfil/${conexao.id}`} title={conexao.nome}>
                 <img
-                  src={conexao.img}
+                  src={getProjectImageUrl(conexao.img)}
                   alt={conexao.nome}
                   className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-4 border-brand-purple-light shadow-md bg-white hover:scale-105 transition-transform"
                 />

@@ -45,6 +45,18 @@ const normalizeUserImage = (fotoPerfil: string | null): string => {
   return fotoPerfil.startsWith('http') ? fotoPerfil : `http://localhost:5000/${fotoPerfil}`;
 };
 
+// Função utilitária para exibir corretamente imagens de capa (Cloudinary, local ou placeholder)
+const getProjectImageUrl = (imgPath?: string) => {
+  if (!imgPath) return '/default-profile.png';
+  if (imgPath.startsWith('http')) return imgPath;
+  if (imgPath.startsWith('uploads/')) return `http://localhost:5000/${imgPath}`;
+  if (imgPath.startsWith('/uploads/')) return `http://localhost:5000${imgPath}`;
+  if (imgPath.startsWith('/src/assets/')) return imgPath.replace('/src/assets', '');
+  if (imgPath.startsWith('/public/')) return imgPath.replace('/public', '');
+  if (imgPath.startsWith('/')) return imgPath;
+  return `/${imgPath}`;
+};
+
 const PortfolioPage: React.FC = () => {
   const [projetos, setProjetos] = useState<Projeto[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -218,7 +230,7 @@ const PortfolioPage: React.FC = () => {
                 {/* Horizontal Image */}
                 <div className="w-full">
                   <img
-                    src={`http://localhost:5000/${projeto.imagem_capa || projeto.imagens?.[0]}`}
+                    src={getProjectImageUrl(projeto.imagem_capa || projeto.imagens?.[0])}
                     alt={projeto.titulo}
                     className="w-full h-32 object-cover"
                   />

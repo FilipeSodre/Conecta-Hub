@@ -50,6 +50,18 @@ const normalizeUserImage = (foto_perfil?: string) => {
     return `/default-profile.png`;
 };
 
+// Utilitário para padronizar exibição de imagens (Cloudinary, local ou placeholder)
+const getProjectImageUrl = (imgPath?: string) => {
+    if (!imgPath) return '/default-profile.png';
+    if (imgPath.startsWith('http')) return imgPath;
+    if (imgPath.startsWith('uploads/')) return `http://localhost:5000/${imgPath}`;
+    if (imgPath.startsWith('/uploads/')) return `http://localhost:5000${imgPath}`;
+    if (imgPath.startsWith('/src/assets/')) return imgPath.replace('/src/assets', '');
+    if (imgPath.startsWith('/public/')) return imgPath.replace('/public', '');
+    if (imgPath.startsWith('/')) return imgPath;
+    return `/${imgPath}`;
+};
+
 const PortfolioProjectPage: React.FC = () => {
     const { projectId } = useParams<{ projectId: string }>();
     const navigate = useNavigate();
@@ -528,7 +540,9 @@ const PortfolioProjectPage: React.FC = () => {
                         imagem && (
                             <div key={index} className="relative aspect-auto group overflow-hidden rounded-lg shadow-md">
                                 <img
-                                    src={imagem.startsWith('http') ? imagem : `http://localhost:5000/${imagem}`}
+                                    src={getProjectImageUrl(
+                                        imagem
+                                    )}
                                     alt={`${projeto.titulo} - Imagem ${index + 1}`}
                                     className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
                                 />
@@ -619,7 +633,7 @@ const PortfolioProjectPage: React.FC = () => {
                     imagem && (
                         <div key={index} className="relative aspect-[4/3] group overflow-hidden rounded-lg shadow-md">
                             <img
-                                src={imagem.startsWith('http') ? imagem : `http://localhost:5000/${imagem}`}
+                                src={getProjectImageUrl(imagem)}
                                 alt={`${projeto.titulo} - Imagem ${index + 1}`}
                                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                             />
@@ -699,7 +713,7 @@ const PortfolioProjectPage: React.FC = () => {
                                                 projeto.participantes.map((p) => (
                                                     <div key={p.usuario_id} className="flex flex-col items-center">
                                                         <img
-                                                            src={p.foto_perfil || '/default-profile.png'}
+                                                            src={normalizeUserImage(p.foto_perfil || undefined)}
                                                             alt={p.nome}
                                                             className="w-8 h-8 rounded-full object-cover border-2 border-white shadow"
                                                         />
@@ -810,16 +824,16 @@ const PortfolioProjectPage: React.FC = () => {
                 recipientName={projetoOwner?.nome || projeto?.usuario_nome || 'Usuário'}
                 recipientId={projetoOwner?.usuario_id || projeto?.usuario_id || 0}
                 onSend={(data) => {
-                  // Função de envio de conexão
-                  console.log('Solicitação de conexão:', data);
+                    // Função de envio de conexão
+                    console.log('Solicitação de conexão:', data);
                 }}
             />
             <AddCollaboratorModal
                 isOpen={isAddCollaboratorModalOpen}
                 onClose={() => setIsAddCollaboratorModalOpen(false)}
                 onInvite={(user) => {
-                  // Função de convite de colaborador (implemente conforme sua lógica)
-                  console.log('Convidar colaborador:', user);
+                    // Função de convite de colaborador (implemente conforme sua lógica)
+                    console.log('Convidar colaborador:', user);
                 }}
             />
         </div>
