@@ -9,9 +9,9 @@ const VagasIcon = () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" view
 
 
 const MainNavigation: React.FC = () => {
-    const navItemBaseClasses = "flex items-center justify-center font-medium px-4 py-3 rounded-xl transition-colors duration-200 shadow-sm hover:shadow-md";
-    const activeNavItemClasses = "bg-brand-purple text-brand-yellow ring-2 ring-brand-purple-dark";
-    const inactiveNavItemClasses = "bg-brand-yellow text-brand-purple-dark hover:bg-brand-yellow-dark";
+    const navItemBaseClasses = "flex items-center justify-center font-indie-flower px-8 py-2 rounded-lg transition-colors duration-200 border-2 text-lg";
+    const activeNavItemClasses = "bg-brand-yellow text-black border-brand-yellow";
+    const inactiveNavItemClasses = "bg-white text-black border-brand-yellow hover:bg-brand-yellow/80";
 
     return (
         <nav className="bg-white py-3 shadow-md sticky top-[68px] z-40"> {/* Adjust top value based on Header height */}

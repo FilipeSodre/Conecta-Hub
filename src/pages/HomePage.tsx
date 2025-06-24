@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useKeenSlider } from 'keen-slider/react';
@@ -101,6 +100,63 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
+      {/* Destaques do mês - dados reais estilizados */}
+      <section>
+        <div className="w-full flex flex-col items-start justify-center pl-2">
+          <h1 className="text-3xl font-indie-flower text-brand-purple-dark leading-tight" style={{ marginBottom: '-2px' }}>Destaques do mês</h1>
+        </div>
+        <div className="flex flex-col md:flex-row justify-center gap-6 md:gap-8">
+          {[
+            {
+              nome: 'joao pedro',
+              avatar: 'http://localhost:5000/uploads/1748450204950-91867ee5-80d8-47e7-9075-68c7aed92866.png',
+              tipo: 'programador',
+              id: 7,
+            },
+            {
+              nome: 'Leo',
+              avatar: 'http://localhost:5000/uploads/1748481759343-1fbf2992-f7c2-428d-b9fd-94ca1922a0a7.png',
+              tipo: 'programador',
+              id: 8,
+            },
+            {
+              nome: 'teste',
+              avatar: 'http://localhost:5000/uploads/1748536420448-2a75bb61dffd7f4edd05363c24b89ef5.webp',
+              tipo: 'programador',
+              id: 9,
+            },
+            {
+              nome: 'jaquleine',
+              avatar: 'http://localhost:5000/uploads/1748537060121-raw.png',
+              tipo: 'designer',
+              id: 10,
+            },
+            {
+              nome: 'marcello',
+              avatar: 'http://localhost:5000/uploads/1748538655523-981a6df7-cb20-4465-a05a-2bbc97dd8cff.png',
+              tipo: 'designer',
+              id: 13,
+            },
+          ].map((user) => (
+            <Link key={user.nome} to={`/perfil/${user.id}`} title={user.nome} className="w-full max-w-xs mx-auto">
+              <div className="flex flex-col items-center bg-white rounded-2xl shadow-card p-0 h-[340px] w-[240px] min-w-[240px] max-w-[240px] overflow-hidden">
+                <div className="w-full h-[180px] flex items-center justify-center bg-gray-200 rounded-t-2xl overflow-hidden">
+                  <img src={user.avatar} alt={user.nome} className="object-cover w-full h-full" />
+                </div>
+                <div className="w-full bg-brand-purple-light rounded-b-2xl flex flex-col items-center p-4 flex-1 justify-center">
+                  <h3 className="text-xl font-indie-flower text-brand-purple-dark text-center mb-1 w-full truncate">
+                    {user.nome}
+                  </h3>
+                  <div className="text-base font-bold text-brand-purple-dark text-center font-nunito">
+                    {user.tipo === 'designer' ? 'Estudante de Design' : user.tipo === 'ti' ? 'Estudante de TI' : 'Estudante de Ciência da Computação'}
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       {/* Desafio de Design da Semana */}
       <section className="flex flex-col md:flex-row gap-8 items-center bg-slate-800 text-white p-8 md:p-12 rounded-2xl shadow-xl">
         <div className="md:w-1/2">
@@ -158,20 +214,27 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Rede de Conexões Recentes */}
+      {/* Rede de Conexões Recentes - dados reais */}
       <section>
         <h2 className="text-3xl font-bold text-brand-purple-dark mb-6">Rede de Conexões Recentes</h2>
         <div className="bg-slate-800 p-8 rounded-2xl shadow-xl relative">
-          {/* Network visualization placeholder - this would require a more complex component or library */}
           <div className="flex flex-wrap justify-center items-center gap-4">
-            {mockConexoesRecentes.map(conexao => (
-              <img
-                key={conexao.id}
-                src={conexao.img}
-                alt={conexao.name}
-                title={conexao.name}
-                className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-4 border-brand-purple-light shadow-md"
-              />
+            {[
+              { nome: 'joao pedro', img: 'http://localhost:5000/uploads/1748450204950-91867ee5-80d8-47e7-9075-68c7aed92866.png', id: 7 },
+              { nome: 'Leo', img: 'http://localhost:5000/uploads/1748481759343-1fbf2992-f7c2-428d-b9fd-94ca1922a0a7.png', id: 8 },
+              { nome: 'teste', img: 'http://localhost:5000/uploads/1748536420448-2a75bb61dffd7f4edd05363c24b89ef5.webp', id: 9 },
+              { nome: 'jaquleine', img: 'http://localhost:5000/uploads/1748537060121-raw.png', id: 10 },
+              { nome: 'marcello', img: 'http://localhost:5000/uploads/1748538655523-981a6df7-cb20-4465-a05a-2bbc97dd8cff.png', id: 13 },
+              { nome: 'Filipe', img: 'http://localhost:5000/uploads/1748537907842-0621fde7-a2ee-448b-b786-e13aff33fc60.png', id: 11 },
+              { nome: 'Filipe', img: 'http://localhost:5000/uploads/1748538474936-ChatGPT Image 1 de abr. de 2025, 13_34_25.png', id: 12 },
+            ].map(conexao => (
+              <Link key={conexao.img} to={`/perfil/${conexao.id}`} title={conexao.nome}>
+                <img
+                  src={conexao.img}
+                  alt={conexao.nome}
+                  className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-4 border-brand-purple-light shadow-md bg-white hover:scale-105 transition-transform"
+                />
+              </Link>
             ))}
           </div>
           <p className="text-center text-slate-300 mt-6">Conecte-se com outros talentos e expanda sua rede!</p>

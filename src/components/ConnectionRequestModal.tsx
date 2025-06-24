@@ -57,9 +57,9 @@ const ConnectionRequestModal: React.FC<ConnectionRequestModalProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-            <div className="bg-[#b48bb2] rounded-3xl p-8 w-full max-w-md shadow-xl relative">
+            <div className="bg-brand-purple-light rounded-3xl p-8 w-full max-w-md shadow-xl relative">
                 <button onClick={onClose} className="absolute top-4 right-4 text-xl font-bold">×</button>
-                <h2 className="text-2xl font-bold mb-6 text-center">Enviar Solicitação de conexão</h2>
+                <h2 className="text-2xl font-indie-flower text-brand-purple-dark mb-4 text-center">Conectar com {recipientName}</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label className="block mb-1">Com quem você deseja se conectar?</label>
@@ -127,7 +127,7 @@ const ConnectionRequestModal: React.FC<ConnectionRequestModalProps> = ({
                     </div>
                     <button
                         type="submit"
-                        className="w-full bg-[#6d3c6b] text-white font-semibold py-3 px-6 rounded-xl hover:bg-[#4e2a4e] transition-colors duration-200 mt-4"
+                        className="w-full bg-brand-purple text-white font-semibold py-3 px-6 rounded-xl hover:bg-brand-purple-dark transition-colors duration-200 mt-4"
                     >
                         Enviar Solicitação
                     </button>
@@ -137,4 +137,4 @@ const ConnectionRequestModal: React.FC<ConnectionRequestModalProps> = ({
     );
 };
 
-export default ConnectionRequestModal; 
+export default ConnectionRequestModal;

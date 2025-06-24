@@ -8,21 +8,22 @@ export default {
     extend: {
       colors: {
         'brand-purple': {
-          light: '#E2D9F3', // Lighter purple for backgrounds, accents
-          DEFAULT: '#6B3F99', // Main purple for primary actions, header, footer
-          dark: '#4F2D80',  // Darker purple for hover states, text
+          light: '#E2D9F3',
+          DEFAULT: '#593396', // Novo roxo principal
+          dark: '#3d225c',    // Um roxo mais escuro para hover
         },
         'brand-yellow': {
-          DEFAULT: '#FDC84F', // Main yellow for highlights, navigation, secondary actions
-          dark: '#E0A82E',   // Darker yellow for hover states
+          DEFAULT: '#f7dd52', // Novo amarelo principal
+          dark: '#e6c13b',   // Amarelo mais escuro para hover
         },
         'brand-background': '#FFFFFF',
-        'brand-text': '#1A1A1A', // Dark text for readability
-        'brand-text-secondary': '#555555', // Lighter text
+        'brand-text': '#1A1A1A',
+        'brand-text-secondary': '#555555',
       },
       fontFamily: {
-        sans: ['"Patrick Hand"', 'cursive', 'sans-serif'],
-        'patrick-hand': ['"Patrick Hand"', 'cursive'],
+        sans: ['Nunito', 'sans-serif'],
+        'indie-flower': ['"Indie Flower"', 'cursive'],
+        'nunito': ['Nunito', 'sans-serif'],
       },
       borderRadius: {
         'xl': '1rem', // 16px

@@ -26,6 +26,7 @@ interface Projeto {
     usuario_nome?: string;
     usuario_foto?: string;
     tipo?: 'designer' | 'programador';
+    participantes?: { usuario_id: number; nome: string; foto_perfil: string | null; papel: string }[];
 }
 
 interface Comentario {
@@ -68,6 +69,15 @@ const PortfolioProjectPage: React.FC = () => {
     const [isOwner, setIsOwner] = useState(false);
     const [newComment, setNewComment] = useState('');
     const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+    const [allProjetos, setAllProjetos] = useState<Projeto[]>([]);
+    const randomProjetos = useMemo(() => {
+        if (!allProjetos || allProjetos.length === 0 || !projeto) return [];
+        // Filtra o projeto atual e sorteia 2 aleatórios
+        const outros = allProjetos.filter(p => p.projeto_id !== projeto.projeto_id);
+        if (outros.length <= 2) return outros;
+        const shuffled = outros.sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, 2);
+    }, [allProjetos, projeto]);
 
     const scrollToComments = () => {
         const commentsSection = document.getElementById('comments-section');
@@ -406,198 +416,149 @@ const PortfolioProjectPage: React.FC = () => {
         fetchCollaborators();
     }, [projectId, projeto?.usuario_id]);
 
+    useEffect(() => {
+        // Busca todos os projetos para mostrar sugestões
+        axios.get('/projetos').then(res => setAllProjetos(res.data)).catch(() => setAllProjetos([]));
+    }, [projectId]);
+
     if (!projeto) {
         return <p>Carregando...</p>;
     }
 
     return (
-        <div className="container mx-auto p-4 max-w-6xl">
-            {/* Cabeçalho com Dono do Projeto e Colaboradores */}
-            <div className="flex flex-col md:flex-row gap-8 mb-8 items-center">
-                {/* Dono do Projeto */}
-                <div className="flex items-center">
-                    <div className="flex items-center">
+        <div className="container mx-auto p-4 max-w-6xl relative">
+            {/* Coluna de Botões Funcionais - ao lado do fundo preto, alinhada ao topo das fotos dos usuários */}
+            {projeto.imagens && projeto.imagens.length > 0 && (
+                <div
+                    className="absolute left-full top-16 ml-4 flex flex-col gap-2 z-20"
+                    style={{ pointerEvents: 'auto' }}
+                >
+                    {/* Botão de Curtida */}
+                    <div className="flex flex-col items-center gap-1">
+                        <button
+                            onClick={handleLikeToggle}
+                            className={`bg-black p-2 rounded-full shadow hover:bg-gray-800 flex items-center justify-center transform transition-all duration-200 font-bold text-base font-sans ${hasLiked ? 'scale-110' : 'scale-100'}`}
+                        >
+                            <img
+                                src={hasLiked ? "/fotos/botao-curtir-vermelho.png" : "/fotos/botao-curtir.png"}
+                                alt="Curtir"
+                                className="w-6 h-6"
+                            />
+                        </button>
+                        <span className="text-center text-sm font-bold font-sans text-black">{likes || 0}</span>
+                    </div>
+                    {/* Botão de Comentários */}
+                    <div className="flex flex-col items-center gap-1">
+                        <button
+                            onClick={scrollToComments}
+                            className="bg-black p-2 rounded-full shadow hover:bg-gray-800 flex items-center justify-center transform transition-all duration-200 font-bold text-base font-sans"
+                        >
+                            <img src="/fotos/botao-comentarios.png" alt="Comentários" className="w-6 h-6" />
+                        </button>
+                        <span className="text-center text-sm font-bold font-sans text-black">{comentarios.length}</span>
+                    </div>
+                    {/* Botão de Conectar - Mostrar apenas se não for dono nem colaborador */}
+                    {projeto && projeto.usuario_id !== userId && !isCollaborator && !isOwner && (
+                        <div className="flex flex-col items-center gap-1">
+                            <button
+                                className="bg-black p-2 rounded-full shadow hover:bg-gray-800 flex items-center justify-center transform transition-all duration-200 font-bold text-base font-sans"
+                                title="Conectar"
+                                onClick={() => setIsConnectionModalOpen(true)}
+                            >
+                                <img src="/fotos/botao-conecta.png" alt="Conectar" className="w-6 h-6" />
+                            </button>
+                            <span className="text-center text-sm font-bold font-sans text-black">Conectar</span>
+                        </div>
+                    )}
+                    {/* Botão de Adicionar Dono - apenas para o dono */}
+                    {isOwner && (
+                        <div className="flex flex-col items-center gap-1">
+                            <button
+                                className="bg-black p-2 rounded-full shadow hover:bg-gray-800 flex items-center justify-center transform transition-all duration-200 font-bold text-base font-sans"
+                                title="Adicionar Colaborador"
+                                onClick={() => setIsAddCollaboratorModalOpen(true)}
+                            >
+                                {/* Ícone padrão de usuário, cor amarelo/dourado igual aos outros */}
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="#FFD700" strokeWidth="2">
+                                    <circle cx="12" cy="8" r="4" />
+                                    <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
+                                </svg>
+                            </button>
+                            <span className="text-center text-sm font-bold font-sans text-black">Adicionar Colaborador</span>
+                        </div>
+                    )}
+                </div>
+            )}
+            {/* Container preto arredondado para área principal do projeto */}
+            <div className="bg-black rounded-3xl p-12 mb-8 shadow-lg flex flex-col">
+                {/* Cabeçalho com Dono do Projeto e Colaboradores */}
+                <div className="flex flex-col md:flex-row gap-12 mb-8 items-center">
+                    {/* Dono do Projeto */}
+                    <div className="flex items-center mr-12">
                         <img
                             src={projeto.usuario_foto}
                             alt={projeto.usuario_nome}
-                            className="w-16 h-16 rounded-full mr-4 border-2 border-brand-purple object-cover cursor-pointer hover:border-brand-purple-dark transition-colors"
+                            className="w-32 h-32 rounded-full border-4 border-brand-purple object-cover cursor-pointer hover:border-brand-purple-dark transition-colors shadow-lg"
+                            style={{ aspectRatio: '1/1' }}
                             onClick={() => navigate(`/perfil/${projeto.usuario_id}`)}
                         />
-                        <div>
+                        <div className="flex flex-col justify-center ml-8 min-w-[220px]">
                             <h1
-                                className="text-2xl font-bold cursor-pointer hover:text-brand-purple transition-colors"
+                                className="text-4xl font-bold cursor-pointer hover:text-brand-purple transition-colors text-white text-left leading-tight"
                                 onClick={() => navigate(`/perfil/${projeto.usuario_id}`)}
                             >
                                 {projeto.usuario_nome}
                             </h1>
-                            <div>
-                                <span className="text-sm text-brand-purple">Criador do Projeto</span>
-                                <span className="text-sm text-gray-600"> • {projetoOwner?.tipo === 'designer' ? 'Designer' : projetoOwner?.tipo === 'programador' ? 'Programador' : 'Área não especificada'}</span>
-                            </div>
+                            <span className="text-lg text-white text-left mt-2 font-nunito font-semibold">Criador do Projeto</span>
+                            <span className="text-base text-white text-left mt-2 font-nunito">{projetoOwner?.tipo || projeto.tipo || '-'}</span>
                         </div>
                     </div>
-                </div>
 
-                {/* Colaboradores */}
-                {colaboradores.length > 0 && colaboradores.some(c => !c.is_owner) && (
-                    <div className="md:w-2/3 flex items-center justify-center">
-                        <div className="flex items-center">
+                    {/* Colaboradores */}
+                    {colaboradores.length > 0 && colaboradores.some(c => !c.is_owner) && (
+                        <div className="md:w-2/3 flex items-center justify-center flex-wrap gap-12">
                             {colaboradores
                                 .filter(colaborador => !colaborador.is_owner)
                                 .map((colaborador) => (
-                                    <div
-                                        key={colaborador.usuario_id}
-                                        className="flex items-center mr-8 cursor-pointer"
-                                        onClick={() => navigate(`/perfil/${colaborador.usuario_id}`)}
-                                    >
+                                    <div key={colaborador.usuario_id} className="flex items-center cursor-pointer" onClick={() => navigate(`/perfil/${colaborador.usuario_id}`)}>
                                         <img
                                             src={normalizeUserImage(colaborador.foto_perfil)}
                                             alt={colaborador.nome}
-                                            className="w-16 h-16 rounded-full mr-4 border-2 border-brand-purple object-cover hover:border-brand-purple-dark transition-colors"
+                                            className="w-20 h-20 rounded-full border-4 border-brand-purple object-cover hover:border-brand-purple-dark transition-colors shadow-lg"
+                                            style={{ aspectRatio: '1/1' }}
                                         />
-                                        <div>
-                                            <h1 className="text-2xl font-bold cursor-pointer hover:text-brand-purple transition-colors">
-                                                {colaborador.nome}
-                                            </h1>
-                                            <div>
-                                                <span className="text-sm text-brand-purple">Colaborador</span>
-                                                <span className="text-sm text-gray-600"> • {colaborador.tipo === 'designer' ? 'Designer' : colaborador.tipo === 'programador' ? 'Programador' : 'Área não especificada'}</span>
-                                            </div>
+                                        <div className="flex flex-col justify-center ml-6">
+                                            <span className="text-xl font-semibold text-white text-left leading-tight">{colaborador.nome}</span>
+                                            <span className="text-base text-white text-left mt-1 font-nunito">Colaborador</span>
+                                            <span className="text-base text-white text-left mt-1 font-nunito capitalize">{colaborador.tipo || '-'}</span>
                                         </div>
                                     </div>
                                 ))}
                         </div>
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
 
-            {/* Título e Descrição */}
-            <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-4">{projeto.titulo}</h2>
-                <p className="text-gray-700 whitespace-pre-wrap">{projeto.descricao}</p>
-            </div>
+                {/* Título e Descrição */}
+                <div className="mb-8">
+                    <h2 className="text-2xl font-bold mb-4 text-white">{projeto.titulo}</h2>
+                    <p className="text-gray-300 whitespace-pre-wrap">{projeto.descricao}</p>
+                </div>
 
-            {/* Galeria Principal */}
-            <div className="flex flex-col gap-6 mb-8 relative">
-                {(projeto.imagens || []).filter(Boolean).map((imagem, index) => (
-                    imagem && (
-                        <div key={index} className="relative aspect-auto group overflow-hidden rounded-lg shadow-md">
-                            <img
-                                src={`http://localhost:5000/${imagem}`}
-                                alt={`${projeto.titulo} - Imagem ${index + 1}`}
-                                className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                    )
-                ))}
-                {projeto.imagens && projeto.imagens.length > 0 && (
-                    <div className="absolute top-0 left-full ml-4 flex flex-col gap-2">
-                        {/* Botão de Curtida */}
-                        <div className="flex flex-col items-center gap-1">
-                            <button
-                                onClick={handleLikeToggle}
-                                className={`bg-white p-2 rounded-full shadow hover:bg-gray-200 flex items-center justify-center transform transition-all duration-200 ${hasLiked ? 'scale-110' : 'scale-100'}`}
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    className={`w-6 h-6 transition-colors duration-200 ${hasLiked ? 'text-red-500' : 'text-gray-400'}`}
-                                    fill={hasLiked ? "currentColor" : "none"}
-                                    stroke="currentColor"
-                                    strokeWidth={hasLiked ? "0" : "2"}
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                                    />
-                                </svg>
-                            </button>
-                            <span className={`text-center text-sm font-medium ${hasLiked ? 'text-red-500' : 'text-gray-500'}`}>
-                                {likes || 0}
-                            </span>
-                        </div>
-
-                        {/* Botão de Comentários */}
-                        <div className="flex flex-col items-center gap-1">
-                            <button
-                                onClick={scrollToComments}
-                                className="bg-white p-2 rounded-full shadow hover:bg-gray-200 flex items-center justify-center transform transition-all duration-200"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    className="w-6 h-6 text-blue-500"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                                    />
-                                </svg>
-                            </button>
-                            <span className="text-center text-sm font-medium text-blue-500">
-                                {comentarios.length}
-                            </span>
-                        </div>
-                        {/* Botão de Conectar - Mostrar apenas se não for dono nem colaborador */}
-                        {projeto && projeto.usuario_id !== userId && !isCollaborator && !isOwner && (
-                            <div className="flex flex-col items-center gap-1">
-                                <button
-                                    className="bg-white p-2 rounded-full shadow hover:bg-gray-200 flex items-center justify-center transform transition-all duration-200"
-                                    title="Conectar"
-                                    onClick={() => setIsConnectionModalOpen(true)}
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        className="w-6 h-6 text-green-500"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                    >
-                                        <circle cx="12" cy="12" r="9" />
-                                    </svg>
-                                </button>
-                                <span className="text-center text-sm font-medium text-green-500">
-                                    Conectar
-                                </span>
+                {/* Galeria Principal */}
+                <div className="flex flex-col gap-6 mb-8 relative">
+                    {(projeto.imagens || []).filter(Boolean).map((imagem, index) => (
+                        imagem && (
+                            <div key={index} className="relative aspect-auto group overflow-hidden rounded-lg shadow-md">
+                                <img
+                                    src={`http://localhost:5000/${imagem}`}
+                                    alt={`${projeto.titulo} - Imagem ${index + 1}`}
+                                    className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                             </div>
-                        )}
-
-                        {/* Botão de Adicionar Dono - apenas para o dono */}
-                        {isOwner && (
-                            <div className="flex flex-col items-center gap-1">
-                                <button
-                                    className="bg-white p-2 rounded-full shadow hover:bg-gray-200 flex items-center justify-center transform transition-all duration-200"
-                                    title="Adicionar Colaborador"
-                                    onClick={() => setIsAddCollaboratorModalOpen(true)}
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        className="w-6 h-6 text-purple-500"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                    >
-                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                                        <circle cx="9" cy="7" r="4" />
-                                        <path d="M19 8v6" />
-                                        <path d="M16 11h6" />
-                                    </svg>
-                                </button>
-                                <span className="text-center text-sm font-medium text-purple-500">
-                                    Adicionar Colaborador
-                                </span>
-                            </div>
-                        )}
-                    </div>
-                )}
+                        )
+                    ))}
+                </div>
             </div>
 
             {/* Barra de Ações */}
@@ -725,6 +686,67 @@ const PortfolioProjectPage: React.FC = () => {
                 )}
             </div>
 
+            {/* Projetos Aleatórios */}
+            {randomProjetos.length > 0 && (
+                <div className="mb-8">
+                    <h2 className="text-2xl font-indie-flower text-black text-center mb-4">Acesse também outros projetos</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        {randomProjetos.map((projeto) => (
+                            <a
+                                key={projeto.projeto_id}
+                                href={`/portfolio/${projeto.projeto_id}`}
+                                className="block bg-white rounded-2xl shadow-md overflow-hidden transform transition-transform hover:scale-105 border border-gray-200"
+                            >
+                                <div className="w-full">
+                                    <img
+                                        src={`http://localhost:5000/${projeto.imagem_capa || projeto.imagens?.[0]}`}
+                                        alt={projeto.titulo}
+                                        className="w-full h-32 object-cover rounded-t-2xl"
+                                    />
+                                </div>
+                                <div className="flex flex-row bg-purple-700 items-center rounded-b-2xl">
+                                    <div className="flex flex-col items-center justify-center py-3 px-4 w-1/3">
+                                        <div className="flex flex-row items-center justify-center gap-2 mb-1">
+                                            {projeto.participantes && projeto.participantes.length > 0 ? (
+                                                projeto.participantes.map((p) => (
+                                                    <div key={p.usuario_id} className="flex flex-col items-center">
+                                                        <img
+                                                            src={p.foto_perfil || '/default-profile.png'}
+                                                            alt={p.nome}
+                                                            className="w-8 h-8 rounded-full object-cover border-2 border-white shadow"
+                                                        />
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <span className="text-xs text-white">Sem participantes</span>
+                                            )}
+                                        </div>
+                                        <div className="flex flex-row items-center justify-center gap-2">
+                                            {projeto.participantes && projeto.participantes.length > 0 && (
+                                                projeto.participantes.map((p) => (
+                                                    <span key={p.usuario_id} className="text-xs text-white font-semibold text-center leading-tight max-w-[70px] truncate">
+                                                        {p.nome}
+                                                    </span>
+                                                ))
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="h-16 w-px bg-white opacity-40 mx-2"></div>
+                                    <div className="flex flex-col justify-center w-2/3 px-4 py-3">
+                                        <h3 className="text-base font-semibold text-white mb-1 truncate">
+                                            {projeto.titulo}
+                                        </h3>
+                                        <p className="text-xs text-white font-normal truncate mb-1">
+                                            {projeto.descricao}
+                                        </p>
+                                    </div>
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Comentários */}
             <div id="comments-section" className="mb-8">
                 <h2 className="text-xl font-semibold mb-4">Comentários</h2>
@@ -765,25 +787,27 @@ const PortfolioProjectPage: React.FC = () => {
                 </form>
 
                 {/* Lista de Comentários */}
-                <div className="flex flex-col gap-4">
+                <div className="space-y-4">
                     {comentarios.length === 0 ? (
                         <p className="text-gray-500">Nenhum comentário ainda.</p>
                     ) : (
                         comentarios.map((comentario) => (
-                            <div key={comentario.comentario_id} className="flex items-start gap-4">
+                            <div
+                                key={comentario.comentario_id}
+                                id={`comentario-${comentario.comentario_id}`}
+                                className="bg-white rounded-lg p-4 shadow flex gap-4 items-start"
+                            >
                                 <img
                                     src={normalizeUserImage(comentario.usuario_foto)}
                                     alt={comentario.usuario_nome}
-                                    className="w-12 h-12 rounded-full border-2 border-brand-purple object-cover"
+                                    className="w-12 h-12 rounded-full object-cover border-2 border-brand-purple"
                                 />
                                 <div className="flex-1">
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-semibold text-brand-purple cursor-pointer hover:underline" onClick={() => navigate(`/perfil/${comentario.usuario_id}`)}>
-                                            {comentario.usuario_nome}
-                                        </span>
-                                        <span className="text-xs text-gray-400">{new Date(comentario.data_criacao).toLocaleString()}</span>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="font-semibold text-gray-900">{comentario.usuario_nome}</span>
+                                        <span className="text-xs text-gray-400">{new Date(comentario.data_criacao).toLocaleString('pt-BR')}</span>
                                     </div>
-                                    <p className="text-gray-800 whitespace-pre-wrap">{comentario.texto}</p>
+                                    <p className="text-gray-700 whitespace-pre-line">{comentario.texto}</p>
                                 </div>
                             </div>
                         ))
@@ -791,38 +815,17 @@ const PortfolioProjectPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Modal de Conexão */}
-            {isConnectionModalOpen && (
-                <ConnectionRequestModal
-                    isOpen={isConnectionModalOpen}
-                    onClose={() => setIsConnectionModalOpen(false)}
-                    recipientName={projetoOwner?.nome || ''}
-                    recipientId={projetoOwner?.usuario_id || 0}
-                    onSend={() => { }}
-                />
-            )}
-            {/* Modal de Adicionar Colaborador */}
-            {isAddCollaboratorModalOpen && (
-                <AddCollaboratorModal
-                    isOpen={isAddCollaboratorModalOpen}
-                    onClose={() => setIsAddCollaboratorModalOpen(false)}
-                    projetoId={projeto?.projeto_id}
-                    onInvite={async (user) => {
-                        try {
-                            await axios.post('/usuario-projeto', {
-                                usuario_id: user.usuario_id,
-                                projeto_id: projeto?.projeto_id,
-                                papel: 'colaborador',
-                                solicitante_id: userId
-                            });
-                            alert('Convite de colaborador enviado!');
-                            setIsAddCollaboratorModalOpen(false);
-                        } catch (err) {
-                            alert('Erro ao enviar convite.');
-                        }
-                    }}
-                />
-            )}
+            {/* Modais */}
+            <ConnectionRequestModal
+                isOpen={isConnectionModalOpen}
+                onClose={() => setIsConnectionModalOpen(false)}
+                projetoId={projeto.projeto_id}
+            />
+            <AddCollaboratorModal
+                isOpen={isAddCollaboratorModalOpen}
+                onClose={() => setIsAddCollaboratorModalOpen(false)}
+                projetoId={projeto.projeto_id}
+            />
         </div>
     );
 };

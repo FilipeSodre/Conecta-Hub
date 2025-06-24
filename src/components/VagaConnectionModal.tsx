@@ -57,9 +57,9 @@ const VagaConnectionModal: React.FC<VagaConnectionModalProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-            <div className="bg-[#b48bb2] rounded-3xl p-8 w-full max-w-md shadow-xl relative">
+            <div className="bg-brand-purple-light rounded-3xl p-8 w-full max-w-md shadow-xl relative">
                 <button onClick={onClose} className="absolute top-4 right-4 text-xl font-bold text-white">×</button>
-                <h2 className="text-2xl font-bold mb-6 text-center text-white">Conectar-se à Vaga</h2>
+                <h2 className="text-2xl font-indie-flower text-brand-purple-dark mb-4 text-center">Conectar com {recipientName}</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label className="block mb-1 font-medium text-white">Com quem você deseja se conectar?</label>

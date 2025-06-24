@@ -56,7 +56,7 @@ const CadastroPage: React.FC = () => {
     return (
         <div className="flex justify-center items-center py-12">
             <div className="bg-brand-purple-light p-8 sm:p-12 rounded-3xl shadow-card w-full max-w-lg">
-                <h1 className="text-3xl sm:text-4xl font-bold text-brand-purple-dark mb-8 text-center">Criar Conta</h1>
+                <h1 className="text-3xl font-indie-flower text-brand-purple-dark mb-8">Cadastro</h1>
 
                 {error && <p className="mb-4 text-center text-red-600 bg-red-100 p-3 rounded-lg">{error}</p>}
                 {success && <p className="mb-4 text-center text-green-600 bg-green-100 p-3 rounded-lg">{success}</p>}
@@ -168,7 +168,7 @@ const CadastroPage: React.FC = () => {
                     <div>
                         <button
                             type="submit"
-                            className="w-full bg-brand-purple text-white font-semibold py-3 px-6 rounded-xl hover:bg-brand-purple-dark transition-colors duration-200 shadow-md"
+                            className="w-full bg-brand-purple text-white font-indie-flower py-3 px-6 rounded-xl hover:bg-brand-purple-dark transition-colors duration-200 shadow-md"
                         >
                             Cadastrar
                         </button>

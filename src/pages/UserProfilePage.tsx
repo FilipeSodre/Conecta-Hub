@@ -130,7 +130,7 @@ const UserProfilePage: React.FC = () => {
   return (
     <div className="container mx-auto p-4 max-w-6xl">
       {/* Card do Perfil com fundo bege claro */}
-      <div className="bg-[#FFF5E9] rounded-2xl p-8 mb-8">
+      <div className="bg-brand-yellow rounded-2xl p-8 mb-8">
         {/* Cabeçalho do Perfil */}
         <div className="flex items-start gap-8 mb-8">
           {/* Foto de Perfil */}

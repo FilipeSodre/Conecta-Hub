@@ -30,48 +30,49 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="bg-brand-purple text-white shadow-lg sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <Link to="/" className="text-3xl font-extrabold">
-          <span className="text-brand-yellow">Conecta</span>
-          <span className="text-white">Hub</span>
-        </Link>
-        <div className="flex items-center space-x-3">
-          <button aria-label="Buscar" className="p-2 rounded-full hover:bg-brand-purple-dark transition-colors">
-            <SearchIcon />
-          </button>
-          {user ? (
-            <div className="flex items-center space-x-2">
-              <Link to="/perfil" className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-full border-2 border-white overflow-hidden bg-white">
-                  <img
-                    src={getProfileImgSrc(user.foto_perfil)}
-                    alt="Foto de perfil"
-                    onError={handleImageError}
-                    className="w-full h-full object-cover"
-                    loading="eager"
-                  />
-                </div>
-                <span className="text-sm font-medium">{user.nome}</span>
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm"
+    <>
+      <header className="relative w-full h-[120px] flex items-center" style={{ backgroundImage: 'url(/fotos/header_Prancheta.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        <div className="w-full flex items-center h-full px-0">
+          <img src="/fotos/pngs-04.png" alt="Logo Conecta" className="h-[115px] w-auto ml-0 mr-8" style={{ minWidth: '180px', maxWidth: 'none' }} />
+          <div className="flex-1" />
+          <div className="flex items-center space-x-3 ml-auto text-white pr-8">
+            <button aria-label="Buscar" className="p-2 rounded-full hover:bg-brand-purple-dark transition-colors">
+              <SearchIcon />
+            </button>
+            {user ? (
+              <div className="flex items-center space-x-2">
+                <Link to="/perfil" className="flex items-center space-x-2">
+                  <div className="w-8 h-8 rounded-full border-2 border-white overflow-hidden bg-white">
+                    <img
+                      src={getProfileImgSrc(user.foto_perfil)}
+                      alt="Foto de perfil"
+                      onError={handleImageError}
+                      className="w-full h-full object-cover"
+                      loading="eager"
+                    />
+                  </div>
+                  <span className="text-sm font-nunito font-medium text-white">{user.nome}</span>
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm font-indie-flower"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="bg-brand-yellow text-brand-purple-dark font-semibold px-6 py-2 rounded-lg hover:bg-yellow-400 transition-colors shadow-md"
               >
-                Logout
-              </button>
-            </div>
-          ) : (
-            <Link
-              to="/login"
-              className="bg-brand-yellow text-brand-purple-dark font-semibold px-6 py-2 rounded-lg hover:bg-yellow-400 transition-colors shadow-md"
-            >
-              Login
-            </Link>
-          )}
+                Login
+              </Link>
+            )}
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+      {/* Removido o banner de divulgação */}
+    </>
   );
 };
 

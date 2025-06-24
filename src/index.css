@@ -1,3 +1,4 @@
+@import './fonts.css';
 
 @tailwind base;
 @tailwind components;
@@ -5,7 +6,7 @@
 
 body {
   background-color: theme('colors.brand-background');
-  font-family: theme('fontFamily.sans'); /* This should correctly apply Inter */
+  font-family: theme('fontFamily.sans'); /* Nunito agora é a fonte principal */
   color: theme('colors.brand-text');
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

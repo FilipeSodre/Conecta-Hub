@@ -42,7 +42,7 @@ const LoginPage: React.FC = () => {
   return (
     <div className="flex justify-center items-center py-12">
       <div className="bg-brand-yellow p-8 sm:p-12 rounded-3xl shadow-card w-full max-w-md text-center">
-        <h1 className="text-4xl font-bold text-brand-purple-dark mb-8">Login</h1>
+        <h1 className="text-4xl font-indie-flower text-brand-purple-dark mb-8">Login</h1>
 
         {/* Placeholder for laptop illustration */}
         <img
@@ -59,7 +59,7 @@ const LoginPage: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-6 py-3 rounded-xl border-2 border-brand-purple-dark bg-white text-brand-text placeholder-gray-500 focus:ring-2 focus:ring-brand-purple focus:border-transparent outline-none shadow-sm"
+              className="w-full px-6 py-3 rounded-xl border-2 border-brand-purple-dark bg-white text-brand-text placeholder-gray-500 focus:ring-2 focus:ring-brand-purple focus:border-transparent outline-none shadow-sm font-indie-flower placeholder:font-indie-flower"
             />
           </div>
           <div>
@@ -69,7 +69,7 @@ const LoginPage: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-6 py-3 rounded-xl border-2 border-brand-purple-dark bg-white text-brand-text placeholder-gray-500 focus:ring-2 focus:ring-brand-purple focus:border-transparent outline-none shadow-sm"
+              className="w-full px-6 py-3 rounded-xl border-2 border-brand-purple-dark bg-white text-brand-text placeholder-gray-500 focus:ring-2 focus:ring-brand-purple focus:border-transparent outline-none shadow-sm font-indie-flower placeholder:font-indie-flower"
             />
           </div>
           <div className="flex items-center justify-center">
@@ -87,7 +87,7 @@ const LoginPage: React.FC = () => {
           <div>
             <button
               type="submit"
-              className="w-full bg-brand-purple text-white font-semibold py-3 px-6 rounded-xl hover:bg-brand-purple-dark transition-colors duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-brand-purple-light focus:ring-opacity-50"
+              className="w-full bg-brand-purple text-white font-indie-flower py-3 px-6 rounded-xl hover:bg-brand-purple-dark transition-colors duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-brand-purple-light focus:ring-opacity-50"
             >
               Entrar
             </button>
