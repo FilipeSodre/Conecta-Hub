@@ -11,7 +11,6 @@ interface Usuario {
 interface AddCollaboratorModalProps {
     isOpen: boolean;
     onClose: () => void;
-    projetoId: number;
     onInvite: (user: Usuario) => void;
 }
 
@@ -22,7 +21,7 @@ const normalizeUserImage = (foto_perfil?: string) => {
     return '/default-profile.png';
 };
 
-const AddCollaboratorModal: React.FC<AddCollaboratorModalProps> = ({ isOpen, onClose, projetoId, onInvite }) => {
+const AddCollaboratorModal: React.FC<AddCollaboratorModalProps> = ({ isOpen, onClose, onInvite }) => {
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');

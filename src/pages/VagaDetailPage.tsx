@@ -5,7 +5,6 @@ import { useUser } from '../context/UserContext';
 import { LeafIcon } from '../components/icons/LeafIcon';
 import { CheckIcon } from '../components/icons/CheckIcon';
 import { CornerAccentIcon } from '../components/icons/CornerAccentIcon';
-import { useNavigate } from 'react-router-dom';
 import VagaConnectionModal from '../components/VagaConnectionModal';
 
 interface Vaga {
@@ -47,7 +46,6 @@ const VagaDetailPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { vagaId } = useParams<{ vagaId: string }>();
   const { user } = useUser();
-  const navigate = useNavigate();
   const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
   const [userProjects, setUserProjects] = useState<any[]>([]);
 

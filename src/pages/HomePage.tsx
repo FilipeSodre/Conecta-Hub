@@ -27,18 +27,6 @@ const mockAmigosPostando = [
   { id: 7, user: "Nathalia Vales Ficher", userImg: "/src/assets/images/avatar-nathalia-f.png", projectTitle: "Campanha de divulgação", projectDesc: "Campanha para marca de moda.", projectImg: "/src/assets/images/project-fashion-camp.png" },
 ];
 
-const mockConexoesRecentes = [
-  { id: 1, name: "Ana", img: "/src/assets/images/avatar-ana.png" },
-  { id: 2, name: "Bruno", img: "/src/assets/images/avatar-bruno.png" },
-  { id: 3, name: "Carla", img: "/src/assets/images/avatar-carla.png" },
-  { id: 4, name: "Daniel", img: "/src/assets/images/avatar-daniel.png" },
-  { id: 5, name: "Elisa", img: "/src/assets/images/avatar-elisa.png" },
-  { id: 6, name: "Fernando", img: "/src/assets/images/avatar-fernando.png" },
-  { id: 7, name: "Sofia", img: "/src/assets/images/avatar-sofia.png" },
-  { id: 8, name: "Mariana", img: "/src/assets/images/avatar-mariana.png" },
-];
-
-
 const HomePage: React.FC = () => {
   const [sliderRefNovidades] = useKeenSlider<HTMLDivElement>({
     loop: true,

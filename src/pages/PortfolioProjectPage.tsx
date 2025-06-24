@@ -62,7 +62,6 @@ const PortfolioProjectPage: React.FC = () => {
     const [hasLiked, setHasLiked] = useState<boolean>(false);
     const [comentarios, setComentarios] = useState<Comentario[]>([]);
     const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
-    const [isOwnerModalOpen, setIsOwnerModalOpen] = useState(false);
     const [isAddCollaboratorModalOpen, setIsAddCollaboratorModalOpen] = useState(false);
     // Adicionando estado para verificar se o usuário é colaborador ou dono
     const [isCollaborator, setIsCollaborator] = useState(false);
@@ -266,27 +265,6 @@ const PortfolioProjectPage: React.FC = () => {
             }
         }
     }, [location, comentarios]);
-
-    // Fetch all users when the modal is opened
-    useEffect(() => {
-        if (isOwnerModalOpen) {
-            // Fetch all users when the modal is opened
-            axios.get('http://localhost:5000/usuarios')
-                .then(response => {
-                    console.log('Dados recebidos:', response.data);
-                    if (Array.isArray(response.data)) {
-                        // Removido: setUsers(response.data.map((user: any) => { ... }));
-                    } else {
-                        console.error('Formato de dados inesperado:', response.data);
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao buscar usuários:', error);
-                    console.error('Detalhes do erro:', error.response?.data || 'Sem detalhes disponíveis');
-                    alert('Erro ao carregar usuários. Por favor, tente novamente.');
-                });
-        }
-    }, [isOwnerModalOpen]);
 
     // Adicionando lógica para verificar se o usuário é colaborador ou dono
     useEffect(() => {
@@ -550,7 +528,7 @@ const PortfolioProjectPage: React.FC = () => {
                         imagem && (
                             <div key={index} className="relative aspect-auto group overflow-hidden rounded-lg shadow-md">
                                 <img
-                                    src={`http://localhost:5000/${imagem}`}
+                                    src={imagem.startsWith('http') ? imagem : `http://localhost:5000/${imagem}`}
                                     alt={`${projeto.titulo} - Imagem ${index + 1}`}
                                     className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
                                 />
@@ -641,7 +619,7 @@ const PortfolioProjectPage: React.FC = () => {
                     imagem && (
                         <div key={index} className="relative aspect-[4/3] group overflow-hidden rounded-lg shadow-md">
                             <img
-                                src={`http://localhost:5000/${imagem}`}
+                                src={imagem.startsWith('http') ? imagem : `http://localhost:5000/${imagem}`}
                                 alt={`${projeto.titulo} - Imagem ${index + 1}`}
                                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                             />
@@ -699,7 +677,17 @@ const PortfolioProjectPage: React.FC = () => {
                             >
                                 <div className="w-full">
                                     <img
-                                        src={`http://localhost:5000/${projeto.imagem_capa || projeto.imagens?.[0]}`}
+                                        src={
+                                            (projeto.imagem_capa && projeto.imagem_capa.startsWith('http'))
+                                                ? projeto.imagem_capa
+                                                : projeto.imagem_capa
+                                                    ? `http://localhost:5000/${projeto.imagem_capa}`
+                                                    : (projeto.imagens && projeto.imagens[0] && projeto.imagens[0].startsWith('http'))
+                                                        ? projeto.imagens[0]
+                                                        : projeto.imagens && projeto.imagens[0]
+                                                            ? `http://localhost:5000/${projeto.imagens[0]}`
+                                                            : '/default-profile.png'
+                                        }
                                         alt={projeto.titulo}
                                         className="w-full h-32 object-cover rounded-t-2xl"
                                     />
@@ -819,12 +807,20 @@ const PortfolioProjectPage: React.FC = () => {
             <ConnectionRequestModal
                 isOpen={isConnectionModalOpen}
                 onClose={() => setIsConnectionModalOpen(false)}
-                projetoId={projeto.projeto_id}
+                recipientName={projetoOwner?.nome || projeto?.usuario_nome || 'Usuário'}
+                recipientId={projetoOwner?.usuario_id || projeto?.usuario_id || 0}
+                onSend={(data) => {
+                  // Função de envio de conexão
+                  console.log('Solicitação de conexão:', data);
+                }}
             />
             <AddCollaboratorModal
                 isOpen={isAddCollaboratorModalOpen}
                 onClose={() => setIsAddCollaboratorModalOpen(false)}
-                projetoId={projeto.projeto_id}
+                onInvite={(user) => {
+                  // Função de convite de colaborador (implemente conforme sua lógica)
+                  console.log('Convidar colaborador:', user);
+                }}
             />
         </div>
     );

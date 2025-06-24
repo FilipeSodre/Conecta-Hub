@@ -39,19 +39,6 @@ interface Notificacao {
     reason?: string; // fallback para mensagem
 }
 
-interface SolicitacaoConexao {
-    id: number;
-    sender_foto: string;
-    sender_nome: string;
-    connection_type: string;
-    reason: string;
-    link?: string; // Agora para um link de portfólio geral
-    sender_id: number;
-    projeto_id?: number; // ID do projeto se a conexão for para um projeto específico
-    projeto_titulo?: string; // Título do projeto se a conexão for para um projeto específico
-    vaga_titulo?: string; // Título da vaga de onde veio a notificação
-}
-
 const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('portfolio');
@@ -61,7 +48,6 @@ const ProfilePage: React.FC = () => {
     const [isEditingDesc, setIsEditingDesc] = useState(false);
     const [newDesc, setNewDesc] = useState('');
     const [notificacoes, setNotificacoes] = useState<Notificacao[]>([]);
-    const [solicitacoesConexao, setSolicitacoesConexao] = useState<SolicitacaoConexao[]>([]);
     const [chats, setChats] = useState<any[]>([]);
     const userId = JSON.parse(localStorage.getItem('user') || '{}').usuario_id;
 
@@ -101,9 +87,6 @@ const ProfilePage: React.FC = () => {
         if (userId && activeTab === 'conexoes') {
             axios.get(`/usuarios/${userId}/notificacoes`).then(res => {
                 setNotificacoes(res.data);
-            });
-            axios.get(`/usuarios/${userId}/conexoes-recebidas`).then(res => {
-                setSolicitacoesConexao(res.data.filter((c: any) => c.status === 'pendente'));
             });
             axios.get(`/chats/user/${userId}`).then(res => {
                 setChats(res.data);
@@ -151,41 +134,6 @@ const ProfilePage: React.FC = () => {
             setNotificacoes(prev => prev.filter(n => n.notificacao_id !== id));
         } catch (e) {
             alert('Erro ao remover notificação');
-        }
-    };
-
-    const handleVistoSolicitacao = async (id: number) => {
-        try {
-            await axios.delete(`/conexoes/${id}`);
-            setSolicitacoesConexao(prev => prev.filter(s => s.id !== id));
-        } catch (e) {
-            alert('Erro ao remover solicitação');
-        }
-    };
-
-    const handleVerComentario = (projetoId: number, comentarioId?: number) => {
-        navigate(`/portfolio/${projetoId}`, { state: { scrollToComments: true, comentarioId } });
-    };
-
-    const handleAceitarConexao = async (id: number, senderId: number) => {
-        try {
-            const res = await axios.put(`/conexoes/${id}/aceitar`);
-            // Atualizar lista de chats imediatamente
-            const chatsRes = await axios.get(`/chats/user/${userId}`);
-            setChats(chatsRes.data);
-            // Redireciona para o chat criado
-            navigate(`/chat/${res.data.chat.id}`);
-        } catch (err) {
-            alert('Erro ao aceitar conexão');
-        }
-    };
-
-    const handleRecusarConexao = async (id: number) => {
-        try {
-            await axios.put(`/conexoes/${id}/recusar`);
-            setSolicitacoesConexao(prev => prev.filter(c => c.id !== id));
-        } catch (err) {
-            alert('Erro ao recusar conexão');
         }
     };
 
@@ -285,14 +233,6 @@ const ProfilePage: React.FC = () => {
                                             >
                                                 Visto
                                             </button>
-                                            {notif.tipo === 'comentario' && (
-                                                <button
-                                                    onClick={() => handleVerComentario(notif.projeto_id, notif.comentario_id)}
-                                                    className="px-3 py-1 bg-white text-purple-900 rounded-full text-xs hover:bg-gray-100 border border-purple-400"
-                                                >
-                                                    Ver comentário
-                                                </button>
-                                            )}
                                         </div>
                                     )}
                                 </>
