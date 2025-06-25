@@ -12,7 +12,6 @@ import CriarVagaPage from './pages/CriarVagaPage';
 import ConexaoPage from './pages/ConexaoPage';
 import NovoProjetoPage from './pages/NovoProjetoPage';
 import { UserProvider } from './context/UserContext'; // Import UserProvider
-import ProjectDetailPage from './pages/ProjectDetailPage';
 import EditarProjetoPage from './pages/EditarProjetoPage';
 import ProfilePage from './pages/ProfilePage';
 import ChatPage from './pages/ChatPage';
