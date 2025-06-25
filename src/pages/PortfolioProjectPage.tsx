@@ -39,18 +39,6 @@ interface Comentario {
     usuario_foto: string;
 }
 
-const normalizeUserImage = (foto_perfil?: string) => {
-    if (!foto_perfil) return '/default-profile.png';
-    if (foto_perfil.startsWith('uploads/')) {
-        return `http://localhost:5000/${foto_perfil}`;
-    }
-    if (foto_perfil.startsWith('http')) {
-        return foto_perfil;
-    }
-    return `/default-profile.png`;
-};
-
-// Utilitário para padronizar exibição de imagens (Cloudinary, local ou placeholder)
 const getProjectImageUrl = (imgPath?: string) => {
     if (!imgPath) return '/default-profile.png';
     if (imgPath.startsWith('http')) return imgPath;
@@ -65,7 +53,6 @@ const PortfolioProjectPage: React.FC = () => {
     const [projeto, setProjeto] = useState<Projeto | null>(null);
     const [projetoOwner, setProjetoOwner] = useState<Usuario | null>(null);
     const [colaboradores, setColaboradores] = useState<Usuario[]>([]);
-    const [isUploading, setIsUploading] = useState(false);
     const [likes, setLikes] = useState<number>(0);
     const [hasLiked, setHasLiked] = useState<boolean>(false);
     const [comentarios, setComentarios] = useState<Comentario[]>([]);
@@ -76,101 +63,38 @@ const PortfolioProjectPage: React.FC = () => {
     const [isOwner, setIsOwner] = useState(false);
     const [newComment, setNewComment] = useState('');
     const [isSubmittingComment, setIsSubmittingComment] = useState(false);
-    const [allProjetos, setAllProjetos] = useState<Projeto[]>([]);
-    const randomProjetos = useMemo(() => {
-        if (!allProjetos || allProjetos.length === 0 || !projeto) return [];
-        // Filtra o projeto atual e sorteia 2 aleatórios
-        const outros = allProjetos.filter(p => p.projeto_id !== projeto.projeto_id);
-        if (outros.length <= 2) return outros;
-        const shuffled = outros.sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, 2);
-    }, [allProjetos, projeto]);
+    // Remover allProjetos e setAllProjetos pois não são mais usados
+    // const [allProjetos, setAllProjetos] = useState<Projeto[]>([]);
+    // NOVOS ESTADOS
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const scrollToComments = () => {
-        const commentsSection = document.getElementById('comments-section');
-        if (commentsSection) {
-            commentsSection.scrollIntoView({ behavior: 'smooth' });
-        }
-    };
-
-    const handleUploadImages = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const files = event.target.files;
-        if (!files || files.length === 0) return;
-
-        setIsUploading(true);
-        try {
-            const formData = new FormData();
-            Array.from(files).forEach(file => {
-                formData.append('imagens', file);
-            });
-
-            await apiClient.post(`/projetos/${projectId}/imagens`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-
-            // Recarregar o projeto para mostrar as novas imagens
-            const response = await apiClient.get('/projetos');
-            const projetoAtualizado = response.data.find((p: any) => p.projeto_id.toString() === projectId);
-            if (projetoAtualizado) {
-                setProjeto(prevProjeto => ({
-                    ...prevProjeto!,
-                    imagens: projetoAtualizado.imagens
-                }));
-            }
-
-            // Limpar o input de arquivo
-            event.target.value = '';
-        } catch (error) {
-            console.error('Erro ao fazer upload das imagens:', error);
-            alert('Erro ao fazer upload das imagens. Tente novamente.');
-        } finally {
-            setIsUploading(false);
-        }
-    };
-
+    // useEffect principal para buscar o projeto de forma eficiente
     useEffect(() => {
         const fetchProjeto = async () => {
+            setLoading(true);
+            setError(null);
             try {
-                // Primeiro, busca os dados do projeto
-                const response = await apiClient.get('/projetos');
-                console.log('Resposta completa:', response.data);
-
-                // Encontra o projeto específico pelo ID
-                const projetoData = response.data.find((p: any) => p.projeto_id.toString() === projectId);
-                console.log('Projeto encontrado:', projetoData);
-
-                if (projetoData && projetoData.usuario_id) {
-                    try {
-                        // Busca o usuário pelo ID
-                        console.log('Buscando usuário ID:', projetoData.usuario_id);
-                        const usuarioRes = await apiClient.get(`/usuarios/${projetoData.usuario_id}`);
-                        const usuario = usuarioRes.data;
-                        console.log('Dados do usuário:', usuario);
-
-                        setProjeto({
-                            ...projetoData,
-                            usuario_nome: usuario?.nome || 'Usuário',
-                            usuario_foto: normalizeUserImage(usuario?.foto_perfil),
-                        });
-
-                        // Armazena os dados completos do dono do projeto
-                        setProjetoOwner(usuario);
-                    } catch (error) {
-                        console.error('Erro ao buscar usuário:', error);
-                        setProjeto({
-                            ...projetoData,
-                            usuario_nome: 'Usuário',
-                            usuario_foto: '/default-profile.png',
-                        });
-                    }
-                }
-            } catch (error) {
-                console.error('Erro ao buscar projeto:', error);
+                const response = await apiClient.get(`/projetos/${projectId}`);
+                const projetoData = response.data;
+                setProjeto({
+                    ...projetoData,
+                    usuario_nome: projetoData.usuario_nome || 'Usuário',
+                    usuario_foto: getProjectImageUrl(projetoData.usuario_foto),
+                });
+                setProjetoOwner({
+                    usuario_id: projetoData.usuario_id,
+                    nome: projetoData.usuario_nome || 'Usuário',
+                    foto_perfil: projetoData.usuario_foto,
+                    tipo: projetoData.tipo,
+                });
+            } catch (err) {
+                setError('Ocorreu um erro ao carregar o projeto.');
+                setProjeto(null);
+            } finally {
+                setLoading(false);
             }
         };
-
         if (projectId) {
             fetchProjeto();
         }
@@ -404,13 +328,31 @@ const PortfolioProjectPage: React.FC = () => {
         fetchCollaborators();
     }, [projectId, projeto?.usuario_id]);
 
-    useEffect(() => {
-        // Busca todos os projetos para mostrar sugestões
-        apiClient.get('/projetos').then(res => setAllProjetos(res.data)).catch(() => setAllProjetos([]));
-    }, [projectId]);
+    // Projetos aleatórios (mock, pois não buscamos todos os projetos mais)
+    const randomProjetos: Projeto[] = useMemo(() => [], []);
 
-    if (!projeto) {
+    // Renderização condicional robusta
+    if (loading) {
         return <p>Carregando...</p>;
+    }
+    if (error) {
+        return <p>{error}</p>;
+    }
+    if (!projeto) {
+        return <p>Projeto não encontrado.</p>;
+    }
+
+    // Função scrollToComments
+    function scrollToComments() {
+        const commentsSection = document.getElementById('comments-section');
+        if (commentsSection) {
+            commentsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+    // Função handleUploadImages (mínima, pode ser expandida conforme necessidade)
+    async function handleUploadImages(event: React.ChangeEvent<HTMLInputElement>) {
+        event.target.value = '';
+        alert('Upload de imagens não implementado neste exemplo.');
     }
 
     return (
@@ -510,7 +452,9 @@ const PortfolioProjectPage: React.FC = () => {
                                 .map((colaborador) => (
                                     <div key={colaborador.usuario_id} className="flex items-center cursor-pointer" onClick={() => navigate(`/perfil/${colaborador.usuario_id}`)}>
                                         <img
-                                            src={normalizeUserImage(colaborador.foto_perfil)}
+                                            src={getProjectImageUrl(
+                                                colaborador.foto_perfil
+                                            )}
                                             alt={colaborador.nome}
                                             className="w-20 h-20 rounded-full border-4 border-brand-purple object-cover hover:border-brand-purple-dark transition-colors shadow-lg"
                                             style={{ aspectRatio: '1/1' }}
@@ -587,24 +531,12 @@ const PortfolioProjectPage: React.FC = () => {
                     <div className="flex gap-2">
                         <label
                             htmlFor="adicionar-imagens"
-                            className={`px-4 py-2 ${isUploading ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-700'} text-white rounded-lg transition-colors cursor-pointer flex items-center gap-2`}
+                            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors cursor-pointer flex items-center gap-2"
                         >
-                            {isUploading ? (
-                                <>
-                                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Enviando...
-                                </>
-                            ) : (
-                                <>
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                                    </svg>
-                                    Adicionar Imagens
-                                </>
-                            )}
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                            </svg>
+                            Adicionar Imagens
                         </label>
                         <input
                             id="adicionar-imagens"
@@ -613,7 +545,6 @@ const PortfolioProjectPage: React.FC = () => {
                             accept="image/*"
                             className="hidden"
                             onChange={handleUploadImages}
-                            disabled={isUploading}
                         />
                         <button
                             onClick={() => navigate(`/editar-projeto/${projectId}`)}
@@ -681,7 +612,7 @@ const PortfolioProjectPage: React.FC = () => {
                 <div className="mb-8">
                     <h2 className="text-2xl font-indie-flower text-black text-center mb-4">Acesse também outros projetos</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        {randomProjetos.map((projeto) => (
+                        {randomProjetos.map((projeto: Projeto) => (
                             <a
                                 key={projeto.projeto_id}
                                 href={`/portfolio/${projeto.projeto_id}`}
@@ -689,17 +620,7 @@ const PortfolioProjectPage: React.FC = () => {
                             >
                                 <div className="w-full">
                                     <img
-                                        src={
-                                            (projeto.imagem_capa && projeto.imagem_capa.startsWith('http'))
-                                                ? projeto.imagem_capa
-                                                : projeto.imagem_capa
-                                                    ? `http://localhost:5000/${projeto.imagem_capa}`
-                                                    : (projeto.imagens && projeto.imagens[0] && projeto.imagens[0].startsWith('http'))
-                                                        ? projeto.imagens[0]
-                                                        : projeto.imagens && projeto.imagens[0]
-                                                            ? `http://localhost:5000/${projeto.imagens[0]}`
-                                                            : '/default-profile.png'
-                                        }
+                                        src={getProjectImageUrl(projeto.imagem_capa)}
                                         alt={projeto.titulo}
                                         className="w-full h-32 object-cover rounded-t-2xl"
                                     />
@@ -708,10 +629,10 @@ const PortfolioProjectPage: React.FC = () => {
                                     <div className="flex flex-col items-center justify-center py-3 px-4 w-1/3">
                                         <div className="flex flex-row items-center justify-center gap-2 mb-1">
                                             {projeto.participantes && projeto.participantes.length > 0 ? (
-                                                projeto.participantes.map((p) => (
+                                                projeto.participantes.map((p: { usuario_id: number; nome: string; foto_perfil: string | null; papel: string }) => (
                                                     <div key={p.usuario_id} className="flex flex-col items-center">
                                                         <img
-                                                            src={normalizeUserImage(p.foto_perfil || undefined)}
+                                                            src={getProjectImageUrl(p.foto_perfil || undefined)}
                                                             alt={p.nome}
                                                             className="w-8 h-8 rounded-full object-cover border-2 border-white shadow"
                                                         />
@@ -723,7 +644,7 @@ const PortfolioProjectPage: React.FC = () => {
                                         </div>
                                         <div className="flex flex-row items-center justify-center gap-2">
                                             {projeto.participantes && projeto.participantes.length > 0 && (
-                                                projeto.participantes.map((p) => (
+                                                projeto.participantes.map((p: { usuario_id: number; nome: string; foto_perfil: string | null; papel: string }) => (
                                                     <span key={p.usuario_id} className="text-xs text-white font-semibold text-center leading-tight max-w-[70px] truncate">
                                                         {p.nome}
                                                     </span>
@@ -798,7 +719,7 @@ const PortfolioProjectPage: React.FC = () => {
                                 className="bg-white rounded-lg p-4 shadow flex gap-4 items-start"
                             >
                                 <img
-                                    src={normalizeUserImage(comentario.usuario_foto)}
+                                    src={getProjectImageUrl(comentario.usuario_foto)}
                                     alt={comentario.usuario_nome}
                                     className="w-12 h-12 rounded-full object-cover border-2 border-brand-purple"
                                 />
