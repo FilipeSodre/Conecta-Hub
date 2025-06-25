@@ -463,8 +463,8 @@ const PortfolioProjectPage: React.FC = () => {
                 {/* Dono do Projeto - BLOCO DESTACADO */}
                 <div className="flex items-center mr-12 bg-black border-4 border-black rounded-2xl p-6 shadow-xl min-w-[380px]">
                     <img
-                        src={colaboradores.find(c => c.usuario_id === projeto.usuario_id)?.foto_perfil || '/fotos/default-profile.png'}
-                        alt={colaboradores.find(c => c.usuario_id === projeto.usuario_id)?.nome || 'Usuário'}
+                        src={getProjectImageUrl(projeto.usuario_foto)}
+                        alt={projeto.usuario_nome || 'Usuário'}
                         className="w-32 h-32 rounded-full border-4 border-brand-purple object-cover cursor-pointer hover:border-brand-purple-dark transition-colors shadow-lg bg-gray-800"
                         style={{ aspectRatio: '1/1' }}
                         onClick={() => navigate(`/perfil/${projeto.usuario_id}`)}
@@ -474,10 +474,10 @@ const PortfolioProjectPage: React.FC = () => {
                             className="text-4xl font-bold cursor-pointer hover:text-brand-purple transition-colors text-white text-left leading-tight"
                             onClick={() => navigate(`/perfil/${projeto.usuario_id}`)}
                         >
-                            {colaboradores.find(c => c.usuario_id === projeto.usuario_id)?.nome || projeto.usuario_nome || 'Usuário'}
+                            {projeto.usuario_nome || 'Usuário'}
                         </h1>
                         <span className="text-lg text-white text-left mt-2 font-nunito font-semibold">Criador do Projeto</span>
-                        <span className="text-base text-white text-left mt-2 font-nunito">{colaboradores.find(c => c.usuario_id === projeto.usuario_id)?.tipo || projeto.tipo || '-'}</span>
+                        <span className="text-base text-white text-left mt-2 font-nunito">{projeto.tipo || '-'}</span>
                     </div>
                 </div>
                 {/* Colaboradores */}
