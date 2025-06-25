@@ -449,7 +449,7 @@ const PortfolioProjectPage: React.FC = () => {
                 {projeto.usuario_id !== userId && !isCollaborator && !isOwner && (
                     <div className="flex flex-col items-center gap-1">
                         <button
-                            className="bg-black p-2 rounded-full shadow hover:bg-gray-800 flex items-center justify-center transform transition-all duration-200 font-bold text-base font-sans"
+                            className="bg-brand-purple p-2 rounded-full shadow hover:bg-brand-purple-dark flex items-center justify-center transform transition-all duration-200 font-bold text-base font-sans"
                             title="Conectar"
                             onClick={() => setIsConnectionModalOpen(true)}
                         >
@@ -476,7 +476,7 @@ const PortfolioProjectPage: React.FC = () => {
                 )}
             </div>
             {/* BLOCO COM BORDA PRETA: Dono, colaboradores, título, descrição, galeria principal */}
-            <div className="bg-black border-4 border-black rounded-3xl shadow-2xl p-6 mb-8">
+            <div className="bg-black border-4 border-black border-solid rounded-3xl shadow-2xl p-6 mb-8">
                 {/* Cabeçalho com Dono do Projeto e Colaboradores */}
                 <div className="flex flex-col md:flex-row gap-12 mb-8 items-center">
                     {/* Dono do Projeto - BLOCO DESTACADO */}
@@ -591,7 +591,6 @@ const PortfolioProjectPage: React.FC = () => {
                     )
                 ))}
             </div>
-
             {/* Links do Projeto */}
             <div className="flex flex-wrap gap-4 mb-8">
                 {projeto.link_figma && (
@@ -626,7 +625,6 @@ const PortfolioProjectPage: React.FC = () => {
                     </a>
                 )}
             </div>
-
             {/* Projetos Aleatórios */}
             {randomProjetos.length > 0 && (
                 <div className="mb-8">
@@ -636,7 +634,7 @@ const PortfolioProjectPage: React.FC = () => {
                             <a
                                 key={projeto.projeto_id}
                                 href={`/portfolio/${projeto.projeto_id}`}
-                                className="block bg-white rounded-2xl shadow-md overflow-hidden transform transition-transform hover:scale-105 border border-gray-200"
+                                className="block bg-white rounded-2xl shadow-md overflow-hidden transform transition-transform hover:scale-105 border-none"
                             >
                                 <div className="w-full">
                                     <img
@@ -687,7 +685,6 @@ const PortfolioProjectPage: React.FC = () => {
                     </div>
                 </div>
             )}
-
             {/* Comentários */}
             <div id="comments-section" className="mb-8">
                 <h2 className="text-xl font-semibold mb-4">Comentários</h2>
@@ -770,9 +767,19 @@ const PortfolioProjectPage: React.FC = () => {
             <AddCollaboratorModal
                 isOpen={isAddCollaboratorModalOpen}
                 onClose={() => setIsAddCollaboratorModalOpen(false)}
-                onInvite={(user: any) => {
-                    // Função de convite de colaborador (implemente conforme sua lógica)
-                    console.log('Convidar colaborador:', user);
+                onInvite={async (user: Usuario) => {
+                    try {
+                        // Envia convite para o usuário ser colaborador deste projeto
+                        await apiClient.post('/convites', {
+                            projeto_id: projeto?.projeto_id,
+                            convidado_id: user.usuario_id,
+                            convidante_id: userId // quem está convidando
+                        });
+                        alert(`Convite enviado para ${user.nome}. Ele(a) precisa aceitar para aparecer como colaborador.`);
+                    } catch (error: any) {
+                        alert('Erro ao enviar convite.');
+                        console.error(error);
+                    }
                 }}
             />
         </div>
