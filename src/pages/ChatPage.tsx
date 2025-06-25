@@ -81,8 +81,8 @@ const ChatPage: React.FC = () => {
                                 </span>
                                 <div
                                     className={`px-3 py-2 rounded-xl shadow-sm ${msg.sender_id === userId
-                                            ? 'bg-brand-purple text-white rounded-tr-none'
-                                            : 'bg-white text-gray-800 rounded-tl-none'
+                                        ? 'bg-brand-purple text-white rounded-tr-none'
+                                        : 'bg-white text-gray-800 rounded-tl-none'
                                         }`}
                                 >
                                     <p className="text-sm whitespace-pre-wrap">{msg.message}</p>

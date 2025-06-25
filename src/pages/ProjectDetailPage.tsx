@@ -42,20 +42,7 @@ const ProjectDetailPage: React.FC = () => {
         if (!found) {
           setProject(null);
         } else {
-          setProject({
-            id: found.projeto_id,
-            title: found.titulo,
-            author: {
-              name: found.autor_nome || found.usuario_nome || 'Autor',
-              avatar: found.foto_perfil || found.imagem_capa || '/default-profile.png',
-              role: found.autor_role || 'Autor',
-              profileLink: found.autor_profileLink || '#',
-            },
-            description: found.descricao,
-            images: found.imagens ? (Array.isArray(found.imagens) ? found.imagens : [found.imagens]) : (found.imagem_capa ? [found.imagem_capa] : []),
-            tags: found.tags || [],
-            relatedProjects: [],
-          });
+          setProject(res.data);
         }
       } catch (err: any) {
         if (err.response && err.response.status === 404) {

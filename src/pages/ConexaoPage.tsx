@@ -37,7 +37,7 @@ const ConexaoPage: React.FC = () => {
             </p>
           </div>
           <div className="md:w-1/3 flex justify-center md:justify-end">
-             {/* Placeholder for a Conecta logo or relevant icon */}
+            {/* Placeholder for a Conecta logo or relevant icon */}
             <img src="/fotos/teamwork-hands-illustration.png" alt="Conexão" className="w-full max-w-xs rounded-lg" />
           </div>
         </div>
@@ -91,8 +91,8 @@ const ConexaoPage: React.FC = () => {
                   type="button"
                   onClick={() => setConnectionType(type)}
                   className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-colors duration-150
-                    ${connectionType === type 
-                      ? 'bg-brand-purple text-white border-brand-purple-dark ring-2 ring-brand-yellow' 
+                    ${connectionType === type
+                      ? 'bg-brand-purple text-white border-brand-purple-dark ring-2 ring-brand-yellow'
                       : 'bg-white text-brand-purple-dark border-brand-purple hover:bg-purple-50'}
                   `}
                 >
@@ -101,9 +101,9 @@ const ConexaoPage: React.FC = () => {
               ))}
             </div>
             {connectionType === "Outro (campo livre)" && (
-              <input 
-                type="text" 
-                placeholder="Especifique o tipo de conexão" 
+              <input
+                type="text"
+                placeholder="Especifique o tipo de conexão"
                 className="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-purple bg-white text-brand-text focus:ring-2 focus:ring-brand-yellow outline-none shadow-sm"
               />
             )}
