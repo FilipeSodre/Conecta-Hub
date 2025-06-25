@@ -12,7 +12,7 @@ import CriarVagaPage from './pages/CriarVagaPage';
 import ConexaoPage from './pages/ConexaoPage';
 import NovoProjetoPage from './pages/NovoProjetoPage';
 import { UserProvider } from './context/UserContext'; // Import UserProvider
-import PortfolioProjectPage from './pages/PortfolioProjectPage';
+import ProjectDetailPage from './pages/ProjectDetailPage';
 import EditarProjetoPage from './pages/EditarProjetoPage';
 import ProfilePage from './pages/ProfilePage';
 import ChatPage from './pages/ChatPage';
@@ -29,7 +29,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/cadastro" element={<CadastroPage />} /> {/* Add route for CadastroPage */}
           <Route path="/portfolio" element={<PortfolioPage />} />
-          <Route path="/portfolio/:projectId" element={<PortfolioProjectPage />} />
+          <Route path="/portfolio/:projectId" element={<ProjectDetailPage />} />
           <Route path="/portfolio/novo" element={<NovoProjetoPage />} />
           <Route path="/portfolio/:projectId/editar" element={<EditarProjetoPage />} />
           <Route path="/vagas" element={<VagasPage />} />
