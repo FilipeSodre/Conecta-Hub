@@ -463,28 +463,28 @@ const PortfolioProjectPage: React.FC = () => {
                 {/* Dono do Projeto - BLOCO DESTACADO */}
                 <div className="flex items-center mr-12 bg-black border-4 border-black rounded-2xl p-6 shadow-xl min-w-[380px]">
                     <img
-                        src={colaboradores.find(c => c.is_owner)?.foto_perfil || '/fotos/default-profile.png'}
-                        alt={colaboradores.find(c => c.is_owner)?.nome || 'Usuário'}
+                        src={colaboradores.find(c => c.usuario_id === projeto.usuario_id)?.foto_perfil || '/fotos/default-profile.png'}
+                        alt={colaboradores.find(c => c.usuario_id === projeto.usuario_id)?.nome || 'Usuário'}
                         className="w-32 h-32 rounded-full border-4 border-brand-purple object-cover cursor-pointer hover:border-brand-purple-dark transition-colors shadow-lg bg-gray-800"
                         style={{ aspectRatio: '1/1' }}
-                        onClick={() => navigate(`/perfil/${colaboradores.find(c => c.is_owner)?.usuario_id || projeto.usuario_id}`)}
+                        onClick={() => navigate(`/perfil/${projeto.usuario_id}`)}
                     />
                     <div className="flex flex-col justify-center ml-8 min-w-[220px]">
                         <h1
                             className="text-4xl font-bold cursor-pointer hover:text-brand-purple transition-colors text-white text-left leading-tight"
-                            onClick={() => navigate(`/perfil/${colaboradores.find(c => c.is_owner)?.usuario_id || projeto.usuario_id}`)}
+                            onClick={() => navigate(`/perfil/${projeto.usuario_id}`)}
                         >
-                            {colaboradores.find(c => c.is_owner)?.nome || projeto.usuario_nome || 'Usuário'}
+                            {colaboradores.find(c => c.usuario_id === projeto.usuario_id)?.nome || projeto.usuario_nome || 'Usuário'}
                         </h1>
                         <span className="text-lg text-white text-left mt-2 font-nunito font-semibold">Criador do Projeto</span>
-                        <span className="text-base text-white text-left mt-2 font-nunito">{colaboradores.find(c => c.is_owner)?.tipo || projeto.tipo || '-'}</span>
+                        <span className="text-base text-white text-left mt-2 font-nunito">{colaboradores.find(c => c.usuario_id === projeto.usuario_id)?.tipo || projeto.tipo || '-'}</span>
                     </div>
                 </div>
                 {/* Colaboradores */}
-                {colaboradores.length > 0 && colaboradores.some(c => !c.is_owner) && (
+                {colaboradores.length > 0 && colaboradores.some(c => c.usuario_id !== projeto.usuario_id) && (
                     <div className="md:w-2/3 flex items-center justify-center flex-wrap gap-12">
                         {colaboradores
-                            .filter(colaborador => !colaborador.is_owner)
+                            .filter(colaborador => colaborador.usuario_id !== projeto.usuario_id)
                             .map((colaborador: Usuario) => (
                                 <div key={colaborador.usuario_id} className="flex items-center cursor-pointer" onClick={() => navigate(`/perfil/${colaborador.usuario_id}`)}>
                                     <img
