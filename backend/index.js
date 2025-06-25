@@ -1292,59 +1292,28 @@ app.get('/chats/:chatId', async (req, res) => {
 app.post('/notificacoes/:id/aceitar-convite', async (req, res) => {
     const { id } = req.params;
     try {
-        console.log('[ACEITAR CONVITE] Iniciando processo para notificação', id);
         // Busca a notificação
         const notifRes = await pool.query('SELECT * FROM notificacoes WHERE notificacao_id = $1', [id]);
         if (notifRes.rows.length === 0) {
-            console.log('[ACEITAR CONVITE] Notificação não encontrada:', id);
             return res.status(404).json({ error: 'Notificação não encontrada' });
         }
         const notif = notifRes.rows[0];
-        console.log('[ACEITAR CONVITE] Notificação encontrada:', notif);
         // Verifica se já é colaborador
         const existing = await pool.query(
-            'SELECT * FROM usuario_projeto WHERE usuario_id = $1 AND projeto_id = $2',
+            'SELECT 1 FROM usuario_projeto WHERE usuario_id = $1 AND projeto_id = $2',
             [notif.usuario_destino_id, notif.projeto_id]
         );
-        console.log('[ACEITAR CONVITE] Já é colaborador?', existing.rows.length > 0);
         if (existing.rows.length === 0) {
-            // Buscar o tipo do usuário convidado para usar como papel
-            const userTipoRes = await pool.query(
-                'SELECT tipo FROM usuario WHERE usuario_id = $1',
-                [notif.usuario_destino_id]
-            );
-            let papel = 'programador';
-            if (userTipoRes.rows.length > 0 && (userTipoRes.rows[0].tipo === 'designer' || userTipoRes.rows[0].tipo === 'programador')) {
-                papel = userTipoRes.rows[0].tipo;
-            }
-            console.log('[ACEITAR CONVITE] Valor final de papel antes do insert:', papel);
             await pool.query(
-                'INSERT INTO usuario_projeto (usuario_id, projeto_id, papel) VALUES ($1, $2, $3)',
-                [notif.usuario_destino_id, notif.projeto_id, papel]
+                'INSERT INTO usuario_projeto (usuario_id, projeto_id) VALUES ($1, $2)',
+                [notif.usuario_destino_id, notif.projeto_id]
             );
-            console.log('[ACEITAR CONVITE] Usuário adicionado como colaborador:', notif.usuario_destino_id, notif.projeto_id, papel);
         }
         // Remove a notificação
         await pool.query('DELETE FROM notificacoes WHERE notificacao_id = $1', [id]);
-        console.log('[ACEITAR CONVITE] Notificação removida:', id);
         res.json({ success: true });
     } catch (error) {
-        console.error('[ACEITAR CONVITE] Erro ao aceitar convite:', {
-            message: error.message,
-            code: error.code,
-            detail: error.detail,
-            table: error.table,
-            constraint: error.constraint,
-            stack: error.stack
-        });
-        res.status(500).json({
-            error: 'Erro ao aceitar convite',
-            details: error.message,
-            code: error.code,
-            detail: error.detail,
-            table: error.table,
-            constraint: error.constraint
-        });
+        res.status(500).json({ error: 'Erro ao aceitar convite', details: error.message });
     }
 });
 
