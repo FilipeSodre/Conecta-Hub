@@ -418,7 +418,7 @@ const PortfolioProjectPage: React.FC = () => {
     }
 
     return (
-        <div className="container mx-auto p-4 max-w-6xl relative bg-black border-4 border-black rounded-3xl shadow-2xl">
+        <div className="container mx-auto p-4 max-w-6xl relative">
             {/* Coluna de Botões Funcionais */}
             <div className="absolute left-full top-16 ml-4 flex flex-col gap-2 z-20" style={{ pointerEvents: 'auto' }}>
                 {/* Botão de Curtida */}
@@ -475,70 +475,73 @@ const PortfolioProjectPage: React.FC = () => {
                     </div>
                 )}
             </div>
-            {/* Cabeçalho com Dono do Projeto e Colaboradores */}
-            <div className="flex flex-col md:flex-row gap-12 mb-8 items-center">
-                {/* Dono do Projeto - BLOCO DESTACADO */}
-                <div className="flex items-center mr-12 bg-black border-4 border-black rounded-2xl p-6 shadow-xl min-w-[380px]">
-                    <img
-                        src={getProjectImageUrl(ownerUser?.foto_perfil)}
-                        alt={ownerUser?.nome || 'Usuário'}
-                        className="w-32 h-32 rounded-full border-4 border-brand-purple object-cover cursor-pointer hover:border-brand-purple-dark transition-colors shadow-lg bg-gray-800"
-                        style={{ aspectRatio: '1/1' }}
-                        onClick={() => navigate(`/perfil/${projeto.usuario_id}`)}
-                    />
-                    <div className="flex flex-col justify-center ml-8 min-w-[220px]">
-                        <h1
-                            className="text-4xl font-bold cursor-pointer hover:text-brand-purple transition-colors text-white text-left leading-tight"
+            {/* BLOCO COM BORDA PRETA: Dono, colaboradores, título, descrição, galeria principal */}
+            <div className="bg-black border-4 border-black rounded-3xl shadow-2xl p-6 mb-8">
+                {/* Cabeçalho com Dono do Projeto e Colaboradores */}
+                <div className="flex flex-col md:flex-row gap-12 mb-8 items-center">
+                    {/* Dono do Projeto - BLOCO DESTACADO */}
+                    <div className="flex items-center mr-12 bg-black border-4 border-black rounded-2xl p-6 shadow-xl min-w-[380px]">
+                        <img
+                            src={getProjectImageUrl(ownerUser?.foto_perfil)}
+                            alt={ownerUser?.nome || 'Usuário'}
+                            className="w-32 h-32 rounded-full border-4 border-brand-purple object-cover cursor-pointer hover:border-brand-purple-dark transition-colors shadow-lg bg-gray-800"
+                            style={{ aspectRatio: '1/1' }}
                             onClick={() => navigate(`/perfil/${projeto.usuario_id}`)}
-                        >
-                            {ownerUser?.nome || 'Usuário'}
-                        </h1>
-                        <span className="text-lg text-white text-left mt-2 font-nunito font-semibold">Criador do Projeto</span>
-                        <span className="text-base text-white text-left mt-2 font-nunito">{ownerUser?.tipo || '-'}</span>
-                    </div>
-                </div>
-                {/* Colaboradores */}
-                {colaboradores.length > 0 && colaboradores.some(c => c.usuario_id !== projeto.usuario_id) && (
-                    <div className="md:w-2/3 flex items-center justify-center flex-wrap gap-12">
-                        {colaboradores
-                            .filter(colaborador => colaborador.usuario_id !== projeto.usuario_id)
-                            .map((colaborador: Usuario) => (
-                                <div key={colaborador.usuario_id} className="flex items-center cursor-pointer" onClick={() => navigate(`/perfil/${colaborador.usuario_id}`)}>
-                                    <img
-                                        src={getProjectImageUrl(colaborador.foto_perfil)}
-                                        alt={colaborador.nome}
-                                        className="w-20 h-20 rounded-full border-4 border-brand-purple object-cover hover:border-brand-purple-dark transition-colors shadow-lg bg-gray-800"
-                                        style={{ aspectRatio: '1/1' }}
-                                    />
-                                    <div className="flex flex-col justify-center ml-6">
-                                        <span className="text-xl font-semibold text-white text-left leading-tight">{colaborador.nome}</span>
-                                        <span className="text-base text-white text-left mt-1 font-nunito">Colaborador</span>
-                                        <span className="text-base text-white text-left mt-1 font-nunito capitalize">{colaborador.tipo || '-'}</span>
-                                    </div>
-                                </div>
-                            ))}
-                    </div>
-                )}
-            </div>
-            {/* Título e Descrição */}
-            <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-4 text-white">{projeto.titulo}</h2>
-                <p className="text-gray-300 whitespace-pre-wrap">{projeto.descricao}</p>
-            </div>
-            {/* Galeria Principal */}
-            <div className="flex flex-col gap-6 mb-8 relative">
-                {(projeto.imagens || []).filter(Boolean).map((imagem: string, index: number) => (
-                    imagem && (
-                        <div key={index} className="relative aspect-auto group overflow-hidden rounded-lg shadow-md">
-                            <img
-                                src={getProjectImageUrl(imagem)}
-                                alt={`${projeto.titulo} - Imagem ${index + 1}`}
-                                className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        />
+                        <div className="flex flex-col justify-center ml-8 min-w-[220px]">
+                            <h1
+                                className="text-4xl font-bold cursor-pointer hover:text-brand-purple transition-colors text-white text-left leading-tight"
+                                onClick={() => navigate(`/perfil/${projeto.usuario_id}`)}
+                            >
+                                {ownerUser?.nome || 'Usuário'}
+                            </h1>
+                            <span className="text-lg text-white text-left mt-2 font-nunito font-semibold">Criador do Projeto</span>
+                            <span className="text-base text-white text-left mt-2 font-nunito">{ownerUser?.tipo || '-'}</span>
                         </div>
-                    )
-                ))}
+                    </div>
+                    {/* Colaboradores */}
+                    {colaboradores.length > 0 && colaboradores.some(c => c.usuario_id !== projeto.usuario_id) && (
+                        <div className="md:w-2/3 flex items-center justify-center flex-wrap gap-12">
+                            {colaboradores
+                                .filter(colaborador => colaborador.usuario_id !== projeto.usuario_id)
+                                .map((colaborador: Usuario) => (
+                                    <div key={colaborador.usuario_id} className="flex items-center cursor-pointer" onClick={() => navigate(`/perfil/${colaborador.usuario_id}`)}>
+                                        <img
+                                            src={getProjectImageUrl(colaborador.foto_perfil)}
+                                            alt={colaborador.nome}
+                                            className="w-20 h-20 rounded-full border-4 border-brand-purple object-cover hover:border-brand-purple-dark transition-colors shadow-lg bg-gray-800"
+                                            style={{ aspectRatio: '1/1' }}
+                                        />
+                                        <div className="flex flex-col justify-center ml-6">
+                                            <span className="text-xl font-semibold text-white text-left leading-tight">{colaborador.nome}</span>
+                                            <span className="text-base text-white text-left mt-1 font-nunito">Colaborador</span>
+                                            <span className="text-base text-white text-left mt-1 font-nunito capitalize">{colaborador.tipo || '-'}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                        </div>
+                    )}
+                </div>
+                {/* Título e Descrição */}
+                <div className="mb-8">
+                    <h2 className="text-2xl font-bold mb-4 text-white">{projeto.titulo}</h2>
+                    <p className="text-gray-300 whitespace-pre-wrap">{projeto.descricao}</p>
+                </div>
+                {/* Galeria Principal */}
+                <div className="flex flex-col gap-6 mb-0 relative">
+                    {(projeto.imagens || []).filter(Boolean).map((imagem: string, index: number) => (
+                        imagem && (
+                            <div key={index} className="relative aspect-auto group overflow-hidden rounded-lg shadow-md">
+                                <img
+                                    src={getProjectImageUrl(imagem)}
+                                    alt={`${projeto.titulo} - Imagem ${index + 1}`}
+                                    className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </div>
+                        )
+                    ))}
+                </div>
             </div>
             {/* Barra de Ações */}
             <div className="flex justify-between items-center mb-8">
@@ -716,9 +719,9 @@ const PortfolioProjectPage: React.FC = () => {
                                 <>
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                         <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                                    </svg>
-                                    Enviar
-                                </>
+                                </svg>
+                                Enviar
+                            </>
                             )}
                         </button>
                     </div>
