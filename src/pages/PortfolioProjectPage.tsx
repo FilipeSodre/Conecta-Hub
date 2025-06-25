@@ -1,11 +1,5 @@
 // DEBUG: Log antes de qualquer importAdd commentMore actions
-try {
-    // eslint-disable-next-line no-console
-    console.log('[DEBUG] Arquivo PortfolioProjectPage.tsx está sendo carregado (antes dos imports)');
-} catch (e) {
-    // eslint-disable-next-line no-console
-    console.error('[DEBUG] Erro ao tentar logar antes dos imports:', e);
-}
+// (Removido todos os logs de debug do carregamento do arquivo)
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
@@ -86,44 +80,31 @@ const PortfolioProjectPage: React.FC = () => {
     // Estado para o usuário dono do projeto
     const [ownerUser, setOwnerUser] = useState<Usuario | null>(null);
 
-    // LOGS DE DEBUG NO RENDER
-    console.log('[PortfolioProjectPage] Renderizou!');
-
     // useEffect principal para buscar o projeto de forma eficiente
     useEffect(() => {
         console.log('[PortfolioProjectPage] useEffect projectId:', projectId);
         const fetchPageData = async () => {
             setLoading(true);
             setError(null);
-            console.log('[PortfolioProjectPage] --- INICIANDO DEBUG ---');
-            console.log('[PortfolioProjectPage] 1. useEffect foi acionado. ID da URL:', projectId);
 
             if (!projectId) {
-                console.error('2. ERRO: O ID do projeto não foi encontrado na URL!');
                 setError("ID do projeto não foi encontrado.");
                 setLoading(false);
                 return;
             }
 
             try {
-                console.log('3. ID do projeto encontrado. Tentando buscar na API...');
                 // A chamada de API correta e otimizada
                 const response = await apiClient.get(`/projetos/${projectId}`);
-                console.log('[PortfolioProjectPage] DADOS DA API:', response.data);
-                console.log('4. API respondeu com sucesso. Dados recebidos:', response.data);
 
                 if (response.data) {
                     setProjeto(response.data);
-                    console.log('[PortfolioProjectPage] 5. Estado "projeto" atualizado com sucesso.', response.data);
                 } else {
-                    console.error('[PortfolioProjectPage] 6. ERRO: A API retornou sucesso, mas sem dados de projeto.');
                     setError("Projeto não encontrado.");
                 }
             } catch (err) {
-                console.error('[PortfolioProjectPage] 7. ERRO CRÍTICO: A chamada para a API falhou!', err);
                 setError("Ocorreu um erro ao carregar o projeto.");
             } finally {
-                console.log('[PortfolioProjectPage] 8. Bloco FINALLY executado. Finalizando o loading.');
                 setLoading(false);
             }
         };
@@ -136,11 +117,9 @@ const PortfolioProjectPage: React.FC = () => {
         const fetchLikes = async () => {
             try {
                 const response = await apiClient.get(`/curtidas/${projectId}`);
-                console.log('Resposta das curtidas:', response.data);
                 setLikes(response.data.length);
                 // Verifica se o usuário atual já curtiu
                 const userLiked = response.data.some((like: any) => like.usuario_id === Number(userId));
-                console.log('Usuário curtiu?', userLiked, 'userId:', userId);
                 setHasLiked(userLiked);
             } catch (error) {
                 console.error('Erro ao buscar curtidas:', error);
@@ -238,21 +217,17 @@ const PortfolioProjectPage: React.FC = () => {
                 const response = await apiClient.get(`/usuario-projeto/${projectId}`);
                 const collaborators = response.data;
 
-                console.log('Colaboradores recebidos:', collaborators); // Log para debug
-
                 // Buscar informações detalhadas de cada colaborador, incluindo o dono
                 const colaboradoresDetalhados = await Promise.all(
                     collaborators.map(async (collaborator: any) => {
                         try {
                             const userRes = await apiClient.get(`/usuarios/${collaborator.usuario_id}`);
                             const isOwner = collaborator.usuario_id === projeto?.usuario_id;
-                            console.log(`Usuário ${collaborator.usuario_id} - isOwner: ${isOwner}`);
                             return {
                                 ...userRes.data,
                                 is_owner: isOwner
                             };
                         } catch (error) {
-                            console.error(`Erro ao buscar dados do usuário ${collaborator.usuario_id}:`, error);
                             return null;
                         }
                     })
@@ -263,11 +238,9 @@ const PortfolioProjectPage: React.FC = () => {
 
                 const isUserCollaborator = collaborators.some((collaborator: any) => collaborator.usuario_id === userId);
                 setIsCollaborator(isUserCollaborator);
-                console.log('Usuário é colaborador?', isUserCollaborator);
 
                 const isUserOwner = projeto?.usuario_id === userId;
                 setIsOwner(isUserOwner);
-                console.log('Usuário é dono?', isUserOwner);
             } catch (error) {
                 console.error('Erro ao verificar papel do usuário:', error);
             }
@@ -334,7 +307,6 @@ const PortfolioProjectPage: React.FC = () => {
                                 is_owner: collab.usuario_id === projeto.usuario_id
                             };
                         } catch (error) {
-                            console.error(`Erro ao buscar usuário ${collab.usuario_id}:`, error);
                             return null;
                         }
                     })
@@ -378,15 +350,12 @@ const PortfolioProjectPage: React.FC = () => {
 
     // Renderização condicional robusta
     if (loading) {
-        console.log('[PortfolioProjectPage] Render: loading...');
         return <p>Carregando...</p>;
     }
     if (error) {
-        console.log('[PortfolioProjectPage] Render: error:', error);
         return <p>{error}</p>;
     }
     if (!projeto) {
-        console.log('[PortfolioProjectPage] Render: projeto não encontrado');
         return <p>Projeto não encontrado.</p>;
     }
 
