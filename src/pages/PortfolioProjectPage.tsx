@@ -52,7 +52,6 @@ const PortfolioProjectPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [projeto, setProjeto] = useState<Projeto | null>(null);
-    const [projetoOwner, setProjetoOwner] = useState<Usuario | null>(null);
     const [colaboradores, setColaboradores] = useState<Usuario[]>([]);
     const [likes, setLikes] = useState<number>(0);
     const [hasLiked, setHasLiked] = useState<boolean>(false);
@@ -72,33 +71,41 @@ const PortfolioProjectPage: React.FC = () => {
 
     // useEffect principal para buscar o projeto de forma eficiente
     useEffect(() => {
-        const fetchProjeto = async () => {
+        const fetchPageData = async () => {
             setLoading(true);
             setError(null);
+            console.log('--- INICIANDO DEBUG ---');
+            console.log('1. useEffect foi acionado. ID da URL:', projectId);
+
+            if (!projectId) {
+                console.error('2. ERRO: O ID do projeto não foi encontrado na URL!');
+                setError("ID do projeto não foi encontrado.");
+                setLoading(false);
+                return;
+            }
+
             try {
+                console.log('3. ID do projeto encontrado. Tentando buscar na API...');
+                // A chamada de API correta e otimizada
                 const response = await apiClient.get(`/projetos/${projectId}`);
-                const projetoData = response.data;
-                setProjeto({
-                    ...projetoData,
-                    usuario_nome: projetoData.usuario_nome || 'Usuário',
-                    usuario_foto: getProjectImageUrl(projetoData.usuario_foto),
-                });
-                setProjetoOwner({
-                    usuario_id: projetoData.usuario_id,
-                    nome: projetoData.usuario_nome || 'Usuário',
-                    foto_perfil: projetoData.usuario_foto,
-                    tipo: projetoData.tipo,
-                });
+                console.log('4. API respondeu com sucesso. Dados recebidos:', response.data);
+
+                if (response.data) {
+                    setProjeto(response.data);
+                    console.log('5. Estado "projeto" atualizado com sucesso.');
+                } else {
+                    console.error('6. ERRO: A API retornou sucesso, mas sem dados de projeto.');
+                    setError("Projeto não encontrado.");
+                }
             } catch (err) {
-                setError('Ocorreu um erro ao carregar o projeto.');
-                setProjeto(null);
+                console.error('7. ERRO CRÍTICO: A chamada para a API falhou!', err);
+                setError("Ocorreu um erro ao carregar o projeto.");
             } finally {
+                console.log('8. Bloco FINALLY executado. Finalizando o loading.');
                 setLoading(false);
             }
         };
-        if (projectId) {
-            fetchProjeto();
-        }
+        fetchPageData();
     }, [projectId]);
 
     const userId = JSON.parse(localStorage.getItem('user') || '{}').usuario_id || 0;
@@ -441,7 +448,7 @@ const PortfolioProjectPage: React.FC = () => {
                                 {projeto.usuario_nome}
                             </h1>
                             <span className="text-lg text-white text-left mt-2 font-nunito font-semibold">Criador do Projeto</span>
-                            <span className="text-base text-white text-left mt-2 font-nunito">{projetoOwner?.tipo || projeto.tipo || '-'}</span>
+                            <span className="text-base text-white text-left mt-2 font-nunito">{projeto.tipo || '-'}</span>
                         </div>
                     </div>
 
@@ -741,8 +748,8 @@ const PortfolioProjectPage: React.FC = () => {
             <ConnectionRequestModal
                 isOpen={isConnectionModalOpen}
                 onClose={() => setIsConnectionModalOpen(false)}
-                recipientName={projetoOwner?.nome || projeto?.usuario_nome || 'Usuário'}
-                recipientId={projetoOwner?.usuario_id || projeto?.usuario_id || 0}
+                recipientName={projeto.usuario_nome || 'Usuário'}
+                recipientId={projeto.usuario_id || 0}
                 onSend={(data) => {
                     // Função de envio de conexão
                     console.log('Solicitação de conexão:', data);
