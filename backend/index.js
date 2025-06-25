@@ -1144,10 +1144,29 @@ app.put('/conexoes/:id/aceitar', async (req, res) => {
                 [conexao.recipient_id, conexao.projeto_id]
             );
             if (colabCheck.rows.length === 0) {
-                await pool.query(
-                    `INSERT INTO usuario_projeto (usuario_id, projeto_id) VALUES ($1, $2)`,
-                    [conexao.recipient_id, conexao.projeto_id]
+                // Buscar o tipo do usuário para preencher o campo papel
+                const userTipoRes = await pool.query(
+                    'SELECT tipo FROM usuario WHERE usuario_id = $1',
+                    [conexao.recipient_id]
                 );
+                let papel = 'programador';
+                if (userTipoRes.rows.length > 0 && (userTipoRes.rows[0].tipo === 'designer' || userTipoRes.rows[0].tipo === 'programador')) {
+                    papel = userTipoRes.rows[0].tipo;
+                }
+                console.log('[ACEITAR CONEXAO] Adicionando colaborador:', {
+                    usuario_id: conexao.recipient_id,
+                    projeto_id: conexao.projeto_id,
+                    papel
+                });
+                await pool.query(
+                    `INSERT INTO usuario_projeto (usuario_id, projeto_id, papel) VALUES ($1, $2, $3)`,
+                    [conexao.recipient_id, conexao.projeto_id, papel]
+                );
+            } else {
+                console.log('[ACEITAR CONEXAO] Usuário já é colaborador:', {
+                    usuario_id: conexao.recipient_id,
+                    projeto_id: conexao.projeto_id
+                });
             }
         }
         // --- FIM: Adiciona colaborador ao projeto ---
