@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useKeenSlider } from 'keen-slider/react';
 import 'keen-slider/keen-slider.min.css';
@@ -37,34 +37,52 @@ const ShareIcon = () => <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24"
 
 // Utilitário para padronizar exibição de imagens (Cloudinary, local ou placeholder)
 const getProjectImageUrl = (imgPath?: string) => {
-  if (!imgPath) return '/default-profile.png'; // placeholder global
+  if (!imgPath) return '/default-profile.png';
   if (imgPath.startsWith('http')) return imgPath;
-  // Remove '/src/assets' se presente, pois build move assets para /public
   if (imgPath.startsWith('/src/assets/')) return imgPath.replace('/src/assets', '');
   if (imgPath.startsWith('/public/')) return imgPath.replace('/public', '');
-  // Nunca retorna /uploads ou localhost
   return '/default-profile.png';
 };
 
 const ProjectDetailPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: keyof typeof mockProjectsData }>();
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({ loop: true });
+  const [project, setProject] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    const fetchProject = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        if (!projectId || !mockProjectsData[projectId]) {
+          setProject(null);
+        } else {
+          setProject(mockProjectsData[projectId]);
+        }
+      } catch (err) {
+        setError('Ocorreu um erro ao carregar o projeto.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProject();
+  }, [projectId]);
 
-  if (!projectId || !mockProjectsData[projectId]) {
-    return <div className="text-center py-10">Projeto não encontrado.</div>;
-  }
-  const project = mockProjectsData[projectId];
+  if (loading) return <p>Carregando...</p>;
+  if (error) return <p>Ocorreu um erro ao carregar o projeto.</p>;
+  if (!project) return <p>Projeto não encontrado.</p>;
 
   return (
     <div className="bg-white rounded-3xl shadow-card p-4 sm:p-6 md:p-8">
       {/* Author Info */}
       <div className="flex items-center mb-6">
-        <img src={getProjectImageUrl(project.author.avatar)} alt={project.author.name} className="w-16 h-16 rounded-full mr-4 object-cover" />
+        <img src={getProjectImageUrl(project?.author?.avatar)} alt={project?.author?.name || 'Autor'} className="w-16 h-16 rounded-full mr-4 object-cover" />
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-brand-purple-dark">{project.title}</h1>
-          <Link to={project.author.profileLink} className="text-brand-purple hover:underline">
-            por {project.author.name} <span className="text-sm text-gray-500">({project.author.role})</span>
+          <h1 className="text-2xl sm:text-3xl font-bold text-brand-purple-dark">{project?.title}</h1>
+          <Link to={project?.author?.profileLink || '#'} className="text-brand-purple hover:underline">
+            por {project?.author?.name} <span className="text-sm text-gray-500">({project?.author?.role})</span>
           </Link>
         </div>
         {/* Action Buttons - Like, Comment, Share */}
@@ -74,58 +92,53 @@ const ProjectDetailPage: React.FC = () => {
           <button className="p-2 rounded-full hover:bg-green-100 hover:text-green-500"><ShareIcon /></button>
         </div>
       </div>
-
       {/* Main Image Slider */}
       <div ref={sliderRef} className="keen-slider mb-4 rounded-xl overflow-hidden bg-gray-200" style={{ height: '500px' }}>
-        {project.images.slice(0, 1).map((img, idx) => (
+        {project?.images?.slice(0, 1).map((img: string, idx: number) => (
           <div key={idx} className="keen-slider__slide">
-            <img src={getProjectImageUrl(img)} alt={`${project.title} - Imagem ${idx + 1}`} className="w-full h-full object-contain" />
+            <img src={getProjectImageUrl(img)} alt={`${project?.title} - Imagem ${idx + 1}`} className="w-full h-full object-contain" />
           </div>
         ))}
       </div>
-
       {/* Description */}
       <div className="my-8">
-        <h2 className="text-xl font-semibold text-brand-purple-dark mb-2">Design de Posts</h2> {/* From mockup image */}
-        <p className="text-brand-text leading-relaxed whitespace-pre-line">{project.description}</p>
+        <h2 className="text-xl font-semibold text-brand-purple-dark mb-2">Design de Posts</h2>
+        <p className="text-brand-text leading-relaxed whitespace-pre-line">{project?.description}</p>
       </div>
-
       {/* Image Gallery (Thumbnails / Smaller Images) */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
-        {project.images.slice(1).map((img, idx) => (
+        {project?.images?.slice(1).map((img: string, idx: number) => (
           <div key={idx} className="rounded-lg overflow-hidden shadow-sm aspect-square bg-gray-100">
             <img
               src={getProjectImageUrl(img)}
-              alt={`${project.title} - Detalhe ${idx + 1}`}
+              alt={`${project?.title} - Detalhe ${idx + 1}`}
               className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform"
-              onClick={() => instanceRef.current?.moveToIdx(project.images.findIndex(i => i === img))}
+              onClick={() => instanceRef.current?.moveToIdx(project?.images?.findIndex((i: string) => i === img))}
             />
           </div>
         ))}
       </div>
-
       {/* Tags */}
       <div className="mb-8">
-        {project.tags.map(tag => (
+        {project?.tags?.map((tag: string) => (
           <span key={tag} className="inline-block bg-brand-purple-light text-brand-purple-dark text-xs font-semibold mr-2 mb-2 px-2.5 py-1 rounded-full">
             {tag}
           </span>
         ))}
       </div>
-
       {/* Related Projects */}
-      {project.relatedProjects && project.relatedProjects.length > 0 && (
+      {project?.relatedProjects && project.relatedProjects.length > 0 && (
         <div>
           <h2 className="text-xl font-semibold text-brand-purple-dark mb-4">Acesse também outros projetos:</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {project.relatedProjects.map(related => (
+            {project.relatedProjects.map((related: any) => (
               <Link to={`/portfolio/${related.id}`} key={related.id} className="flex items-center bg-slate-800 p-4 rounded-xl shadow-md group">
-                <img src={getProjectImageUrl(related.img)} alt={related.title} className="w-24 h-20 object-cover rounded-lg mr-4" />
+                <img src={getProjectImageUrl(related?.img)} alt={related?.title} className="w-24 h-20 object-cover rounded-lg mr-4" />
                 <div className="text-white">
-                  <h4 className="font-semibold group-hover:underline text-brand-yellow">{related.title}</h4>
+                  <h4 className="font-semibold group-hover:underline text-brand-yellow">{related?.title}</h4>
                   <div className="flex items-center text-xs text-slate-300 mt-1">
-                    <img src={getProjectImageUrl(related.userImg)} alt={related.user} className="w-5 h-5 rounded-full mr-1" />
-                    {related.user}
+                    <img src={getProjectImageUrl(related?.userImg)} alt={related?.user} className="w-5 h-5 rounded-full mr-1" />
+                    {related?.user}
                   </div>
                 </div>
               </Link>

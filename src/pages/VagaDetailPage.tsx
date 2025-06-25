@@ -61,23 +61,23 @@ const VagaDetailPage: React.FC = () => {
 
   useEffect(() => {
     const fetchVaga = async () => {
+      setLoading(true);
+      setError(null);
       try {
         if (!vagaId) {
           setError('ID da vaga não fornecido');
-          setLoading(false);
-          return;
+          setVaga(null);
+        } else {
+          const response = await apiClient.get(`/vagas/${vagaId}`);
+          setVaga(response.data);
         }
-
-        const response = await apiClient.get(`/vagas/${vagaId}`);
-        setVaga(response.data);
-        setLoading(false);
       } catch (error) {
-        console.error('Erro ao carregar vaga:', error);
         setError('Erro ao carregar a vaga. Por favor, tente novamente.');
+        setVaga(null);
+      } finally {
         setLoading(false);
       }
     };
-
     fetchVaga();
   }, [vagaId]);
 
@@ -97,9 +97,11 @@ const VagaDetailPage: React.FC = () => {
   if (loading) {
     return <div className="text-center py-10">Carregando...</div>;
   }
-
-  if (error || !vaga) {
-    return <div className="text-center py-10 text-red-600">{error || 'Vaga não encontrada'}</div>;
+  if (error) {
+    return <div className="text-center py-10 text-red-600">{error}</div>;
+  }
+  if (!vaga) {
+    return <div className="text-center py-10 text-red-600">Vaga não encontrada</div>;
   }
 
   return (

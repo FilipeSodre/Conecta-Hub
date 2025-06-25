@@ -23,32 +23,34 @@ const VagasPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredVagas, setFilteredVagas] = useState<Vaga[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchVagas = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
-        setIsLoading(true);
         const response = await apiClient.get('/vagas');
         setVagas(response.data);
         setFilteredVagas(response.data);
       } catch (error) {
-        console.error('Erro ao buscar vagas:', error);
+        setError('Erro ao buscar vagas.');
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchVagas();
   }, []);
 
   // Função para buscar vagas no backend
   const handleSearch = async (term: string) => {
+    setIsLoading(true);
+    setError(null);
     try {
-      setIsLoading(true);
       const response = await apiClient.get(`/vagas/busca?q=${encodeURIComponent(term)}`);
       setFilteredVagas(response.data);
     } catch (error) {
-      console.error('Erro ao buscar vagas:', error);
+      setError('Erro ao buscar vagas.');
       // Em caso de erro, usa filtro local
       const filtered = vagas.filter(vaga =>
         vaga.titulo.toLowerCase().includes(term.toLowerCase()) ||
@@ -74,6 +76,30 @@ const VagasPage: React.FC = () => {
       handleSearch(term);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-purple"></div>
+        <span className="ml-4 text-brand-purple font-semibold">Carregando...</span>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <span className="text-red-600 font-semibold">{error}</span>
+      </div>
+    );
+  }
+  if (!filteredVagas || filteredVagas.length === 0) {
+    return (
+      <div className="text-center py-12 text-gray-500 min-h-screen">
+        <p className="text-lg mb-2">Nenhuma vaga disponível no momento</p>
+        <p>Seja o primeiro a publicar uma vaga!</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
