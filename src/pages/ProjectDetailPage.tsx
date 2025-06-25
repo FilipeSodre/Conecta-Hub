@@ -36,13 +36,12 @@ const ProjectDetailPage: React.FC = () => {
           setLoading(false);
           return;
         }
-        // Busca todos os projetos e filtra pelo ID (backend não tem /projetos/:id)
-        const res = await apiClient.get('/projetos');
-        const found = res.data.find((p: any) => String(p.projeto_id) === String(projectId));
+        // Busca eficiente: apenas o projeto necessário
+        const res = await apiClient.get(`/projetos/${projectId}`);
+        const found = res.data;
         if (!found) {
           setProject(null);
         } else {
-          // Monta objeto compatível com o componente
           setProject({
             id: found.projeto_id,
             title: found.titulo,
@@ -55,11 +54,15 @@ const ProjectDetailPage: React.FC = () => {
             description: found.descricao,
             images: found.imagens ? (Array.isArray(found.imagens) ? found.imagens : [found.imagens]) : (found.imagem_capa ? [found.imagem_capa] : []),
             tags: found.tags || [],
-            relatedProjects: [], // Pode ser populado depois se backend fornecer
+            relatedProjects: [],
           });
         }
-      } catch (err) {
-        setError('Ocorreu um erro ao carregar o projeto.');
+      } catch (err: any) {
+        if (err.response && err.response.status === 404) {
+          setProject(null);
+        } else {
+          setError('Ocorreu um erro ao carregar o projeto.');
+        }
       } finally {
         setLoading(false);
       }

@@ -260,6 +260,21 @@ app.get('/projetos', async (req, res) => {
     }
 });
 
+// Rota para buscar um projeto específico por ID
+app.get('/projetos/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await pool.query('SELECT * FROM projeto WHERE projeto_id = $1', [id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Projeto não encontrado' });
+        }
+        res.status(200).json(result.rows[0]);
+    } catch (err) {
+        console.error('Erro ao buscar projeto por ID:', err);
+        res.status(500).json({ message: 'Erro ao buscar projeto' });
+    }
+});
+
 // Rota de busca para projetos/portfólios
 app.get('/projetos/busca', async (req, res) => {
     try {
