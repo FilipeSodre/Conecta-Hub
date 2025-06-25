@@ -71,13 +71,17 @@ const PortfolioProjectPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    // LOGS DE DEBUG NO RENDER
+    console.log('[PortfolioProjectPage] Renderizou!');
+
     // useEffect principal para buscar o projeto de forma eficiente
     useEffect(() => {
+        console.log('[PortfolioProjectPage] useEffect projectId:', projectId);
         const fetchPageData = async () => {
             setLoading(true);
             setError(null);
-            console.log('--- INICIANDO DEBUG ---');
-            console.log('1. useEffect foi acionado. ID da URL:', projectId);
+            console.log('[PortfolioProjectPage] --- INICIANDO DEBUG ---');
+            console.log('[PortfolioProjectPage] 1. useEffect foi acionado. ID da URL:', projectId);
 
             if (!projectId) {
                 console.error('2. ERRO: O ID do projeto não foi encontrado na URL!');
@@ -90,21 +94,21 @@ const PortfolioProjectPage: React.FC = () => {
                 console.log('3. ID do projeto encontrado. Tentando buscar na API...');
                 // A chamada de API correta e otimizada
                 const response = await apiClient.get(`/projetos/${projectId}`);
-                console.log('DADOS DA API (PortfolioProjectPage):', response.data);
+                console.log('[PortfolioProjectPage] DADOS DA API:', response.data);
                 console.log('4. API respondeu com sucesso. Dados recebidos:', response.data);
 
                 if (response.data) {
                     setProjeto(response.data);
-                    console.log('5. Estado "projeto" atualizado com sucesso.');
+                    console.log('[PortfolioProjectPage] 5. Estado "projeto" atualizado com sucesso.', response.data);
                 } else {
-                    console.error('6. ERRO: A API retornou sucesso, mas sem dados de projeto.');
+                    console.error('[PortfolioProjectPage] 6. ERRO: A API retornou sucesso, mas sem dados de projeto.');
                     setError("Projeto não encontrado.");
                 }
             } catch (err) {
-                console.error('7. ERRO CRÍTICO: A chamada para a API falhou!', err);
+                console.error('[PortfolioProjectPage] 7. ERRO CRÍTICO: A chamada para a API falhou!', err);
                 setError("Ocorreu um erro ao carregar o projeto.");
             } finally {
-                console.log('8. Bloco FINALLY executado. Finalizando o loading.');
+                console.log('[PortfolioProjectPage] 8. Bloco FINALLY executado. Finalizando o loading.');
                 setLoading(false);
             }
         };
@@ -344,12 +348,15 @@ const PortfolioProjectPage: React.FC = () => {
 
     // Renderização condicional robusta
     if (loading) {
+        console.log('[PortfolioProjectPage] Render: loading...');
         return <p>Carregando...</p>;
     }
     if (error) {
+        console.log('[PortfolioProjectPage] Render: error:', error);
         return <p>{error}</p>;
     }
     if (!projeto) {
+        console.log('[PortfolioProjectPage] Render: projeto não encontrado');
         return <p>Projeto não encontrado.</p>;
     }
 

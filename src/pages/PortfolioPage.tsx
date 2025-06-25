@@ -160,6 +160,11 @@ const PortfolioPage: React.FC = () => {
     }
   };
 
+  // LOGS DE DEBUG NO RENDER
+  console.log('[PortfolioPage] Renderizou! Projetos:', projetos);
+  console.log('[PortfolioPage] Renderizou! Filtered:', filteredProjetos);
+  console.log('[PortfolioPage] Renderizou! isLoading:', isLoading, 'searchTerm:', searchTerm);
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -214,7 +219,9 @@ const PortfolioPage: React.FC = () => {
             {filteredProjetos.map((projeto) => (
               <a
                 key={projeto.projeto_id}
-                onClick={e => { e.preventDefault(); window.location.href = '/'; return; }}
+                onClick={() => {
+                  console.log('[PortfolioPage] Card clicado! Projeto:', projeto);
+                }}
                 href={`/portfolio/${projeto.projeto_id}`}
                 className="block bg-purple-600 rounded-lg shadow-md overflow-hidden transform transition-transform hover:scale-105"
               >
