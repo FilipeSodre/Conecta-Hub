@@ -463,21 +463,21 @@ const PortfolioProjectPage: React.FC = () => {
                 {/* Dono do Projeto - BLOCO DESTACADO */}
                 <div className="flex items-center mr-12 bg-black border-4 border-black rounded-2xl p-6 shadow-xl min-w-[380px]">
                     <img
-                        src={projeto.usuario_foto || '/fotos/default-profile.png'}
-                        alt={projeto.usuario_nome || 'Usuário'}
+                        src={colaboradores.find(c => c.is_owner)?.foto_perfil || '/fotos/default-profile.png'}
+                        alt={colaboradores.find(c => c.is_owner)?.nome || 'Usuário'}
                         className="w-32 h-32 rounded-full border-4 border-brand-purple object-cover cursor-pointer hover:border-brand-purple-dark transition-colors shadow-lg bg-gray-800"
                         style={{ aspectRatio: '1/1' }}
-                        onClick={() => navigate(`/perfil/${projeto.usuario_id}`)}
+                        onClick={() => navigate(`/perfil/${colaboradores.find(c => c.is_owner)?.usuario_id || projeto.usuario_id}`)}
                     />
                     <div className="flex flex-col justify-center ml-8 min-w-[220px]">
                         <h1
                             className="text-4xl font-bold cursor-pointer hover:text-brand-purple transition-colors text-white text-left leading-tight"
-                            onClick={() => navigate(`/perfil/${projeto.usuario_id}`)}
+                            onClick={() => navigate(`/perfil/${colaboradores.find(c => c.is_owner)?.usuario_id || projeto.usuario_id}`)}
                         >
-                            {projeto.usuario_nome || 'Usuário'}
+                            {colaboradores.find(c => c.is_owner)?.nome || projeto.usuario_nome || 'Usuário'}
                         </h1>
                         <span className="text-lg text-white text-left mt-2 font-nunito font-semibold">Criador do Projeto</span>
-                        <span className="text-base text-white text-left mt-2 font-nunito">{projeto.tipo || '-'}</span>
+                        <span className="text-base text-white text-left mt-2 font-nunito">{colaboradores.find(c => c.is_owner)?.tipo || projeto.tipo || '-'}</span>
                     </div>
                 </div>
                 {/* Colaboradores */}
@@ -536,8 +536,6 @@ const PortfolioProjectPage: React.FC = () => {
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                            </svg>
-                            Adicionar Imagens
                         </label>
                         <input
                             id="adicionar-imagens"
