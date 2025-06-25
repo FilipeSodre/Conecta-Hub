@@ -21,6 +21,7 @@ import PortfolioProjectPage from './pages/PortfolioProjectPage'; // Import the P
 // Remover ou condicionar axios.defaults.baseURL para não usar localhost em produção
 
 function App() {
+  console.log('[DEBUG] App component is rendering!');
   return (
     <UserProvider>
       <Layout>
@@ -40,6 +41,8 @@ function App() {
           <Route path="/perfil" element={<ProfilePage />} />
           <Route path="/conexao" element={<ConexaoPage />} />
           <Route path="/chat/:chatId" element={<ChatPage />} />
+          {/* Catch-all route for debugging */}
+          <Route path="*" element={<div>[DEBUG] No route matched!</div>} />
           {/* Add other routes here */}
         </Routes>
       </Layout>
