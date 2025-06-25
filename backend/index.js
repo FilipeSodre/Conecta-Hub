@@ -1136,6 +1136,21 @@ app.put('/conexoes/:id/aceitar', async (req, res) => {
             );
             chat = chatRes.rows[0];
         }
+        // --- INÍCIO: Adiciona colaborador ao projeto se for convite de projeto ---
+        if (conexao.connection_type === 'projeto' && conexao.projeto_id) {
+            // Verifica se já é colaborador
+            const colabCheck = await pool.query(
+                `SELECT 1 FROM usuario_projeto WHERE usuario_id = $1 AND projeto_id = $2`,
+                [conexao.recipient_id, conexao.projeto_id]
+            );
+            if (colabCheck.rows.length === 0) {
+                await pool.query(
+                    `INSERT INTO usuario_projeto (usuario_id, projeto_id) VALUES ($1, $2)`,
+                    [conexao.recipient_id, conexao.projeto_id]
+                );
+            }
+        }
+        // --- FIM: Adiciona colaborador ao projeto ---
         res.json({ conexao, chat });
     } catch (err) {
         res.status(500).json({ error: 'Erro ao aceitar conexão' });
@@ -1343,7 +1358,7 @@ app.get('/projetos/:id/participantes', async (req, res) => {
              JOIN usuario u ON up.usuario_id = u.usuario_id
              WHERE up.projeto_id = $1`, [id]
         );
-        // Junta e remove duplicados (caso o dono também seja colaborador)
+        // Junta e removes duplicados (caso o dono também seja colaborador)
         const participantes = [
             ...donoRes.rows,
             ...colabRes.rows.filter(c => !donoRes.rows.some(d => d.usuario_id === c.usuario_id))
