@@ -769,11 +769,12 @@ const PortfolioProjectPage: React.FC = () => {
                 onClose={() => setIsAddCollaboratorModalOpen(false)}
                 onInvite={async (user: Usuario) => {
                     try {
-                        // Envia convite para o usuário ser colaborador deste projeto
-                        await apiClient.post('/convites', {
+                        await apiClient.post('/notificacoes', {
+                            tipo: 'convite',
+                            usuario_origem_id: userId, // quem convida
+                            usuario_destino_id: user.usuario_id, // convidado
                             projeto_id: projeto?.projeto_id,
-                            convidado_id: user.usuario_id,
-                            convidante_id: userId // quem está convidando
+                            comentario_texto: null
                         });
                         alert(`Convite enviado para ${user.nome}. Ele(a) precisa aceitar para aparecer como colaborador.`);
                     } catch (error: any) {
