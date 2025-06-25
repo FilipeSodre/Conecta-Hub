@@ -79,16 +79,99 @@ const VagasPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-purple"></div>
-        <span className="ml-4 text-brand-purple font-semibold">Carregando...</span>
+      <div className="min-h-screen bg-gray-50">
+        {/* Cabeçalho */}
+        <div className="bg-brand-purple p-8">
+          <div className="container mx-auto">
+            <h1 className="text-2xl font-bold text-white mb-2">Vagas & Briefings</h1>
+            <p className="text-white opacity-90">
+              Encontre oportunidades para trabalhar em projetos incríveis ou publique suas próprias vagas.
+            </p>
+          </div>
+        </div>
+        {/* Barra de Busca e Botão */}
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex gap-4 items-center">
+            <div className="flex-1 relative">
+              <input
+                type="search"
+                placeholder="Buscar vagas por título, empresa, descrição..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-purple focus:border-transparent"
+              />
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              {isLoading && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-brand-purple"></div>
+                </div>
+              )}
+            </div>
+            <Link
+              to="/vagas/criar"
+              className="flex items-center gap-2 bg-brand-purple text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors"
+            >
+              <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+              </svg>
+              Publicar Vaga
+            </Link>
+          </div>
+        </div>
+        <div className="flex justify-center items-center min-h-[300px]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-purple"></div>
+          <span className="ml-4 text-brand-purple font-semibold">Carregando...</span>
+        </div>
       </div>
     );
   }
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <span className="text-red-600 font-semibold">{error}</span>
+      <div className="min-h-screen bg-gray-50">
+        {/* Cabeçalho */}
+        <div className="bg-brand-purple p-8">
+          <div className="container mx-auto">
+            <h1 className="text-2xl font-bold text-white mb-2">Vagas & Briefings</h1>
+            <p className="text-white opacity-90">
+              Encontre oportunidades para trabalhar em projetos incríveis ou publique suas próprias vagas.
+            </p>
+          </div>
+        </div>
+        {/* Barra de Busca e Botão */}
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex gap-4 items-center">
+            <div className="flex-1 relative">
+              <input
+                type="search"
+                placeholder="Buscar vagas por título, empresa, descrição..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-purple focus:border-transparent"
+              />
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+            </div>
+            <Link
+              to="/vagas/criar"
+              className="flex items-center gap-2 bg-brand-purple text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors"
+            >
+              <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+              </svg>
+              Publicar Vaga
+            </Link>
+          </div>
+        </div>
+        <div className="flex justify-center items-center min-h-[300px]">
+          <span className="text-red-600 font-semibold">{error}</span>
+        </div>
       </div>
     );
   }

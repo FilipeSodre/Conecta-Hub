@@ -2,33 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useKeenSlider } from 'keen-slider/react';
 import 'keen-slider/keen-slider.min.css';
-
-// Mock Data (replace with actual data fetching)
-const mockProjectsData = {
-  'projJulia': {
-    id: 'projJulia',
-    title: 'Design de Posts para Mídias Sociais',
-    author: { name: 'Julia Silva', avatar: '/src/assets/images/avatar-julia.png', role: 'Estudante de Design Gráfico', profileLink: '/perfil/julia-silva' },
-    description: 'Para desenvolver a nova Identidade Visual para a Paula seguimos um caminho de estética minimalista, com toques leves e elegantes, trabalhando os conceitos da marca e divulgando seu trabalho de terapias holísticas e yoga de forma libre.',
-    images: [
-      '/src/assets/images/project-julia-main.png', // Main image from mockup
-      '/src/assets/images/project-julia-thumb1.png',
-      '/src/assets/images/project-julia-thumb2.png',
-      '/src/assets/images/project-julia-thumb3.png',
-      '/src/assets/images/project-julia-mobile1.png',
-      '/src/assets/images/project-julia-mobile2.png',
-      '/src/assets/images/project-julia-mobile3.png',
-      '/src/assets/images/project-julia-detail1.png',
-      '/src/assets/images/project-julia-detail2.png',
-    ],
-    tags: ['Identidade Visual', 'Social Media', 'Minimalista', 'Yoga'],
-    relatedProjects: [
-      { id: '1', title: 'Desenvolvimento de Aplicativo', user: 'Maria Lima & João Gomes', userImg: '/src/assets/images/avatar-maria.png', img: '/src/assets/images/project-app-fitness.png' },
-      { id: '8', title: 'Redesign de App', user: 'Caio Junior', userImg: '/src/assets/images/avatar-caio.png', img: '/src/assets/images/project-courts-app.png' },
-    ]
-  },
-  // Add more projects as needed
-};
+import apiClient from '../services/api';
+import { getProjectImageUrl } from '../services/imageUtils';
 
 // Placeholder icons
 const HeartIcon = () => <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.5l1.318-1.182a4.5 4.5 0 116.364 6.364L12 18.75l-7.682-7.682a4.5 4.5 0 010-6.364z" /></svg>;
@@ -36,16 +11,16 @@ const CommentIcon = () => <svg className="w-6 h-6" fill="none" viewBox="0 0 24 2
 const ShareIcon = () => <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12s-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6.008l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.368a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" /></svg>;
 
 // Utilitário para padronizar exibição de imagens (Cloudinary, local ou placeholder)
-const getProjectImageUrl = (imgPath?: string) => {
-  if (!imgPath) return '/default-profile.png';
-  if (imgPath.startsWith('http')) return imgPath;
-  if (imgPath.startsWith('/src/assets/')) return imgPath.replace('/src/assets', '');
-  if (imgPath.startsWith('/public/')) return imgPath.replace('/public', '');
-  return '/default-profile.png';
-};
+// const getProjectImageUrl = (imgPath?: string) => {
+//   if (!imgPath) return '/default-profile.png';
+//   if (imgPath.startsWith('http')) return imgPath;
+//   if (imgPath.startsWith('/src/assets/')) return imgPath.replace('/src/assets', '');
+//   if (imgPath.startsWith('/public/')) return imgPath.replace('/public', '');
+//   return '/default-profile.png';
+// };
 
 const ProjectDetailPage: React.FC = () => {
-  const { projectId } = useParams<{ projectId: keyof typeof mockProjectsData }>();
+  const { projectId } = useParams<{ projectId: string }>();
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({ loop: true });
   const [project, setProject] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
@@ -56,10 +31,32 @@ const ProjectDetailPage: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        if (!projectId || !mockProjectsData[projectId]) {
+        if (!projectId) {
+          setProject(null);
+          setLoading(false);
+          return;
+        }
+        // Busca todos os projetos e filtra pelo ID (backend não tem /projetos/:id)
+        const res = await apiClient.get('/projetos');
+        const found = res.data.find((p: any) => String(p.projeto_id) === String(projectId));
+        if (!found) {
           setProject(null);
         } else {
-          setProject(mockProjectsData[projectId]);
+          // Monta objeto compatível com o componente
+          setProject({
+            id: found.projeto_id,
+            title: found.titulo,
+            author: {
+              name: found.autor_nome || found.usuario_nome || 'Autor',
+              avatar: found.foto_perfil || found.imagem_capa || '/default-profile.png',
+              role: found.autor_role || 'Autor',
+              profileLink: found.autor_profileLink || '#',
+            },
+            description: found.descricao,
+            images: found.imagens ? (Array.isArray(found.imagens) ? found.imagens : [found.imagens]) : (found.imagem_capa ? [found.imagem_capa] : []),
+            tags: found.tags || [],
+            relatedProjects: [], // Pode ser populado depois se backend fornecer
+          });
         }
       } catch (err) {
         setError('Ocorreu um erro ao carregar o projeto.');
