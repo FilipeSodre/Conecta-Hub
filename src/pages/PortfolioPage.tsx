@@ -214,10 +214,7 @@ const PortfolioPage: React.FC = () => {
             {filteredProjetos.map((projeto) => (
               <a
                 key={projeto.projeto_id}
-                // TESTE: ao clicar, redireciona para a Home em vez do detalhe do projeto
-                // window.location.href = '/';
-                // return;
-                // ---
+                onClick={e => { e.preventDefault(); window.location.href = '/'; return; }}
                 href={`/portfolio/${projeto.projeto_id}`}
                 className="block bg-purple-600 rounded-lg shadow-md overflow-hidden transform transition-transform hover:scale-105"
               >
