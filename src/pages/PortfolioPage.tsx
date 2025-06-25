@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../services/api';
 
 interface Participante {
   usuario_id: number;
@@ -39,22 +39,12 @@ const PlusIcon = () => (
   </svg>
 );
 
-// Função para normalizar imagem do usuário
-const normalizeUserImage = (fotoPerfil: string | null): string => {
-  if (!fotoPerfil) return '/default-profile.png';
-  return fotoPerfil.startsWith('http') ? fotoPerfil : `http://localhost:5000/${fotoPerfil}`;
-};
-
 // Função utilitária para exibir corretamente imagens de capa (Cloudinary, local ou placeholder)
 const getProjectImageUrl = (imgPath?: string) => {
   if (!imgPath) return '/default-profile.png';
   if (imgPath.startsWith('http')) return imgPath;
-  if (imgPath.startsWith('uploads/')) return `http://localhost:5000/${imgPath}`;
-  if (imgPath.startsWith('/uploads/')) return `http://localhost:5000${imgPath}`;
-  if (imgPath.startsWith('/src/assets/')) return imgPath.replace('/src/assets', '');
-  if (imgPath.startsWith('/public/')) return imgPath.replace('/public', '');
-  if (imgPath.startsWith('/')) return imgPath;
-  return `/${imgPath}`;
+  // Nunca retorna localhost ou /uploads, só Cloudinary ou placeholder
+  return '/default-profile.png';
 };
 
 const PortfolioPage: React.FC = () => {
@@ -67,16 +57,16 @@ const PortfolioPage: React.FC = () => {
     const fetchProjetos = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get('/projetos');
+        const response = await apiClient.get('/projetos');
         const projetosComParticipantes = await Promise.all(
           response.data.map(async (projeto: any) => {
             let participantes: Participante[] = [];
             try {
-              const partRes = await axios.get(`/projetos/${projeto.projeto_id}/participantes`);
+              const partRes = await apiClient.get(`/projetos/${projeto.projeto_id}/participantes`);
               participantes = partRes.data.map((p: any) => ({
                 usuario_id: p.usuario_id,
                 nome: p.nome,
-                foto_perfil: p.foto_perfil ? (p.foto_perfil.startsWith('http') ? p.foto_perfil : `http://localhost:5000/${p.foto_perfil}`) : '/default-profile.png',
+                foto_perfil: p.foto_perfil ? (p.foto_perfil.startsWith('http') ? p.foto_perfil : '/default-profile.png') : '/default-profile.png',
                 papel: p.papel,
               }));
             } catch {
@@ -111,19 +101,19 @@ const PortfolioPage: React.FC = () => {
   const handleSearch = async (term: string) => {
     try {
       setIsLoading(true);
-      const response = await axios.get(`/projetos/busca?q=${encodeURIComponent(term)}`);
+      const response = await apiClient.get(`/projetos/busca?q=${encodeURIComponent(term)}`);
 
       // Processar os projetos retornados para incluir informações do usuário
       const projetosComUsuario = await Promise.all(
         response.data.map(async (projeto: any) => {
           if (projeto.usuario_id) {
             try {
-              const usuarioRes = await axios.get(`/usuarios/${projeto.usuario_id}`);
+              const usuarioRes = await apiClient.get(`/usuarios/${projeto.usuario_id}`);
               const usuario = usuarioRes.data;
               return {
                 ...projeto,
                 usuario_nome: usuario?.nome || 'Usuário',
-                usuario_foto: normalizeUserImage(usuario?.foto_perfil),
+                usuario_foto: usuario?.foto_perfil && usuario.foto_perfil.startsWith('http') ? usuario.foto_perfil : '/default-profile.png',
               };
             } catch {
               return {

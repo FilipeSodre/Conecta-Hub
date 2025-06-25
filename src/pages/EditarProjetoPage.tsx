@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../services/api';
 
 interface Projeto {
     projeto_id: number;
@@ -25,7 +25,7 @@ const EditarProjetoPage: React.FC = () => {
     useEffect(() => {
         const fetchProjeto = async () => {
             try {
-                const response = await axios.get(`/projetos/${projectId}`);
+                const response = await apiClient.get(`/projetos/${projectId}`);
                 setProjeto(response.data);
             } catch (error) {
                 console.error('Erro ao buscar projeto:', error);
@@ -52,7 +52,7 @@ const EditarProjetoPage: React.FC = () => {
                     formData.append('imagens', imagem);
                 });
 
-                await axios.post(`/projetos/${projectId}/imagens`, formData, {
+                await apiClient.post(`/projetos/${projectId}/imagens`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },

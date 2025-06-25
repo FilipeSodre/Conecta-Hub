@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../services/api';
+import { getCompanyLogoUrl } from '../services/imageUtils';
 
 interface Vaga {
   vaga_id: number;
@@ -27,7 +28,7 @@ const VagasPage: React.FC = () => {
     const fetchVagas = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get('/vagas');
+        const response = await apiClient.get('/vagas');
         setVagas(response.data);
         setFilteredVagas(response.data);
       } catch (error) {
@@ -44,7 +45,7 @@ const VagasPage: React.FC = () => {
   const handleSearch = async (term: string) => {
     try {
       setIsLoading(true);
-      const response = await axios.get(`/vagas/busca?q=${encodeURIComponent(term)}`);
+      const response = await apiClient.get(`/vagas/busca?q=${encodeURIComponent(term)}`);
       setFilteredVagas(response.data);
     } catch (error) {
       console.error('Erro ao buscar vagas:', error);
@@ -151,7 +152,7 @@ const VagasPage: React.FC = () => {
                       <div className="flex items-center gap-3">
                         {vaga.logo_empresa ? (
                           <img
-                            src={`http://localhost:5000/${vaga.logo_empresa}`}
+                            src={getCompanyLogoUrl(vaga.logo_empresa)}
                             alt={vaga.empresa}
                             className="w-12 h-12 rounded-full object-contain bg-white p-1"
                           />

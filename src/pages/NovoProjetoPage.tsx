@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../services/api';
 import { useUser } from '../context/UserContext';
 
 const NovoProjetoPage: React.FC = () => {
@@ -44,7 +44,7 @@ const NovoProjetoPage: React.FC = () => {
     }
 
     try {
-      const response = await axios.post('/projetos', data, {
+      const response = await apiClient.post('/projetos', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

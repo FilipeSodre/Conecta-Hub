@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import apiClient from '../services/api';
+import { getUserImageUrl } from '../services/imageUtils';
 
 interface Usuario {
     usuario_id: number;
@@ -14,13 +15,6 @@ interface AddCollaboratorModalProps {
     onInvite: (user: Usuario) => void;
 }
 
-const normalizeUserImage = (foto_perfil?: string) => {
-    if (!foto_perfil) return '/default-profile.png';
-    if (foto_perfil.startsWith('uploads/')) return `http://localhost:5000/${foto_perfil}`;
-    if (foto_perfil.startsWith('http')) return foto_perfil;
-    return '/default-profile.png';
-};
-
 const AddCollaboratorModal: React.FC<AddCollaboratorModalProps> = ({ isOpen, onClose, onInvite }) => {
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
     const [loading, setLoading] = useState(true);
@@ -29,7 +23,7 @@ const AddCollaboratorModal: React.FC<AddCollaboratorModalProps> = ({ isOpen, onC
     useEffect(() => {
         if (isOpen) {
             setLoading(true);
-            axios.get('/usuarios').then(res => {
+            apiClient.get('/usuarios').then(res => {
                 setUsuarios(res.data);
                 setLoading(false);
             });
@@ -58,7 +52,7 @@ const AddCollaboratorModal: React.FC<AddCollaboratorModalProps> = ({ isOpen, onC
                     <div className="max-h-80 overflow-y-auto flex flex-col gap-3">
                         {filtered.map(user => (
                             <div key={user.usuario_id} className="flex items-center gap-4 p-2 hover:bg-gray-100 rounded cursor-pointer" onClick={() => onInvite(user)}>
-                                <img src={normalizeUserImage(user.foto_perfil)} alt={user.nome} className="w-10 h-10 rounded-full border-2 border-brand-purple object-cover" />
+                                <img src={getUserImageUrl(user.foto_perfil)} alt={user.nome} className="w-10 h-10 rounded-full border-2 border-brand-purple object-cover" />
                                 <span className="font-medium">{user.nome}</span>
                                 <span className="text-xs text-gray-500">{user.tipo}</span>
                             </div>

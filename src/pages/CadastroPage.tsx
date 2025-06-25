@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../services/api';
 
 const CadastroPage: React.FC = () => {
     const [nome, setNome] = useState('');
@@ -38,7 +38,7 @@ const CadastroPage: React.FC = () => {
                 formData.append('foto_perfil', fotoPerfil);
             }
 
-            const response = await axios.post('/usuarios', formData, {
+            const response = await apiClient.post('/usuarios', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

@@ -33,9 +33,8 @@ const getProjectImageUrl = (imgPath?: string) => {
   if (imgPath.startsWith('http')) return imgPath;
   if (imgPath.startsWith('/src/assets/')) return imgPath.replace('/src/assets', '');
   if (imgPath.startsWith('/public/')) return imgPath.replace('/public', '');
-  if (imgPath.startsWith('/uploads/')) return imgPath; // backend local
-  if (imgPath.startsWith('/')) return imgPath; // já relativo ao public
-  return `/${imgPath}`;
+  // Nunca retorna /uploads ou localhost
+  return '/default-profile.png';
 };
 
 const HomePage: React.FC = () => {

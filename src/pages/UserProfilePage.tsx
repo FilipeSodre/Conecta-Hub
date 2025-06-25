@@ -1,8 +1,8 @@
 // src/pages/UserProfilePage.tsx
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
+import apiClient from '../services/api';
 
 interface Projeto {
   projeto_id: number;
@@ -33,9 +33,8 @@ interface Usuario {
 const normalizeUserImage = (foto_perfil?: string | null) => {
   if (!foto_perfil) return '/default-profile.png';
   if (foto_perfil.startsWith('http')) return foto_perfil;
-  // Remove barras invertidas e monta o caminho igual ao PortfolioPage
-  const cleanPath = foto_perfil.replace(/\\/g, '/');
-  return `http://localhost:5000/${cleanPath}`;
+  // Não retorna mais localhost, só Cloudinary ou placeholder
+  return '/default-profile.png';
 };
 
 const UserProfilePage: React.FC = () => {
@@ -67,7 +66,7 @@ const UserProfilePage: React.FC = () => {
       }
       try {
         console.log('Tentando buscar dados do usuário para ID:', otherUserId);
-        const response = await axios.get(`/usuarios/${otherUserId}`);
+        const response = await apiClient.get(`/usuarios/${otherUserId}`);
         console.log('Resposta da API para dados do usuário:', response.data);
         setUsuario(response.data);
       } catch (err) {
@@ -82,13 +81,13 @@ const UserProfilePage: React.FC = () => {
       if (typeof otherUserId !== 'number' || isNaN(otherUserId) || otherUserId <= 0) return;
       try {
         // Busca todas as associações usuario-projeto
-        const assocRes = await axios.get('/usuario-projeto');
+        const assocRes = await apiClient.get('/usuario-projeto');
         const projetosAssociadosIds = assocRes.data
           .filter((assoc: any) => assoc.usuario_id === otherUserId)
           .map((assoc: any) => assoc.projeto_id);
 
         // Busca todos os projetos
-        const response = await axios.get('/projetos');
+        const response = await apiClient.get('/projetos');
         // Mostra projetos onde é dono OU colaborador
         const projetosDoUsuario = response.data.filter(
           (projeto: Projeto) => projeto.usuario_id === otherUserId || projetosAssociadosIds.includes(projeto.projeto_id)

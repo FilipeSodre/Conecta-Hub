@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../services/api';
 import { useUser } from '../context/UserContext';
 
 const CriarVagaPage: React.FC = () => {
@@ -85,7 +85,7 @@ const CriarVagaPage: React.FC = () => {
 
             console.log('Enviando dados:', Object.fromEntries(formDataToSend));
 
-            const response = await axios.post('/vagas', formDataToSend, {
+            const response = await apiClient.post('/vagas', formDataToSend, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 }
@@ -326,4 +326,4 @@ const CriarVagaPage: React.FC = () => {
     );
 };
 
-export default CriarVagaPage; 
+export default CriarVagaPage;

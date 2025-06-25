@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import apiClient from '../services/api';
 
 interface Projeto {
     projeto_id: number;
@@ -54,7 +54,7 @@ const ProfilePage: React.FC = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await axios.get(`/usuarios/${userId}`);
+                const response = await apiClient.get(`/usuarios/${userId}`);
                 setUsuario(response.data);
                 setNewDesc(response.data.descricao || '');
             } catch (error) {
@@ -64,7 +64,7 @@ const ProfilePage: React.FC = () => {
 
         const fetchProjetos = async () => {
             try {
-                const response = await axios.get('/projetos');
+                const response = await apiClient.get('/projetos');
                 // Inclui projetos que o usuário é dono OU colaborador
                 const projetosDoUsuario = response.data.filter(
                     (projeto: Projeto) => projeto.usuario_id === userId || (projeto.colaboradores && projeto.colaboradores.includes(userId))
@@ -85,10 +85,10 @@ const ProfilePage: React.FC = () => {
 
     useEffect(() => {
         if (userId && activeTab === 'conexoes') {
-            axios.get(`/usuarios/${userId}/notificacoes`).then(res => {
+            apiClient.get(`/usuarios/${userId}/notificacoes`).then(res => {
                 setNotificacoes(res.data);
             });
-            axios.get(`/chats/user/${userId}`).then(res => {
+            apiClient.get(`/chats/user/${userId}`).then(res => {
                 setChats(res.data);
             });
         }
@@ -102,13 +102,13 @@ const ProfilePage: React.FC = () => {
         formData.append('foto_perfil', file);
 
         try {
-            await axios.put(`/usuarios/${userId}/foto`, formData, {
+            await apiClient.put(`/usuarios/${userId}/foto`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
             // Recarregar os dados do usuário
-            const response = await axios.get(`/usuarios/${userId}`);
+            const response = await apiClient.get(`/usuarios/${userId}`);
             setUsuario(response.data);
             setIsEditingPhoto(false);
         } catch (error) {
@@ -119,7 +119,7 @@ const ProfilePage: React.FC = () => {
 
     const handleDescriptionUpdate = async () => {
         try {
-            await axios.put(`/usuarios/${userId}/descricao`, { descricao: newDesc });
+            await apiClient.put(`/usuarios/${userId}/descricao`, { descricao: newDesc });
             setUsuario(prev => prev ? { ...prev, descricao: newDesc } : null);
             setIsEditingDesc(false);
         } catch (error) {
@@ -130,7 +130,7 @@ const ProfilePage: React.FC = () => {
 
     const handleVisto = async (id: number) => {
         try {
-            await axios.delete(`/notificacoes/${id}`);
+            await apiClient.delete(`/notificacoes/${id}`);
             setNotificacoes(prev => prev.filter(n => n.notificacao_id !== id));
         } catch (e) {
             alert('Erro ao remover notificação');
@@ -140,7 +140,7 @@ const ProfilePage: React.FC = () => {
     // Handlers para aceitar/recusar convite
     const handleAceitarConvite = async (notificacaoId: number) => {
         try {
-            await axios.post(`/notificacoes/${notificacaoId}/aceitar-convite`);
+            await apiClient.post(`/notificacoes/${notificacaoId}/aceitar-convite`);
             setNotificacoes(prev => prev.filter(n => n.notificacao_id !== notificacaoId));
             alert('Convite aceito! Agora você é colaborador do projeto.');
         } catch (err) {
@@ -149,7 +149,7 @@ const ProfilePage: React.FC = () => {
     };
     const handleRecusarConvite = async (notificacaoId: number) => {
         try {
-            await axios.post(`/notificacoes/${notificacaoId}/recusar-convite`);
+            await apiClient.post(`/notificacoes/${notificacaoId}/recusar-convite`);
             setNotificacoes(prev => prev.filter(n => n.notificacao_id !== notificacaoId));
             alert('Convite recusado.');
         } catch (err) {
@@ -164,7 +164,7 @@ const ProfilePage: React.FC = () => {
                     <div key={notif.notificacao_id} className="bg-purple-300 rounded-2xl p-3 flex items-center gap-3">
                         <Link to={`/perfil/${notif.usuario_origem_id}`} className="flex items-center gap-3">
                             <img
-                                src={notif.usuario_foto ? `http://localhost:5000/${notif.usuario_foto}` : '/default-profile.png'}
+                                src={getUserImageUrl(notif.usuario_foto)}
                                 alt={notif.usuario_nome}
                                 className="w-10 h-10 rounded-full object-cover"
                             />
@@ -259,7 +259,7 @@ const ProfilePage: React.FC = () => {
                         const otherUserFoto = chat.user1_id === userId ? chat.user2_foto : chat.user1_foto;
                         return (
                             <li key={chat.id} className="flex items-center gap-3 cursor-pointer hover:bg-purple-50 rounded-lg p-2" onClick={() => navigate(`/chat/${chat.id}`)}>
-                                <img src={otherUserFoto ? `http://localhost:5000/${otherUserFoto}` : '/default-profile.png'} alt={otherUserName} className="w-8 h-8 rounded-full object-cover" />
+                                <img src={getUserImageUrl(otherUserFoto)} alt={otherUserName} className="w-8 h-8 rounded-full object-cover" />
                                 <span className="font-medium text-brand-purple-dark">{otherUserName || `Usuário ${otherUserId}`}</span>
                             </li>
                         );
@@ -270,6 +270,19 @@ const ProfilePage: React.FC = () => {
             )}
         </div>
     );
+
+    // Corrige exibição de imagens de perfil e chat para nunca usar localhost, apenas Cloudinary ou placeholder
+    const getUserImageUrl = (foto_perfil?: string | null) => {
+        if (!foto_perfil) return '/default-profile.png';
+        if (foto_perfil.startsWith('http')) return foto_perfil;
+        return '/default-profile.png';
+    };
+
+    const getProjectImageUrl = (imgPath?: string) => {
+        if (!imgPath) return '/default-profile.png';
+        if (imgPath.startsWith('http')) return imgPath;
+        return '/default-profile.png';
+    };
 
     if (!usuario) {
         return <div>Carregando...</div>;
@@ -282,7 +295,7 @@ const ProfilePage: React.FC = () => {
                 {/* Foto de Perfil */}
                 <div className="relative">
                     <img
-                        src={usuario.foto_perfil ? `http://localhost:5000/${usuario.foto_perfil}` : '/default-profile.png'}
+                        src={getUserImageUrl(usuario.foto_perfil)}
                         alt={usuario.nome}
                         className="w-48 h-48 rounded-full object-cover border-4 border-brand-purple"
                     />
@@ -409,7 +422,7 @@ const ProfilePage: React.FC = () => {
                         {/* Renderização dos projetos do usuário */}
                         {projetos.map(projeto => (
                             <div key={projeto.projeto_id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate(`/portfolio/${projeto.projeto_id}`)}>
-                                <img src={projeto.imagem_capa ? `http://localhost:5000/${projeto.imagem_capa}` : '/default-profile.png'} alt={projeto.titulo} className="w-full h-40 object-cover" />
+                                <img src={getProjectImageUrl(projeto.imagem_capa)} alt={projeto.titulo} className="w-full h-40 object-cover" />
                                 <div className="p-4">
                                     <h3 className="text-lg font-semibold mb-2">{projeto.titulo}</h3>
                                     <p className="text-gray-600 line-clamp-2">{projeto.descricao}</p>

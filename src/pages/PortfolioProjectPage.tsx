@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../services/api';
 import ConnectionRequestModal from '../components/ConnectionRequestModal';
 import AddCollaboratorModal from '../components/AddCollaboratorModal';
 
@@ -54,12 +54,8 @@ const normalizeUserImage = (foto_perfil?: string) => {
 const getProjectImageUrl = (imgPath?: string) => {
     if (!imgPath) return '/default-profile.png';
     if (imgPath.startsWith('http')) return imgPath;
-    if (imgPath.startsWith('uploads/')) return `http://localhost:5000/${imgPath}`;
-    if (imgPath.startsWith('/uploads/')) return `http://localhost:5000${imgPath}`;
-    if (imgPath.startsWith('/src/assets/')) return imgPath.replace('/src/assets', '');
-    if (imgPath.startsWith('/public/')) return imgPath.replace('/public', '');
-    if (imgPath.startsWith('/')) return imgPath;
-    return `/${imgPath}`;
+    // Nunca mais retorna localhost ou /uploads, só Cloudinary ou placeholder
+    return '/default-profile.png';
 };
 
 const PortfolioProjectPage: React.FC = () => {
@@ -108,14 +104,14 @@ const PortfolioProjectPage: React.FC = () => {
                 formData.append('imagens', file);
             });
 
-            await axios.post(`/projetos/${projectId}/imagens`, formData, {
+            await apiClient.post(`/projetos/${projectId}/imagens`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
 
             // Recarregar o projeto para mostrar as novas imagens
-            const response = await axios.get('/projetos');
+            const response = await apiClient.get('/projetos');
             const projetoAtualizado = response.data.find((p: any) => p.projeto_id.toString() === projectId);
             if (projetoAtualizado) {
                 setProjeto(prevProjeto => ({
@@ -132,11 +128,13 @@ const PortfolioProjectPage: React.FC = () => {
         } finally {
             setIsUploading(false);
         }
-    }; useEffect(() => {
+    };
+
+    useEffect(() => {
         const fetchProjeto = async () => {
             try {
                 // Primeiro, busca os dados do projeto
-                const response = await axios.get('/projetos');
+                const response = await apiClient.get('/projetos');
                 console.log('Resposta completa:', response.data);
 
                 // Encontra o projeto específico pelo ID
@@ -147,7 +145,7 @@ const PortfolioProjectPage: React.FC = () => {
                     try {
                         // Busca o usuário pelo ID
                         console.log('Buscando usuário ID:', projetoData.usuario_id);
-                        const usuarioRes = await axios.get(`/usuarios/${projetoData.usuario_id}`);
+                        const usuarioRes = await apiClient.get(`/usuarios/${projetoData.usuario_id}`);
                         const usuario = usuarioRes.data;
                         console.log('Dados do usuário:', usuario);
 
@@ -183,7 +181,7 @@ const PortfolioProjectPage: React.FC = () => {
     useEffect(() => {
         const fetchLikes = async () => {
             try {
-                const response = await axios.get(`/curtidas/${projectId}`);
+                const response = await apiClient.get(`/curtidas/${projectId}`);
                 console.log('Resposta das curtidas:', response.data);
                 setLikes(response.data.length);
                 // Verifica se o usuário atual já curtiu
@@ -214,17 +212,17 @@ const PortfolioProjectPage: React.FC = () => {
             if (hasLiked) {
                 console.log('Tentando remover curtida');
                 // Remove like
-                const response = await axios.get(`/curtidas/${projectId}`);
+                const response = await apiClient.get(`/curtidas/${projectId}`);
                 const curtida = response.data.find((like: any) => like.usuario_id === Number(userId));
                 if (curtida) {
-                    await axios.delete(`/curtidas/${curtida.curtida_id}`);
+                    await apiClient.delete(`/curtidas/${curtida.curtida_id}`);
                     setLikes(prev => prev - 1);
                     setHasLiked(false);
                 }
             } else {
                 console.log('Tentando adicionar curtida');
                 // Add like
-                await axios.post('/curtidas', {
+                await apiClient.post('/curtidas', {
                     usuario_id: Number(userId),
                     projeto_id: Number(projectId)
                 });
@@ -246,7 +244,7 @@ const PortfolioProjectPage: React.FC = () => {
         if (!projectId) return;
 
         try {
-            const response = await axios.get(`/comentarios/${projectId}`);
+            const response = await apiClient.get(`/comentarios/${projectId}`);
             setComentarios(response.data);
         } catch (error) {
             console.error('Erro ao carregar comentários:', error);
@@ -283,7 +281,7 @@ const PortfolioProjectPage: React.FC = () => {
         const checkUserRole = async () => {
             try {
                 const userId = JSON.parse(localStorage.getItem('user') || '{}').usuario_id;
-                const response = await axios.get(`/usuario-projeto/${projectId}`);
+                const response = await apiClient.get(`/usuario-projeto/${projectId}`);
                 const collaborators = response.data;
 
                 console.log('Colaboradores recebidos:', collaborators); // Log para debug
@@ -292,7 +290,7 @@ const PortfolioProjectPage: React.FC = () => {
                 const colaboradoresDetalhados = await Promise.all(
                     collaborators.map(async (collaborator: any) => {
                         try {
-                            const userRes = await axios.get(`/usuarios/${collaborator.usuario_id}`);
+                            const userRes = await apiClient.get(`/usuarios/${collaborator.usuario_id}`);
                             const isOwner = collaborator.usuario_id === projeto?.usuario_id;
                             console.log(`Usuário ${collaborator.usuario_id} - isOwner: ${isOwner}`);
                             return {
@@ -344,7 +342,7 @@ const PortfolioProjectPage: React.FC = () => {
 
         setIsSubmittingComment(true);
         try {
-            await axios.post('/comentarios', {
+            await apiClient.post('/comentarios', {
                 usuario_id: userId,
                 projeto_id: Number(projectId),
                 texto: newComment.trim()
@@ -369,14 +367,14 @@ const PortfolioProjectPage: React.FC = () => {
 
             try {
                 const userId = JSON.parse(localStorage.getItem('user') || '{}').usuario_id;
-                const response = await axios.get(`/usuario-projeto/${projectId}`);
+                const response = await apiClient.get(`/usuario-projeto/${projectId}`);
                 const collaboratorsData = response.data;
 
                 // Buscar informações detalhadas dos usuários
                 const detailedUsers = await Promise.all(
                     collaboratorsData.map(async (collab: any) => {
                         try {
-                            const userRes = await axios.get(`/usuarios/${collab.usuario_id}`);
+                            const userRes = await apiClient.get(`/usuarios/${collab.usuario_id}`);
                             return {
                                 ...userRes.data,
                                 is_owner: collab.usuario_id === projeto.usuario_id
@@ -408,7 +406,7 @@ const PortfolioProjectPage: React.FC = () => {
 
     useEffect(() => {
         // Busca todos os projetos para mostrar sugestões
-        axios.get('/projetos').then(res => setAllProjetos(res.data)).catch(() => setAllProjetos([]));
+        apiClient.get('/projetos').then(res => setAllProjetos(res.data)).catch(() => setAllProjetos([]));
     }, [projectId]);
 
     if (!projeto) {

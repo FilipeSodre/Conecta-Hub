@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../services/api';
+import { getUserImageUrl } from '../services/imageUtils';
 import { useUser } from '../context/UserContext';
 
 const LoginPage: React.FC = () => {
@@ -14,16 +15,10 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     if (agreed) {
       try {
-        const response = await axios.post('/login', { email, senha: password });
-
-        // Verifica se o caminho da foto já contém a URL completa
+        const response = await apiClient.post('/login', { email, senha: password });
+        // Use utility to normalize image URL
         const foto_perfil = response.data.usuario.foto_perfil;
-        let fotoPerfilFinal = foto_perfil;
-        if (foto_perfil && !foto_perfil.startsWith('http')) {
-          fotoPerfilFinal = foto_perfil.replace(/\\/g, '/');
-          fotoPerfilFinal = `http://localhost:5000/${fotoPerfilFinal}`;
-        }
-        const userData = { ...response.data.usuario, foto_perfil: fotoPerfilFinal };
+        const userData = { ...response.data.usuario, foto_perfil: getUserImageUrl(foto_perfil) };
         // Salvar no localStorage e atualizar o contexto
         localStorage.setItem('user', JSON.stringify(userData));
         setUser(userData);

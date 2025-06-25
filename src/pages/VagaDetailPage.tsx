@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../services/api';
+import { getCompanyLogoUrl } from '../services/imageUtils';
 import { useUser } from '../context/UserContext';
 import { LeafIcon } from '../components/icons/LeafIcon';
 import { CheckIcon } from '../components/icons/CheckIcon';
@@ -52,7 +53,7 @@ const VagaDetailPage: React.FC = () => {
   // Buscar projetos do usuário (dono ou colaborador) ao abrir modal
   useEffect(() => {
     if (isConnectionModalOpen && user?.usuario_id) {
-      axios.get(`/usuarios/${user.usuario_id}/projetos-participando`).then(res => {
+      apiClient.get(`/usuarios/${user.usuario_id}/projetos-participando`).then(res => {
         setUserProjects(res.data);
       }).catch(() => setUserProjects([]));
     }
@@ -67,7 +68,7 @@ const VagaDetailPage: React.FC = () => {
           return;
         }
 
-        const response = await axios.get(`/vagas/${vagaId}`);
+        const response = await apiClient.get(`/vagas/${vagaId}`);
         setVaga(response.data);
         setLoading(false);
       } catch (error) {
@@ -114,7 +115,7 @@ const VagaDetailPage: React.FC = () => {
               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center overflow-hidden p-2">
                 {vaga.logo_empresa ? (
                   <img
-                    src={`http://localhost:5000/${vaga.logo_empresa}`}
+                    src={getCompanyLogoUrl(vaga.logo_empresa)}
                     alt={`Logo da ${vaga.empresa}`}
                     className="w-full h-full object-contain rounded-full"
                   />
@@ -153,7 +154,7 @@ const VagaDetailPage: React.FC = () => {
           projetos={userProjects}
           onSend={async ({ recipientId, reason, projetoId }) => {
             const projetoSelecionado = userProjects.find((p: any) => p.projeto_id === projetoId);
-            await axios.post('/conexoes', {
+            await apiClient.post('/conexoes', {
               senderId: user?.usuario_id,
               recipientId,
               projetoId,
@@ -177,7 +178,7 @@ const VagaDetailPage: React.FC = () => {
               <div className="bg-white border-2 border-gray-200 rounded-full p-1 mr-4 shadow-md">
                 {vaga.logo_empresa ? (
                   <img
-                    src={`http://localhost:5000/${vaga.logo_empresa}`}
+                    src={getCompanyLogoUrl(vaga.logo_empresa)}
                     alt={`Logo da ${vaga.empresa}`}
                     className="w-20 h-20 rounded-full object-contain"
                   />
