@@ -83,6 +83,8 @@ const PortfolioProjectPage: React.FC = () => {
     // NOVOS ESTADOS
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    // Estado para o usuário dono do projeto
+    const [ownerUser, setOwnerUser] = useState<Usuario | null>(null);
 
     // LOGS DE DEBUG NO RENDER
     console.log('[PortfolioProjectPage] Renderizou!');
@@ -356,6 +358,21 @@ const PortfolioProjectPage: React.FC = () => {
         fetchCollaborators();
     }, [projectId, projeto?.usuario_id]);
 
+    // Buscar dados do dono do projeto (usuário) ao carregar o projeto
+    useEffect(() => {
+        const fetchOwnerUser = async () => {
+            if (projeto?.usuario_id) {
+                try {
+                    const response = await apiClient.get(`/usuarios/${projeto.usuario_id}`);
+                    setOwnerUser(response.data);
+                } catch (error) {
+                    setOwnerUser(null);
+                }
+            }
+        };
+        fetchOwnerUser();
+    }, [projeto?.usuario_id]);
+
     // Projetos aleatórios (mock, pois não buscamos todos os projetos mais)
     const randomProjetos: Projeto[] = useMemo(() => [], []);
 
@@ -463,8 +480,8 @@ const PortfolioProjectPage: React.FC = () => {
                 {/* Dono do Projeto - BLOCO DESTACADO */}
                 <div className="flex items-center mr-12 bg-black border-4 border-black rounded-2xl p-6 shadow-xl min-w-[380px]">
                     <img
-                        src={getProjectImageUrl(projeto.usuario_foto)}
-                        alt={projeto.usuario_nome || 'Usuário'}
+                        src={getProjectImageUrl(ownerUser?.foto_perfil)}
+                        alt={ownerUser?.nome || 'Usuário'}
                         className="w-32 h-32 rounded-full border-4 border-brand-purple object-cover cursor-pointer hover:border-brand-purple-dark transition-colors shadow-lg bg-gray-800"
                         style={{ aspectRatio: '1/1' }}
                         onClick={() => navigate(`/perfil/${projeto.usuario_id}`)}
@@ -474,10 +491,10 @@ const PortfolioProjectPage: React.FC = () => {
                             className="text-4xl font-bold cursor-pointer hover:text-brand-purple transition-colors text-white text-left leading-tight"
                             onClick={() => navigate(`/perfil/${projeto.usuario_id}`)}
                         >
-                            {projeto.usuario_nome || 'Usuário'}
+                            {ownerUser?.nome || 'Usuário'}
                         </h1>
                         <span className="text-lg text-white text-left mt-2 font-nunito font-semibold">Criador do Projeto</span>
-                        <span className="text-base text-white text-left mt-2 font-nunito">{projeto.tipo || '-'}</span>
+                        <span className="text-base text-white text-left mt-2 font-nunito">{ownerUser?.tipo || '-'}</span>
                     </div>
                 </div>
                 {/* Colaboradores */}
