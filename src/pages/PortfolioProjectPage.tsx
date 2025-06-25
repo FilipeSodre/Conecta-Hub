@@ -39,11 +39,12 @@ interface Comentario {
     usuario_foto: string;
 }
 
+// Utilitário para obter o caminho correto da imagem
 const getProjectImageUrl = (imgPath?: string) => {
-    if (!imgPath) return '/default-profile.png';
+    if (!imgPath) return '/fotos/default-profile.png';
     if (imgPath.startsWith('http')) return imgPath;
-    // Nunca mais retorna localhost ou /uploads, só Cloudinary ou placeholder
-    return '/default-profile.png';
+    // Se for só o nome do arquivo, retorna do /fotos/
+    return `/fotos/${imgPath}`;
 };
 
 const PortfolioProjectPage: React.FC = () => {

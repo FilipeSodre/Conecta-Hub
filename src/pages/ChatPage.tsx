@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { getProjectImageUrl } from '../services/imageUtils';
 
 const ChatPage: React.FC = () => {
     const { chatId } = useParams<{ chatId: string }>();
@@ -50,8 +51,8 @@ const ChatPage: React.FC = () => {
                     <div className="flex items-center gap-3">
                         <img
                             src={chatInfo.user1_id === userId
-                                ? (chatInfo.user2_foto ? `http://localhost:5000/${chatInfo.user2_foto}` : '/default-profile.png')
-                                : (chatInfo.user1_foto ? `http://localhost:5000/${chatInfo.user1_foto}` : '/default-profile.png')
+                                ? (chatInfo.user2_foto ? getProjectImageUrl(chatInfo.user2_foto) : '/default-profile.png')
+                                : (chatInfo.user1_foto ? getProjectImageUrl(chatInfo.user1_foto) : '/default-profile.png')
                             }
                             alt="Foto do perfil"
                             className="w-8 h-8 rounded-full object-cover border-2 border-white"
@@ -70,7 +71,7 @@ const ChatPage: React.FC = () => {
                             className={`flex items-start gap-2 ${msg.sender_id === userId ? 'flex-row-reverse' : ''}`}
                         >
                             <img
-                                src={msg.sender_foto ? `http://localhost:5000/${msg.sender_foto}` : '/default-profile.png'}
+                                src={msg.sender_foto ? getProjectImageUrl(msg.sender_foto) : '/default-profile.png'}
                                 alt={msg.sender_nome || 'Foto do perfil'}
                                 className="w-6 h-6 rounded-full object-cover flex-shrink-0"
                             />

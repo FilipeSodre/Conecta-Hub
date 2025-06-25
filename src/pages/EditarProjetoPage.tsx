@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../services/api';
+import { getProjectImageUrl } from '../services/imageUtils';
 
 interface Projeto {
     projeto_id: number;
@@ -103,7 +104,7 @@ const EditarProjetoPage: React.FC = () => {
                         {projeto.imagens?.map((imagem, index) => (
                             <div key={index} className="relative group">
                                 <img
-                                    src={`http://localhost:5000/${imagem}`}
+                                    src={getProjectImageUrl(imagem)}
                                     alt={`Imagem ${index + 1}`}
                                     className="w-full h-48 object-cover rounded-lg"
                                 />

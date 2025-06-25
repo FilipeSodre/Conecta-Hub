@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -39,7 +38,7 @@ const ConexaoPage: React.FC = () => {
           </div>
           <div className="md:w-1/3 flex justify-center md:justify-end">
              {/* Placeholder for a Conecta logo or relevant icon */}
-            <img src="/src/assets/images/teamwork-hands-illustration.png" alt="Conexão" className="w-full max-w-xs rounded-lg" />
+            <img src="/fotos/teamwork-hands-illustration.png" alt="Conexão" className="w-full max-w-xs rounded-lg" />
           </div>
         </div>
       </section>

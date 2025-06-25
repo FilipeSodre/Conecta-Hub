@@ -11,20 +11,20 @@ const LearningIcon = () => <svg className="w-8 h-8 text-brand-yellow" fill="none
 
 
 const mockNovidades = [
-  { id: 1, title: "Download de Códigos", desc: "Baixe códigos e protótipos.", img: "/src/assets/images/placeholder-code.png", bgColor: "bg-slate-700" },
-  { id: 2, title: "Tema Escuro Disponível", desc: "Navegue com conforto visual.", img: "/src/assets/images/placeholder-darkmode.png", bgColor: "bg-gray-800" },
-  { id: 3, title: "Recomendações Personalizadas", desc: "Projetos baseados no seu interesse.", img: "/src/assets/images/placeholder-recommend.png", bgColor: "bg-purple-700" },
-  { id: 4, title: "Novo Sistema de Agendamento", desc: "Agende conversas em tempo real.", img: "/src/assets/images/placeholder-calendar.png", bgColor: "bg-sky-700" },
+  { id: 1, title: "Download de Códigos", desc: "Baixe códigos e protótipos.", img: "/images/placeholder-code.png", bgColor: "bg-slate-700" },
+  { id: 2, title: "Tema Escuro Disponível", desc: "Navegue com conforto visual.", img: "/images/placeholder-darkmode.png", bgColor: "bg-gray-800" },
+  { id: 3, title: "Recomendações Personalizadas", desc: "Projetos baseados no seu interesse.", img: "/images/placeholder-recommend.png", bgColor: "bg-purple-700" },
+  { id: 4, title: "Novo Sistema de Agendamento", desc: "Agende conversas em tempo real.", img: "/images/placeholder-calendar.png", bgColor: "bg-sky-700" },
 ];
 
 const mockAmigosPostando = [
-  { id: 1, user: "Maria Lima", userImg: "/src/assets/images/avatar-maria.png", projectTitle: "Desenvolvimento de Aplicativo", projectDesc: "Aplicativo para academia.", projectImg: "/src/assets/images/project-app-fitness.png" },
-  { id: 2, user: "João Gomes", userImg: "/src/assets/images/avatar-joao.png", projectTitle: "FeedUp com treinos e registros", projectDesc: "Interface para app de treinos.", projectImg: "/src/assets/images/project-feedup.png" },
-  { id: 3, user: "Caio Junior", userImg: "/src/assets/images/avatar-caio.png", projectTitle: "Desenvolvimento de Aplicativo", projectDesc: "Aplicativo para aulas de tênis.", projectImg: "/src/assets/images/project-tennis.png" },
-  { id: 4, user: "Prof. Anderson", userImg: "/src/assets/images/avatar-prof.png", projectTitle: "Redesign de Aplicativo", projectDesc: "Novo visual para app educacional.", projectImg: "/src/assets/images/project-redesign.png" },
-  { id: 5, user: "Julia Silva", userImg: "/src/assets/images/avatar-julia.png", projectTitle: "Projeto de Fotodesign", projectDesc: "Ensaio fotográfico conceitual.", projectImg: "/src/assets/images/project-photodesign.png" },
-  { id: 6, user: "Nathalia Montenegro", userImg: "/src/assets/images/avatar-nathalia-m.png", projectTitle: "Identidade Visual", projectDesc: "Marca para startup de IA.", projectImg: "/src/assets/images/project-id-visual.png" },
-  { id: 7, user: "Nathalia Vales Ficher", userImg: "/src/assets/images/avatar-nathalia-f.png", projectTitle: "Campanha de divulgação", projectDesc: "Campanha para marca de moda.", projectImg: "/src/assets/images/project-fashion-camp.png" },
+  { id: 1, user: "Maria Lima", userImg: "/fotos/avatar-maria.png", projectTitle: "Desenvolvimento de Aplicativo", projectDesc: "Aplicativo para academia.", projectImg: "/fotos/project-app-fitness.png" },
+  { id: 2, user: "João Gomes", userImg: "/fotos/avatar-joao.png", projectTitle: "FeedUp com treinos e registros", projectDesc: "Interface para app de treinos.", projectImg: "/fotos/project-feedup.png" },
+  { id: 3, user: "Caio Junior", userImg: "/fotos/avatar-caio.png", projectTitle: "Desenvolvimento de Aplicativo", projectDesc: "Aplicativo para aulas de tênis.", projectImg: "/fotos/project-tennis.png" },
+  { id: 4, user: "Prof. Anderson", userImg: "/fotos/avatar-prof.png", projectTitle: "Redesign de Aplicativo", projectDesc: "Novo visual para app educacional.", projectImg: "/fotos/project-redesign.png" },
+  { id: 5, user: "Julia Silva", userImg: "/fotos/avatar-julia.png", projectTitle: "Projeto de Fotodesign", projectDesc: "Ensaio fotográfico conceitual.", projectImg: "/fotos/project-photodesign.png" },
+  { id: 6, user: "Nathalia Montenegro", userImg: "/fotos/avatar-nathalia-m.png", projectTitle: "Identidade Visual", projectDesc: "Marca para startup de IA.", projectImg: "/fotos/project-id-visual.png" },
+  { id: 7, user: "Nathalia Vales Ficher", userImg: "/fotos/avatar-nathalia-f.png", projectTitle: "Campanha de divulgação", projectDesc: "Campanha para marca de moda.", projectImg: "/fotos/project-fashion-camp.png" },
 ];
 
 // Utilitário para padronizar exibição de imagens (Cloudinary, local ou placeholder)
@@ -63,7 +63,7 @@ const HomePage: React.FC = () => {
       <section className="relative text-center py-16 md:py-24 bg-gradient-to-br from-brand-purple-light via-brand-purple to-brand-purple-dark rounded-2xl shadow-xl overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           {/* Background pattern if any - e.g., geometric shapes from header */}
-          {/* <img src="/src/assets/images/header-bg-pattern.svg" className="w-full h-full object-cover" /> */}
+          {/* <img src="/fotos/header-bg-pattern.svg" className="w-full h-full object-cover" /> */}
         </div>
         <div className="relative z-10">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white">
@@ -107,31 +107,31 @@ const HomePage: React.FC = () => {
           {[
             {
               nome: 'joao pedro',
-              avatar: 'http://localhost:5000/uploads/1748450204950-91867ee5-80d8-47e7-9075-68c7aed92866.png',
+              avatar: '/default-profile.png',
               tipo: 'programador',
               id: 7,
             },
             {
               nome: 'Leo',
-              avatar: 'http://localhost:5000/uploads/1748481759343-1fbf2992-f7c2-428d-b9fd-94ca1922a0a7.png',
+              avatar: '/default-profile.png',
               tipo: 'programador',
               id: 8,
             },
             {
               nome: 'teste',
-              avatar: 'http://localhost:5000/uploads/1748536420448-2a75bb61dffd7f4edd05363c24b89ef5.webp',
+              avatar: '/default-profile.png',
               tipo: 'programador',
               id: 9,
             },
             {
               nome: 'jaquleine',
-              avatar: 'http://localhost:5000/uploads/1748537060121-raw.png',
+              avatar: '/default-profile.png',
               tipo: 'designer',
               id: 10,
             },
             {
               nome: 'marcello',
-              avatar: 'http://localhost:5000/uploads/1748538655523-981a6df7-cb20-4465-a05a-2bbc97dd8cff.png',
+              avatar: '/default-profile.png',
               tipo: 'designer',
               id: 13,
             },
@@ -167,7 +167,7 @@ const HomePage: React.FC = () => {
           </button>
         </div>
         <div className="md:w-1/2">
-          <img src="/src/assets/images/desafio-design-artdeco.png" alt="Desafio Art Deco" className="rounded-lg shadow-lg w-full h-auto object-cover max-h-80" />
+          <img src="/fotos/desafio-design-artdeco.png" alt="Desafio Art Deco" className="rounded-lg shadow-lg w-full h-auto object-cover max-h-80" />
         </div>
       </section>
 
@@ -218,13 +218,13 @@ const HomePage: React.FC = () => {
         <div className="bg-slate-800 p-8 rounded-2xl shadow-xl relative">
           <div className="flex flex-wrap justify-center items-center gap-4">
             {[
-              { nome: 'joao pedro', img: 'http://localhost:5000/uploads/1748450204950-91867ee5-80d8-47e7-9075-68c7aed92866.png', id: 7 },
-              { nome: 'Leo', img: 'http://localhost:5000/uploads/1748481759343-1fbf2992-f7c2-428d-b9fd-94ca1922a0a7.png', id: 8 },
-              { nome: 'teste', img: 'http://localhost:5000/uploads/1748536420448-2a75bb61dffd7f4edd05363c24b89ef5.webp', id: 9 },
-              { nome: 'jaquleine', img: 'http://localhost:5000/uploads/1748537060121-raw.png', id: 10 },
-              { nome: 'marcello', img: 'http://localhost:5000/uploads/1748538655523-981a6df7-cb20-4465-a05a-2bbc97dd8cff.png', id: 13 },
-              { nome: 'Filipe', img: 'http://localhost:5000/uploads/1748537907842-0621fde7-a2ee-448b-b786-e13aff33fc60.png', id: 11 },
-              { nome: 'Filipe', img: 'http://localhost:5000/uploads/1748538474936-ChatGPT Image 1 de abr. de 2025, 13_34_25.png', id: 12 },
+              { nome: 'joao pedro', img: '/default-profile.png', id: 7 },
+              { nome: 'Leo', img: '/default-profile.png', id: 8 },
+              { nome: 'teste', img: '/default-profile.png', id: 9 },
+              { nome: 'jaquleine', img: '/default-profile.png', id: 10 },
+              { nome: 'marcello', img: '/default-profile.png', id: 13 },
+              { nome: 'Filipe', img: '/default-profile.png', id: 11 },
+              { nome: 'Filipe', img: '/default-profile.png', id: 12 },
             ].map(conexao => (
               <Link key={conexao.img} to={`/perfil/${conexao.id}`} title={conexao.nome}>
                 <img
@@ -254,7 +254,7 @@ const HomePage: React.FC = () => {
           </div>
           <div className="md:w-1/2">
             {/* Placeholder for laptop image or illustration */}
-            <img src="/src/assets/images/laptop-illustration.png" alt="Plataforma Conecta" className="rounded-lg w-full" />
+            <img src="/fotos/laptop-illustration.png" alt="Plataforma Conecta" className="rounded-lg w-full" />
           </div>
         </div>
 
@@ -271,7 +271,7 @@ const HomePage: React.FC = () => {
           </div>
           <div className="md:w-1/2">
             {/* Placeholder for teamwork image or illustration */}
-            <img src="/src/assets/images/teamwork-illustration.png" alt="Time ideal" className="rounded-lg w-full" />
+            <img src="/fotos/teamwork-illustration.png" alt="Time ideal" className="rounded-lg w-full" />
           </div>
         </div>
 

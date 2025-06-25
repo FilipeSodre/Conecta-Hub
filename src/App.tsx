@@ -12,14 +12,13 @@ import CriarVagaPage from './pages/CriarVagaPage';
 import ConexaoPage from './pages/ConexaoPage';
 import NovoProjetoPage from './pages/NovoProjetoPage';
 import { UserProvider } from './context/UserContext'; // Import UserProvider
-import axios from 'axios';
 import PortfolioProjectPage from './pages/PortfolioProjectPage';
 import EditarProjetoPage from './pages/EditarProjetoPage';
 import ProfilePage from './pages/ProfilePage';
 import ChatPage from './pages/ChatPage';
 
 // Import other pages as they are created
-axios.defaults.baseURL = 'http://localhost:5000'; // Configuração da URL base do backend
+// Remover ou condicionar axios.defaults.baseURL para não usar localhost em produção
 
 function App() {
   return (

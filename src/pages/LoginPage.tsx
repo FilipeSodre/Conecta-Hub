@@ -41,7 +41,7 @@ const LoginPage: React.FC = () => {
 
         {/* Placeholder for laptop illustration */}
         <img
-          src="/src/assets/images/laptop-login-illustration.png"
+          src="/fotos/laptop-login-illustration.png"
           alt="Ilustração de login"
           className="w-48 h-auto mx-auto mb-8"
         />

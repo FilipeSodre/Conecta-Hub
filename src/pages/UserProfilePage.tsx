@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import apiClient from '../services/api';
+import { getProjectImageUrl } from '../services/imageUtils';
 
 interface Projeto {
   projeto_id: number;
@@ -253,7 +254,7 @@ const UserProfilePage: React.FC = () => {
                 className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transform transition-transform hover:scale-105"
               >
                 <img
-                  src={`http://localhost:5000/${projeto.imagem_capa}`}
+                  src={getProjectImageUrl(projeto.imagem_capa)}
                   alt={projeto.titulo}
                   className="w-full h-48 object-cover"
                   onError={(e) => {
