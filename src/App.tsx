@@ -16,6 +16,7 @@ import ProjectDetailPage from './pages/ProjectDetailPage';
 import EditarProjetoPage from './pages/EditarProjetoPage';
 import ProfilePage from './pages/ProfilePage';
 import ChatPage from './pages/ChatPage';
+import PortfolioProjectPage from './pages/PortfolioProjectPage'; // Import the PortfolioProjectPage
 
 // Import other pages as they are created
 // Remover ou condicionar axios.defaults.baseURL para não usar localhost em produção
@@ -29,7 +30,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/cadastro" element={<CadastroPage />} /> {/* Add route for CadastroPage */}
           <Route path="/portfolio" element={<PortfolioPage />} />
-          <Route path="/portfolio/:projectId" element={<ProjectDetailPage />} />
+          <Route path="/portfolio/:projectId" element={<PortfolioProjectPage />} /> {/* Use PortfolioProjectPage for project details */}
           <Route path="/portfolio/novo" element={<NovoProjetoPage />} />
           <Route path="/portfolio/:projectId/editar" element={<EditarProjetoPage />} />
           <Route path="/vagas" element={<VagasPage />} />

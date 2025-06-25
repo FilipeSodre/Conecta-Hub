@@ -90,6 +90,7 @@ const PortfolioProjectPage: React.FC = () => {
                 console.log('3. ID do projeto encontrado. Tentando buscar na API...');
                 // A chamada de API correta e otimizada
                 const response = await apiClient.get(`/projetos/${projectId}`);
+                console.log('DADOS DA API (PortfolioProjectPage):', response.data);
                 console.log('4. API respondeu com sucesso. Dados recebidos:', response.data);
 
                 if (response.data) {

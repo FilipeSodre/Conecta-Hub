@@ -38,6 +38,7 @@ const ProjectDetailPage: React.FC = () => {
         }
         // Busca eficiente: apenas o projeto necessário
         const res = await apiClient.get(`/projetos/${projectId}`);
+        console.log('DADOS DA API:', res.data);
         const found = res.data;
         if (!found) {
           setProject(null);
