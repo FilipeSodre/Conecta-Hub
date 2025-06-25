@@ -1,3 +1,12 @@
+// DEBUG: Log antes de qualquer import
+try {
+  // eslint-disable-next-line no-console
+  console.log('[DEBUG] Arquivo PortfolioProjectPage.tsx está sendo carregado (antes dos imports)');
+} catch (e) {
+  // eslint-disable-next-line no-console
+  console.error('[DEBUG] Erro ao tentar logar antes dos imports:', e);
+}
+
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import apiClient from '../services/api';
@@ -48,6 +57,13 @@ const getProjectImageUrl = (imgPath?: string) => {
 };
 
 const PortfolioProjectPage: React.FC = () => {
+    try {
+        console.log('[DEBUG] PortfolioProjectPage componente iniciou (dentro do try/catch)');
+    } catch (err) {
+        console.error('[DEBUG] ERRO CRÍTICO NO COMPONENTE PortfolioProjectPage:', err);
+        return <div style={{color: 'red', fontWeight: 'bold'}}>Erro crítico ao renderizar o projeto. Veja o console para detalhes.</div>;
+    }
+
     console.log('O COMPONENTE PortfolioProjectPage FOI MONTADO! A ROTA FUNCIONOU!');
 
     const { projectId } = useParams<{ projectId: string }>();
