@@ -167,7 +167,10 @@ const HomePage: React.FC = () => {
           </button>
         </div>
         <div className="md:w-1/2">
-          <img src="/fotos/desafio-design-artdeco.png" alt="Desafio Art Deco" className="rounded-lg shadow-lg w-full h-auto object-cover max-h-80" />
+          {/* Imagem removida: <img src="/fotos/desafio-design-artdeco.png" ... /> */}
+          <div className="w-full h-80 flex items-center justify-center bg-gray-700 rounded-lg text-white text-lg font-bold opacity-60">
+            Imagem do desafio removida
+          </div>
         </div>
       </section>
 
@@ -253,8 +256,10 @@ const HomePage: React.FC = () => {
             </Link>
           </div>
           <div className="md:w-1/2">
-            {/* Placeholder for laptop image or illustration */}
-            <img src="/fotos/laptop-illustration.png" alt="Plataforma Conecta" className="rounded-lg w-full" />
+            {/* Imagem removida: <img src="/fotos/laptop-illustration.png" ... /> */}
+            <div className="w-full h-64 flex items-center justify-center bg-gray-200 rounded-lg text-brand-purple-dark text-lg font-bold opacity-60">
+              Ilustração removida
+            </div>
           </div>
         </div>
 
@@ -270,8 +275,10 @@ const HomePage: React.FC = () => {
             </Link>
           </div>
           <div className="md:w-1/2">
-            {/* Placeholder for teamwork image or illustration */}
-            <img src="/fotos/teamwork-illustration.png" alt="Time ideal" className="rounded-lg w-full" />
+            {/* Imagem removida: <img src="/fotos/teamwork-illustration.png" ... /> */}
+            <div className="w-full h-64 flex items-center justify-center bg-gray-200 rounded-lg text-brand-purple-dark text-lg font-bold opacity-60">
+              Ilustração removida
+            </div>
           </div>
         </div>
 
