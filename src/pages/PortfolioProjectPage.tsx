@@ -401,7 +401,7 @@ const PortfolioProjectPage: React.FC = () => {
     }
 
     return (
-        <div className="container mx-auto p-4 max-w-6xl relative">
+        <div className="container mx-auto p-4 max-w-6xl relative bg-black border-4 border-black rounded-3xl shadow-2xl">
             {/* Coluna de Botões Funcionais */}
             <div className="absolute left-full top-16 ml-4 flex flex-col gap-2 z-20" style={{ pointerEvents: 'auto' }}>
                 {/* Botão de Curtida */}
@@ -460,12 +460,12 @@ const PortfolioProjectPage: React.FC = () => {
             </div>
             {/* Cabeçalho com Dono do Projeto e Colaboradores */}
             <div className="flex flex-col md:flex-row gap-12 mb-8 items-center">
-                {/* Dono do Projeto */}
-                <div className="flex items-center mr-12">
+                {/* Dono do Projeto - BLOCO DESTACADO */}
+                <div className="flex items-center mr-12 bg-black border-4 border-black rounded-2xl p-6 shadow-xl min-w-[380px]">
                     <img
-                        src={projeto.usuario_foto}
-                        alt={projeto.usuario_nome}
-                        className="w-32 h-32 rounded-full border-4 border-brand-purple object-cover cursor-pointer hover:border-brand-purple-dark transition-colors shadow-lg"
+                        src={projeto.usuario_foto || '/fotos/default-profile.png'}
+                        alt={projeto.usuario_nome || 'Usuário'}
+                        className="w-32 h-32 rounded-full border-4 border-brand-purple object-cover cursor-pointer hover:border-brand-purple-dark transition-colors shadow-lg bg-gray-800"
                         style={{ aspectRatio: '1/1' }}
                         onClick={() => navigate(`/perfil/${projeto.usuario_id}`)}
                     />
@@ -474,7 +474,7 @@ const PortfolioProjectPage: React.FC = () => {
                             className="text-4xl font-bold cursor-pointer hover:text-brand-purple transition-colors text-white text-left leading-tight"
                             onClick={() => navigate(`/perfil/${projeto.usuario_id}`)}
                         >
-                            {projeto.usuario_nome}
+                            {projeto.usuario_nome || 'Usuário'}
                         </h1>
                         <span className="text-lg text-white text-left mt-2 font-nunito font-semibold">Criador do Projeto</span>
                         <span className="text-base text-white text-left mt-2 font-nunito">{projeto.tipo || '-'}</span>
@@ -490,7 +490,7 @@ const PortfolioProjectPage: React.FC = () => {
                                     <img
                                         src={getProjectImageUrl(colaborador.foto_perfil)}
                                         alt={colaborador.nome}
-                                        className="w-20 h-20 rounded-full border-4 border-brand-purple object-cover hover:border-brand-purple-dark transition-colors shadow-lg"
+                                        className="w-20 h-20 rounded-full border-4 border-brand-purple object-cover hover:border-brand-purple-dark transition-colors shadow-lg bg-gray-800"
                                         style={{ aspectRatio: '1/1' }}
                                     />
                                     <div className="flex flex-col justify-center ml-6">
@@ -536,7 +536,8 @@ const PortfolioProjectPage: React.FC = () => {
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                            </svg> Adicionar Imagens
+                            </svg>
+                            Adicionar Imagens
                         </label>
                         <input
                             id="adicionar-imagens"
