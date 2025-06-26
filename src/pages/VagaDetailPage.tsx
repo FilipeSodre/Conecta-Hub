@@ -155,15 +155,19 @@ const VagaDetailPage: React.FC = () => {
           recipientId={vaga?.usuario_id || 0}
           projetos={userProjects}
           onSend={async ({ reason, projetoId }) => {
+            if (!user?.usuario_id || !vaga?.usuario_id || !vaga?.vaga_id) {
+              alert('Dados insuficientes para enviar a conexão.');
+              return;
+            }
             try {
               await apiClient.post('/conexoes', {
-                senderId: user?.usuario_id,
-                recipientId: vaga?.usuario_id,
+                senderId: user.usuario_id,
+                recipientId: vaga.usuario_id,
                 projetoId: projetoId,
                 reason: reason,
                 link: '',
                 connectionType: 'vaga',
-                vagaId: vaga?.vaga_id
+                vagaId: vaga.vaga_id
               });
               setIsConnectionModalOpen(false);
               alert('Solicitação enviada com sucesso!');
