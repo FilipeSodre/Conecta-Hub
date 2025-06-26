@@ -16,9 +16,7 @@ const ChatPage: React.FC = () => {
             if (!chatId) return;
             const res = await apiClient.get(`/chats/${chatId}/messages`);
             setMessages(Array.isArray(res.data) ? res.data : []);
-            if (messagesEndRef.current) {
-                messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-            }
+            // Removido scroll automático
         };
         fetchMessages();
         const interval = setInterval(fetchMessages, 2000);
@@ -46,9 +44,7 @@ const ChatPage: React.FC = () => {
         // Atualiza imediatamente após enviar
         const res = await apiClient.get(`/chats/${chatId}/messages`);
         setMessages(Array.isArray(res.data) ? res.data : []);
-        if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
+        // Removido scroll automático
     };
 
     // Helper para pegar info do outro usuário

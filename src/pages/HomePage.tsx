@@ -22,7 +22,7 @@ const RecommendIcon = () => (
   <svg className="w-10 h-10 text-brand-yellow mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 9l-2 2-2-2m0 6l2-2 2 2m-2-2v.01" /></svg>
 );
 const CalendarIcon = () => (
-  <svg className="w-10 h-10 text-brand-yellow mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 2v4M8 2v4M3 10h18" /></svg>
+  <svg className="w-10 h-10 text-brand-yellow mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 2v4M8 2v4M3 10h18" /></svg>
 );
 
 const novidadesIcones = [
@@ -39,6 +39,15 @@ const mockNovidades = [
   { id: 4, title: "Novo Sistema de Agendamento", desc: "Agende conversas em tempo real.", img: "/images/placeholder-calendar.png", bgColor: "bg-sky-700" },
 ];
 
+// const mockAmigosPostando = [
+//   { id: 1, user: "Maria Lima", userImg: "/fotos/avatar-maria.png", projectTitle: "Desenvolvimento de Aplicativo", projectDesc: "Aplicativo para academia.", projectImg: "/fotos/project-app-fitness.png" },
+//   { id: 2, user: "João Gomes", userImg: "/fotos/avatar-joao.png", projectTitle: "FeedUp com treinos e registros", projectDesc: "Interface para app de treinos.", projectImg: "/fotos/project-feedup.png" },
+//   { id: 3, user: "Caio Junior", userImg: "/fotos/avatar-caio.png", projectTitle: "Desenvolvimento de Aplicativo", projectDesc: "Aplicativo para aulas de tênis.", projectImg: "/fotos/project-tennis.png" },
+//   { id: 4, user: "Prof. Anderson", userImg: "/fotos/avatar-prof.png", projectTitle: "Redesign de Aplicativo", projectDesc: "Novo visual para app educacional.", projectImg: "/fotos/project-redesign.png" },
+//   { id: 5, user: "Julia Silva", userImg: "/fotos/avatar-julia.png", projectTitle: "Projeto de Fotodesign", projectDesc: "Ensaio fotográfico conceitual.", projectImg: "/fotos/project-photodesign.png" },
+//   { id: 6, user: "Nathalia Montenegro", userImg: "/fotos/avatar-nathalia-m.png", projectTitle: "Identidade Visual", projectDesc: "Marca para startup de IA.", projectImg: "/fotos/project-id-visual.png" },
+//   { id: 7, user: "Nathalia Vales Ficher", userImg: "/fotos/avatar-nathalia-f.png", projectTitle: "Campanha de divulgação", projectDesc: "Campanha para marca de moda.", projectImg: "/fotos/project-fashion-camp.png" },
+// ];
 
 // Utilitário para padronizar exibição de imagens (Cloudinary, local ou placeholder)
 // const getProjectImageUrl = (imgPath?: string) => {
@@ -256,15 +265,15 @@ const HomePage: React.FC = () => {
             <p className="text-brand-text leading-relaxed">
               Conecta é o seu hub de tecnologia para colaboração e crescimento. Unimos estudantes de Design Gráfico e Ciência da Computação para transformar ideias em projetos de portfólio incríveis.
             </p>
-            <Link to="/sobre" className="mt-6 inline-flex items-center text-brand-purple-dark font-semibold hover:text-brand-purple">
-              Saiba Mais <ArrowRightIcon />
-            </Link>
           </div>
-          <div className="md:w-1/2">
-            {/* Imagem removida: <img src="/fotos/laptop-illustration.png" ... /> */}
-            <div className="w-full h-64 flex items-center justify-center bg-gray-200 rounded-lg text-brand-purple-dark text-lg font-bold opacity-60">
-              Ilustração removida
-            </div>
+          <div className="md:w-1/2 flex items-center justify-center">
+            {/* Ilustração moderna de tecnologia (Unsplash ou SVG) */}
+            <img
+              src="https://undraw.co/api/illustrations/undraw_online_collaboration_re_bkpm.svg"
+              alt="Ilustração de colaboração online"
+              className="w-full h-64 object-contain rounded-lg shadow-md bg-white"
+              loading="lazy"
+            />
           </div>
         </div>
 
@@ -279,11 +288,14 @@ const HomePage: React.FC = () => {
               Buscar Projetos <ArrowRightIcon />
             </Link>
           </div>
-          <div className="md:w-1/2">
-            {/* Imagem removida: <img src="/fotos/teamwork-illustration.png" ... /> */}
-            <div className="w-full h-64 flex items-center justify-center bg-gray-200 rounded-lg text-brand-purple-dark text-lg font-bold opacity-60">
-              Ilustração removida
-            </div>
+          <div className="md:w-1/2 flex items-center justify-center">
+            {/* Ilustração moderna de trabalho em equipe (Unsplash ou SVG) */}
+            <img
+              src="https://undraw.co/api/illustrations/undraw_team_spirit_re_yl1v.svg"
+              alt="Ilustração de trabalho em equipe"
+              className="w-full h-64 object-contain rounded-lg shadow-md bg-white"
+              loading="lazy"
+            />
           </div>
         </div>
 

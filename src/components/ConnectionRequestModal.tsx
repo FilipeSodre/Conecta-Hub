@@ -11,7 +11,6 @@ interface ConnectionRequestModalProps {
 }
 
 const connectionTypes = [
-    'Criar grupo novo com esta pessoa',
     'Trocar ideias / Mentoria',
     'Propor parceria pontual',
     'Outro (campo livre)'
