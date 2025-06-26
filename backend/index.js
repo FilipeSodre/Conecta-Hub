@@ -1267,6 +1267,7 @@ app.get('/chats/:chatId', async (req, res) => {
 // Aceitar convite de colaborador
 app.post('/notificacoes/:id/aceitar-convite', async (req, res) => {
     const { id } = req.params;
+    console.log('[NOTIFICAÇÃO] Endpoint POST /notificacoes/:id/aceitar-convite chamado para id:', id);
     try {
         console.log('[NOTIFICAÇÃO] Iniciando aceite do convite para notificacao_id:', id);
         // Busca a notificação
