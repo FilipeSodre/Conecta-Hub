@@ -1215,14 +1215,18 @@ app.post('/chats', async (req, res) => {
 app.post('/chats/:chatId/messages', async (req, res) => {
     const { chatId } = req.params;
     const { sender_id, message } = req.body;
+    console.log('[CHAT] POST /chats/' + chatId + '/messages');
+    console.log('Payload recebido:', { chatId, sender_id, message });
     try {
         const result = await pool.query(
             `INSERT INTO user_messages (chat_id, sender_id, message) VALUES ($1, $2, $3) RETURNING *`,
             [chatId, sender_id, message]
         );
+        console.log('[CHAT] Mensagem salva no banco:', result.rows[0]);
         res.status(201).json(result.rows[0]);
     } catch (err) {
-        res.status(500).json({ error: 'Erro ao enviar mensagem' });
+        console.error('[CHAT] Erro ao enviar mensagem:', err);
+        res.status(500).json({ error: 'Erro ao enviar mensagem', details: err.message });
     }
 });
 

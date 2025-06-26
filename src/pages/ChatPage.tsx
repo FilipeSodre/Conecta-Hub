@@ -15,7 +15,7 @@ const ChatPage: React.FC = () => {
         const fetchMessages = async () => {
             if (!chatId) return;
             const res = await axios.get(`/chats/${chatId}/messages`);
-            setMessages(res.data);
+            setMessages(Array.isArray(res.data) ? res.data : []);
             if (messagesEndRef.current) {
                 messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
             }
@@ -42,26 +42,38 @@ const ChatPage: React.FC = () => {
             message: newMessage.trim(),
         });
         setNewMessage('');
+        // Atualiza imediatamente após enviar
+        const res = await axios.get(`/chats/${chatId}/messages`);
+        setMessages(Array.isArray(res.data) ? res.data : []);
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
     };
+
+    // Helper para pegar info do outro usuário
+    const getOtherUser = () => {
+        if (!chatInfo) return { nome: '', foto: '' };
+        if (Number(chatInfo.user1_id) === Number(userId)) {
+            return { nome: chatInfo.user2_nome, foto: chatInfo.user2_foto };
+        } else {
+            return { nome: chatInfo.user1_nome, foto: chatInfo.user1_foto };
+        }
+    };
+    const otherUser = getOtherUser();
 
     return (
         <div className="container mx-auto max-w-4xl h-[600px] my-8 bg-gray-100 rounded-2xl overflow-hidden shadow-lg">
             <header className="bg-brand-purple text-white px-6 py-3 flex items-center gap-4 shadow">
-                {chatInfo && (
-                    <div className="flex items-center gap-3">
-                        <img
-                            src={chatInfo.user1_id === userId
-                                ? (chatInfo.user2_foto ? getProjectImageUrl(chatInfo.user2_foto) : '/default-profile.png')
-                                : (chatInfo.user1_foto ? getProjectImageUrl(chatInfo.user1_foto) : '/default-profile.png')
-                            }
-                            alt="Foto do perfil"
-                            className="w-8 h-8 rounded-full object-cover border-2 border-white"
-                        />
-                        <span className="text-base font-semibold">
-                            {chatInfo.user1_id === userId ? chatInfo.user2_nome : chatInfo.user1_nome}
-                        </span>
-                    </div>
-                )}
+                <div className="flex items-center gap-3">
+                    <img
+                        src={otherUser.foto ? getProjectImageUrl(otherUser.foto) : '/default-profile.png'}
+                        alt="Foto do perfil"
+                        className="w-8 h-8 rounded-full object-cover border-2 border-white"
+                    />
+                    <span className="text-base font-semibold">
+                        {otherUser.nome || 'Usuário'}
+                    </span>
+                </div>
             </header>
             <main className="h-[500px] p-4 flex flex-col">
                 <div className="flex-1 flex flex-col gap-2 overflow-y-auto mb-4">
