@@ -805,9 +805,22 @@ const PortfolioProjectPage: React.FC = () => {
                 recipientName={projeto.usuario_nome || 'Usuário'}
                 recipientId={projeto.usuario_id || 0}
                 userProjects={userProjects}
-                onSend={(data: any) => {
-                    // Função de envio de conexão
-                    console.log('Solicitação de conexão:', data);
+                onSend={async (data: any) => {
+                    try {
+                        const user = JSON.parse(localStorage.getItem('user') || '{}');
+                        await apiClient.post('/conexoes', {
+                            senderId: user.usuario_id,
+                            recipientId: data.recipientId,
+                            projetoId: projeto.projeto_id,
+                            reason: data.reason,
+                            link: data.link,
+                            connectionType: 'colaborador', // sempre colaborador para portfólio
+                        });
+                        setIsConnectionModalOpen(false);
+                        alert('Solicitação enviada com sucesso!');
+                    } catch (error) {
+                        alert('Erro ao enviar solicitação. Tente novamente.');
+                    }
                 }}
             />
             <AddCollaboratorModal
