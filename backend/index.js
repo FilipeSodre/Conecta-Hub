@@ -1097,6 +1097,10 @@ app.put('/conexoes/:id/aceitar', async (req, res) => {
             [id]
         );
         const conexao = result.rows[0];
+        // Impedir chat consigo mesmo
+        if (conexao.sender_id === conexao.recipient_id) {
+            return res.status(400).json({ error: 'Não é possível criar chat consigo mesmo.' });
+        }
         // Cria chat se não existir
         const chatExist = await pool.query(
             `SELECT * FROM user_chats WHERE (user1_id = $1 AND user2_id = $2) OR (user1_id = $2 AND user2_id = $1)`,
@@ -1186,6 +1190,10 @@ app.get('/chats/user/:userId', async (req, res) => {
 
 app.post('/chats', async (req, res) => {
     const { user1_id, user2_id } = req.body;
+    // Impedir chat consigo mesmo
+    if (user1_id === user2_id) {
+        return res.status(400).json({ error: 'Não é possível criar chat consigo mesmo.' });
+    }
     try {
         const existing = await pool.query(
             `SELECT * FROM user_chats WHERE (user1_id = $1 AND user2_id = $2) OR (user1_id = $2 AND user2_id = $1)`,
