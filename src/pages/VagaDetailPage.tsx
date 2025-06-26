@@ -155,17 +155,20 @@ const VagaDetailPage: React.FC = () => {
           recipientId={vaga?.usuario_id || 0}
           projetos={userProjects}
           onSend={async ({ recipientId, reason, projetoId }) => {
-            const projetoSelecionado = userProjects.find((p: any) => p.projeto_id === projetoId);
-            await apiClient.post('/conexoes', {
-              senderId: user?.usuario_id,
-              recipientId,
-              projetoId,
-              projetoTitle: projetoSelecionado ? projetoSelecionado.titulo : '',
-              reason,
-              connectionType: 'vaga',
-              link: '',
-              vagaId: vaga?.vaga_id // <-- Envia o vagaId corretamente
-            });
+            try {
+              await apiClient.post(`/conexoes/vagas/${vaga.vaga_id}`, {
+                usuario_id: user?.usuario_id,
+                mensagem: reason,
+                link_portfolio: '',
+                tipo_conexao: 'vaga',
+                projeto_id: projetoId
+              });
+              setIsConnectionModalOpen(false);
+              alert('Solicitação enviada com sucesso!');
+            } catch (error) {
+              console.error('Erro ao enviar solicitação:', error);
+              alert('Erro ao enviar solicitação. Tente novamente.');
+            }
           }}
         />
       </div>
