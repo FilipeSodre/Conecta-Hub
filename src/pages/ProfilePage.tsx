@@ -202,29 +202,87 @@ const ProfilePage: React.FC = () => {
     const renderNotificacoesRoxas = () => (
         <div className="space-y-3">
             {notificacoesUnicas.length > 0 ? (
-                notificacoesUnicas.map((notif) => (
-                    <div key={notif.notificacao_id} className="bg-purple-300 rounded-2xl p-3 flex items-center gap-3">
-                        <Link to={`/perfil/${notif.usuario_origem_id}`} className="flex items-center gap-3">
-                            <img
-                                src={getUserImageUrl(notif.usuario_foto)}
-                                alt={notif.usuario_nome}
-                                className="w-10 h-10 rounded-full object-cover"
-                            />
-                            <span className="font-semibold mr-2">@{notif.usuario_nome}</span>
-                        </Link>
-                        <div className="flex-1">
-                            {/* Notificação de conexão para vaga: formato especial */}
-                            {notif.tipo === 'conexao' && notif.vaga_titulo ? (
-                                <>
-                                    <span>
-                                        quer se conectar à vaga: <span className="font-semibold">{notif.vaga_titulo}</span>
-                                    </span>
+                notificacoesUnicas.map((notif) => {
+                    let mensagem = null;
+                    if (notif.tipo === 'convite_colaborador') {
+                        mensagem = (
+                            <span>
+                                <span className="font-semibold">@{notif.usuario_nome}</span> enviou um convite para você virar colaborador.
+                            </span>
+                        );
+                    } else if (notif.tipo === 'conexao') {
+                        if (notif.vaga_titulo) {
+                            mensagem = (
+                                <span>
+                                    <span className="font-semibold">@{notif.usuario_nome}</span> quer se conectar com <span className="font-semibold">{notif.vaga_titulo}</span>.
+                                </span>
+                            );
+                        } else if (notif.mensagem || notif.reason || notif.projeto_titulo) {
+                            mensagem = (
+                                <span>
+                                    <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite para <span className="font-semibold">{notif.mensagem || notif.reason || notif.projeto_titulo}</span>.
+                                </span>
+                            );
+                        } else {
+                            mensagem = (
+                                <span>
+                                    <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite de conexão.
+                                </span>
+                            );
+                        }
+                    } else if (notif.tipo === 'curtida') {
+                        mensagem = (
+                            <span>curtiu seu projeto - <span className="font-semibold">{notif.projeto_titulo}</span></span>
+                        );
+                    } else if (notif.tipo === 'comentario') {
+                        mensagem = (
+                            <>
+                                <span>comentou seu projeto - <span className="font-semibold">{notif.projeto_titulo}</span></span>
+                                <div className="text-xs text-gray-700 mt-1 italic">"{notif.comentario_texto}"</div>
+                            </>
+                        );
+                    }
+                    return (
+                        <div key={notif.notificacao_id} className="bg-purple-300 rounded-2xl p-3 flex items-center gap-3">
+                            <Link to={`/perfil/${notif.usuario_origem_id}`} className="flex items-center gap-3">
+                                <img
+                                    src={getUserImageUrl(notif.usuario_foto)}
+                                    alt={notif.usuario_nome}
+                                    className="w-10 h-10 rounded-full object-cover"
+                                />
+                            </Link>
+                            <div className="flex-1">
+                                {mensagem}
+                                {notif.projeto_titulo && notif.tipo === 'convite_colaborador' && (
+                                    <div className="text-xs text-blue-700 mt-1">
+                                        Projeto: <span className="font-medium">{notif.projeto_titulo}</span>
+                                    </div>
+                                )}
+                                {notif.tipo === 'conexao' && notif.projeto_titulo && notif.vaga_titulo && (
+                                    <div className="text-xs text-blue-700 mt-1">
+                                        Portfólio escolhido: <span className="font-medium">{notif.projeto_titulo}</span>
+                                    </div>
+                                )}
+                                {notif.tipo === 'conexao' && (notif.mensagem || notif.reason) && (
                                     <div className="text-xs text-gray-700 mt-1 italic">{notif.mensagem || notif.reason}</div>
-                                    {notif.projeto_titulo && notif.projeto_id && (
-                                        <div className="text-xs text-blue-700 mt-1">
-                                            Portfólio escolhido: <Link to={`/portfolio/${notif.projeto_id}`} className="font-medium underline hover:text-blue-900">{notif.projeto_titulo}</Link>
-                                        </div>
-                                    )}
+                                )}
+                                {(notif.tipo === 'convite_colaborador') && (
+                                    <div className="flex gap-2 mt-2">
+                                        <button
+                                            onClick={() => handleAceitarConvite(notif.notificacao_id)}
+                                            className="px-3 py-1 bg-green-500 text-white rounded-full text-xs hover:bg-green-600"
+                                        >
+                                            Aceitar
+                                        </button>
+                                        <button
+                                            onClick={() => handleRecusarConvite(notif.notificacao_id)}
+                                            className="px-3 py-1 bg-red-500 text-white rounded-full text-xs hover:bg-red-600"
+                                        >
+                                            Recusar
+                                        </button>
+                                    </div>
+                                )}
+                                {(notif.tipo === 'curtida' || notif.tipo === 'comentario' || notif.tipo === 'conexao') && (
                                     <div className="flex gap-2 mt-2">
                                         <button
                                             onClick={() => handleVisto(notif.notificacao_id)}
@@ -233,55 +291,11 @@ const ProfilePage: React.FC = () => {
                                             Visto
                                         </button>
                                     </div>
-                                </>
-                            ) : (
-                                <>
-                                    {notif.vaga_titulo && (
-                                        <div className="text-sm text-purple-900 font-bold mb-1">Vaga: {notif.vaga_titulo}</div>
-                                    )}
-                                    {notif.tipo === 'curtida' && (
-                                        <span>curtiu seu projeto - <span className="font-semibold">{notif.projeto_titulo}</span></span>
-                                    )}
-                                    {notif.tipo === 'comentario' && (
-                                        <>
-                                            <span>comentou seu projeto - <span className="font-semibold">{notif.projeto_titulo}</span></span>
-                                            <div className="text-xs text-gray-700 mt-1 italic">"{notif.comentario_texto}"</div>
-                                        </>
-                                    )}
-                                    {notif.tipo === 'convite_colaborador' && (
-                                        <>
-                                            <span>convidou você para ser colaborador no projeto <span className="font-semibold">{notif.projeto_titulo}</span></span>
-                                            <div className="flex gap-2 mt-2">
-                                                <button
-                                                    onClick={() => handleAceitarConvite(notif.notificacao_id)}
-                                                    className="px-3 py-1 bg-green-500 text-white rounded-full text-xs hover:bg-green-600"
-                                                >
-                                                    Aceitar
-                                                </button>
-                                                <button
-                                                    onClick={() => handleRecusarConvite(notif.notificacao_id)}
-                                                    className="px-3 py-1 bg-red-500 text-white rounded-full text-xs hover:bg-red-600"
-                                                >
-                                                    Recusar
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
-                                    {(notif.tipo === 'curtida' || notif.tipo === 'comentario') && (
-                                        <div className="flex gap-2 mt-2">
-                                            <button
-                                                onClick={() => handleVisto(notif.notificacao_id)}
-                                                className="px-3 py-1 bg-green-200 text-green-900 rounded-full text-xs hover:bg-green-300"
-                                            >
-                                                Visto
-                                            </button>
-                                        </div>
-                                    )}
-                                </>
-                            )}
+                                )}
+                            </div>
                         </div>
-                    </div>
-                ))
+                    );
+                })
             ) : (
                 <div className="text-center py-10 text-gray-500">
                     Nenhuma notificação encontrada

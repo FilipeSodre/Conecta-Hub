@@ -267,13 +267,7 @@ const HomePage: React.FC = () => {
             </p>
           </div>
           <div className="md:w-1/2 flex items-center justify-center">
-            {/* Ilustração moderna de tecnologia (imagem local) */}
-            <img
-              src="/fotos/online-collaborative-learning.png"
-              alt="Ilustração de colaboração online"
-              className="w-full h-64 object-contain rounded-lg shadow-md bg-white"
-              loading="lazy"
-            />
+            {/* Removido a imagem, apenas texto */}
           </div>
         </div>
 
