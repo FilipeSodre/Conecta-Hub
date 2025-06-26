@@ -1040,12 +1040,12 @@ app.post('/conexoes', async (req, res) => {
                 vagaTitulo = vagaRes.rows[0].titulo;
             }
         }
-        // Removido vaga_id do INSERT em user_connections
+        // Cria apenas a notificação de conexão (a roxa)
         const result = await pool.query(
             `INSERT INTO user_connections 
-                (sender_id, recipient_id, projeto_id, reason, link, connection_type) 
-             VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-            [senderId, recipientId, projetoId, reason, link, connectionType]
+                (sender_id, recipient_id, projeto_id, reason, link, connection_type, vaga_id) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+            [senderId, recipientId, projetoId, reason, link, connectionType, vagaId || null]
         );
         // Evitar duplicidade de notificações de conexão
         const notifExists = await pool.query(
