@@ -65,7 +65,7 @@ const ChatPage: React.FC = () => {
             </header>
             <main className="h-[500px] p-4 flex flex-col">
                 <div className="flex-1 flex flex-col gap-2 overflow-y-auto mb-4">
-                    {messages.map(msg => (
+                    {(Array.isArray(messages) ? messages : []).map(msg => (
                         <div
                             key={msg.id}
                             className={`flex items-start gap-2 ${msg.sender_id === userId ? 'flex-row-reverse' : ''}`}
