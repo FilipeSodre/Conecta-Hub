@@ -178,8 +178,7 @@ const ProfilePage: React.FC = () => {
         try {
             await apiClient.put(`/conexoes/${id}/aceitar`);
             setSolicitacoesConexao(prev => prev.filter(c => c.id !== id));
-            // Optionally, refresh projects/collaborators here
-            alert('Conexão aceita! Agora você é colaborador do projeto.');
+            alert('Conexão aceita! Agora vocês estão conectados.');
         } catch (err) {
             alert('Erro ao aceitar conexão.');
         }
@@ -542,7 +541,6 @@ const ProfilePage: React.FC = () => {
                     <div className="flex flex-col md:flex-row gap-4 sm:gap-8">
                         <div className="md:w-1/3">{renderMiniChatList()}</div>
                         <div className="flex-1">
-                            {renderSolicitacoesConexao()}
                             {renderNotificacoesRoxas()}
                         </div>
                     </div>
