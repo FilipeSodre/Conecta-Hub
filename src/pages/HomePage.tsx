@@ -4,12 +4,8 @@ import { useKeenSlider } from 'keen-slider/react';
 import 'keen-slider/keen-slider.min.css';
 import apiClient from '../services/api';
 import { useUser } from '../context/UserContext';
-
-// Placeholder Icons (replace with actual SVGs or library)
-const ArrowRightIcon = () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 ml-1"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>;
-const PartnershipIcon = () => <svg className="w-8 h-8 text-brand-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>;
-const ShowcaseIcon = () => <svg className="w-8 h-8 text-brand-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h10l-1-1-0.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>;
-const LearningIcon = () => <svg className="w-8 h-8 text-brand-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 16v-2m7.071-7.071l-1.414-1.414M4.929 4.929L6.343 6.343m0 11.314l-1.414 1.414M19.071 4.929l-1.414 1.414M4.929 19.071l1.414-1.414M12 12l3.536 3.536M12 12l-3.536 3.536"></path></svg>;
+import ProjectCard from '../components/ProjectCard';
+import WhyConecta from '../components/WhyConecta';
 
 // Ícones para novidades
 const DownloadIcon = () => (
@@ -256,76 +252,15 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* "Sobre a plataforma" "Encontre o time ideal" "Por que usar Conecta?" - from home_landing.png */}
-      <section className="py-8 sm:py-12 space-y-8 sm:space-y-16">
-        {/* Sobre a plataforma */}
-        <div className="flex flex-col md:flex-row items-center gap-4 md:gap-12 bg-brand-purple-light p-4 sm:p-8 md:p-12 rounded-2xl shadow-card w-full">
-          <div className="md:w-1/2">
-            <h3 className="text-3xl font-bold text-brand-purple-dark mb-4">Sobre a Plataforma</h3>
-            <p className="text-brand-text leading-relaxed">
-              Conecta é o seu hub de tecnologia para colaboração e crescimento. Unimos estudantes de Design Gráfico e Ciência da Computação para transformar ideias em projetos de portfólio incríveis.
-            </p>
-          </div>
-          <div className="md:w-1/2 flex items-center justify-center">
-            {/* Removido a imagem, apenas texto */}
-          </div>
-        </div>
-
-        {/* Encontre o time ideal */}
-        <div className="flex flex-col md:flex-row-reverse items-center gap-4 md:gap-12 p-4 sm:p-8 md:p-12 rounded-2xl shadow-card w-full">
-          <div className="md:w-1/2">
-            <h3 className="text-3xl font-bold text-brand-purple-dark mb-4">Encontre o Time Ideal para seu Projeto</h3>
-            <p className="text-brand-text leading-relaxed">
-              Publique seus briefings, explore projetos de outros talentos e forme parcerias para desenvolver soluções inovadoras. Acreditamos no poder da colaboração para impulsionar a criatividade.
-            </p>
-            <Link to="/portfolio" className="mt-6 inline-flex items-center text-brand-purple-dark font-semibold hover:text-brand-purple">
-              Buscar Projetos <ArrowRightIcon />
-            </Link>
-          </div>
-          <div className="md:w-1/2 flex items-center justify-center">
-            {/* Ilustração moderna de trabalho em equipe (imagem local) */}
-            <img
-              src="/fotos/leadership.png"
-              alt="Ilustração de trabalho em equipe"
-              className="w-full h-64 object-contain rounded-lg shadow-md bg-white"
-              loading="lazy"
-            />
-          </div>
-        </div>
-
-        {/* Por que usar Conecta? */}
-        <div className="flex flex-col md:flex-row items-stretch gap-0 rounded-2xl shadow-card overflow-hidden w-full">
-          <div className="md:w-1/2 bg-slate-800 text-white p-8 md:p-12 flex flex-col justify-center">
-            <h3 className="text-3xl md:text-4xl font-bold mb-6">Por que usar o <span className="text-brand-yellow">Conecta</span>?</h3>
-          </div>
-          <div className="md:w-1/2 bg-brand-purple-light p-8 md:p-12">
-            <ul className="space-y-6">
-              <li className="flex items-start">
-                <PartnershipIcon />
-                <div className="ml-4">
-                  <h4 className="font-semibold text-xl text-brand-purple-dark">Parcerias de Sucesso</h4>
-                  <p className="text-brand-text-secondary">Conecte-se com talentos complementares.</p>
-                </div>
-              </li>
-              <li className="flex items-start">
-                <ShowcaseIcon />
-                <div className="ml-4">
-                  <h4 className="font-semibold text-xl text-brand-purple-dark">Divulgação do seu Trabalho</h4>
-                  <p className="text-brand-text-secondary">Construa um portfólio impactante.</p>
-                </div>
-              </li>
-              <li className="flex items-start">
-                <LearningIcon />
-                <div className="ml-4">
-                  <h4 className="font-semibold text-xl text-brand-purple-dark">Aprendizagem Prática e Rápida</h4>
-                  <p className="text-brand-text-secondary">Desenvolva habilidades em projetos reais.</p>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
+      {/* ProjectCard substitui o card "Encontre o time ideal" */}
+      <section>
+        <ProjectCard />
       </section>
 
+      {/* WhyConecta substitui o card "Por que usar Conecta?" */}
+      <section>
+        <WhyConecta />
+      </section>
 
     </div>
   );
