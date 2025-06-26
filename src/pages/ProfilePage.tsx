@@ -175,8 +175,8 @@ const ProfilePage: React.FC = () => {
 
     const handleAceitarConexao = async (id: number) => {
         try {
-            // Corrigido: usar endpoint de notificação para aceitar conexão
-            await apiClient.post(`/notificacoes/${id}/aceitar-conexao`);
+            // O correto para o fluxo de conexão de projeto é:
+            await apiClient.put(`/conexoes/${id}/aceitar`);
             setSolicitacoesConexao(prev => prev.filter(s => s.id !== id));
             alert('Conexão aceita! Agora vocês estão conectados.');
         } catch (err) {
