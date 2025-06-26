@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useKeenSlider } from 'keen-slider/react';
 import 'keen-slider/keen-slider.min.css';
+import apiClient from '../services/api';
 
 // Placeholder Icons (replace with actual SVGs or library)
 const ArrowRightIcon = () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 ml-1"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>;
@@ -9,6 +10,26 @@ const PartnershipIcon = () => <svg className="w-8 h-8 text-brand-yellow" fill="n
 const ShowcaseIcon = () => <svg className="w-8 h-8 text-brand-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h10l-1-1-0.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>;
 const LearningIcon = () => <svg className="w-8 h-8 text-brand-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 16v-2m7.071-7.071l-1.414-1.414M4.929 4.929L6.343 6.343m0 11.314l-1.414 1.414M19.071 4.929l-1.414 1.414M4.929 19.071l1.414-1.414M12 12l3.536 3.536M12 12l-3.536 3.536"></path></svg>;
 
+// Ícones para novidades
+const DownloadIcon = () => (
+  <svg className="w-10 h-10 text-brand-yellow mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v12m0 0l-4-4m4 4l4-4m-7 8h10" /></svg>
+);
+const DarkModeIcon = () => (
+  <svg className="w-10 h-10 text-brand-yellow mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" /></svg>
+);
+const RecommendIcon = () => (
+  <svg className="w-10 h-10 text-brand-yellow mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 9l-2 2-2-2m0 6l2-2 2 2m-2-2v.01" /></svg>
+);
+const CalendarIcon = () => (
+  <svg className="w-10 h-10 text-brand-yellow mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 2v4M8 2v4M3 10h18" /></svg>
+);
+
+const novidadesIcones = [
+  DownloadIcon,
+  DarkModeIcon,
+  RecommendIcon,
+  CalendarIcon,
+];
 
 const mockNovidades = [
   { id: 1, title: "Download de Códigos", desc: "Baixe códigos e protótipos.", img: "/images/placeholder-code.png", bgColor: "bg-slate-700" },
@@ -56,6 +77,33 @@ const HomePage: React.FC = () => {
     },
   });
 
+  // Destaques do mês - usuários reais
+  const [destaques, setDestaques] = useState<any[]>([]);
+  const [sliderRefDestaques] = useKeenSlider<HTMLDivElement>({
+    loop: false,
+    slides: { perView: 1.3, spacing: 15 },
+    breakpoints: {
+      '(min-width: 640px)': { slides: { perView: 2.5, spacing: 20 } },
+      '(min-width: 1024px)': { slides: { perView: 3.5, spacing: 25 } },
+    },
+  });
+
+  useEffect(() => {
+    async function fetchDestaques() {
+      try {
+        const res = await apiClient.get('/usuarios');
+        // Pega até 7 usuários, ordem pode ser randomizada ou por id
+        let users = res.data || [];
+        if (users.length > 7) {
+          users = users.slice(0, 7);
+        }
+        setDestaques(users);
+      } catch (e) {
+        setDestaques([]);
+      }
+    }
+    fetchDestaques();
+  }, []);
 
   return (
     <div className="space-y-12 px-2 sm:px-4 md:px-8 max-w-screen-xl mx-auto w-full">
@@ -88,58 +136,35 @@ const HomePage: React.FC = () => {
       <section>
         <h2 className="text-2xl sm:text-3xl font-bold text-brand-purple-dark mb-4 sm:mb-6">Novidades da Plataforma</h2>
         <div ref={sliderRefNovidades} className="keen-slider overflow-x-auto">
-          {mockNovidades.map((novidade) => (
-            <div key={novidade.id} className={`keen-slider__slide ${novidade.bgColor} text-white p-6 rounded-xl shadow-card`}>
-              <img src={getProjectImageUrl(novidade.img)} alt={novidade.title} className="w-16 h-16 mb-4 object-contain" />
-              <h3 className="text-xl font-semibold mb-2">{novidade.title}</h3>
-              <p className="text-sm opacity-80">{novidade.desc}</p>
-            </div>
-          ))}
+          {mockNovidades.map((novidade, idx) => {
+            const Icon = novidadesIcones[idx] || DownloadIcon;
+            return (
+              <div key={novidade.id} className={`keen-slider__slide ${novidade.bgColor} text-white p-5 rounded-xl shadow-card flex flex-col items-center justify-center min-h-[180px]`}>
+                <Icon />
+                <h3 className="text-base font-semibold mb-1 text-center leading-tight">{novidade.title}</h3>
+                <p className="text-xs opacity-80 text-center leading-snug">{novidade.desc}</p>
+              </div>
+            );
+          })}
         </div>
       </section>
 
-      {/* Destaques do mês - dados reais estilizados */}
+      {/* Destaques do mês - dados reais */}
       <section>
         <div className="w-full flex flex-col items-start justify-center pl-2">
           <h1 className="text-2xl sm:text-3xl font-indie-flower text-brand-purple-dark leading-tight mb-2">Destaques do mês</h1>
         </div>
-        <div className="flex flex-row flex-nowrap overflow-x-auto gap-4 md:gap-8 py-2 md:py-0">
-          {[
-            {
-              nome: 'joao pedro',
-              avatar: '/default-profile.png',
-              tipo: 'programador',
-              id: 7,
-            },
-            {
-              nome: 'Leo',
-              avatar: '/default-profile.png',
-              tipo: 'programador',
-              id: 8,
-            },
-            {
-              nome: 'teste',
-              avatar: '/default-profile.png',
-              tipo: 'programador',
-              id: 9,
-            },
-            {
-              nome: 'jaquleine',
-              avatar: '/default-profile.png',
-              tipo: 'designer',
-              id: 10,
-            },
-            {
-              nome: 'marcello',
-              avatar: '/default-profile.png',
-              tipo: 'designer',
-              id: 13,
-            },
-          ].map((user) => (
-            <Link key={user.nome} to={`/perfil/${user.id}`} title={user.nome} className="w-full max-w-xs mx-auto">
+        <div ref={sliderRefDestaques} className="keen-slider overflow-x-auto">
+          {destaques.length === 0 && (
+            <div className="keen-slider__slide bg-white rounded-2xl shadow-card flex items-center justify-center h-[340px] w-[240px] min-w-[240px] max-w-[240px] text-gray-400">
+              Nenhum usuário encontrado
+            </div>
+          )}
+          {destaques.map((user) => (
+            <Link key={user.usuario_id} to={`/perfil/${user.usuario_id}`} title={user.nome} className="keen-slider__slide w-full max-w-xs mx-auto">
               <div className="flex flex-col items-center bg-white rounded-2xl shadow-card p-0 h-[340px] w-[240px] min-w-[240px] max-w-[240px] overflow-hidden">
                 <div className="w-full h-[180px] flex items-center justify-center bg-gray-200 rounded-t-2xl overflow-hidden">
-                  <img src={user.avatar} alt={user.nome} className="object-cover w-full h-full" />
+                  <img src={user.foto_perfil || '/default-profile.png'} alt={user.nome} className="object-cover w-full h-full" />
                 </div>
                 <div className="w-full bg-brand-purple-light rounded-b-2xl flex flex-col items-center p-4 flex-1 justify-center">
                   <h3 className="text-xl font-indie-flower text-brand-purple-dark text-center mb-1 w-full truncate">
