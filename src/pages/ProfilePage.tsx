@@ -39,18 +39,6 @@ interface Notificacao {
     reason?: string; // fallback para mensagem
 }
 
-interface SolicitacaoConexao {
-    id: number;
-    sender_id: number;
-    sender_nome: string;
-    sender_foto: string;
-    projeto_id?: number;
-    projeto_titulo?: string;
-    connection_type: string;
-    reason: string;
-    status: 'pendente' | 'aceito' | 'recusado';
-}
-
 const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('portfolio');
@@ -61,7 +49,6 @@ const ProfilePage: React.FC = () => {
     const [newDesc, setNewDesc] = useState('');
     const [notificacoes, setNotificacoes] = useState<Notificacao[]>([]);
     const [chats, setChats] = useState<any[]>([]);
-    const [solicitacoesConexao, setSolicitacoesConexao] = useState<SolicitacaoConexao[]>([]);
     const userId = JSON.parse(localStorage.getItem('user') || '{}').usuario_id;
 
     useEffect(() => {
@@ -103,10 +90,6 @@ const ProfilePage: React.FC = () => {
             });
             apiClient.get(`/chats/user/${userId}`).then(res => {
                 setChats(res.data);
-            });
-            // Fetch connection requests
-            apiClient.get(`/usuarios/${userId}/conexoes-recebidas`).then(res => {
-                setSolicitacoesConexao(res.data.filter((c: any) => c.status === 'pendente'));
             });
         }
     }, [userId, activeTab]);
@@ -171,25 +154,6 @@ const ProfilePage: React.FC = () => {
             alert('Convite recusado.');
         } catch (err) {
             alert('Erro ao recusar convite.');
-        }
-    };
-
-    const handleAceitarConexao = async (id: number) => {
-        try {
-            await apiClient.put(`/conexoes/${id}/aceitar`);
-            setSolicitacoesConexao(prev => prev.filter(c => c.id !== id));
-            alert('Conexão aceita! Agora vocês estão conectados.');
-        } catch (err) {
-            alert('Erro ao aceitar conexão.');
-        }
-    };
-    const handleRecusarConexao = async (id: number) => {
-        try {
-            await apiClient.put(`/conexoes/${id}/recusar`);
-            setSolicitacoesConexao(prev => prev.filter(c => c.id !== id));
-            alert('Conexão recusada.');
-        } catch (err) {
-            alert('Erro ao recusar conexão.');
         }
     };
 
@@ -310,65 +274,6 @@ const ProfilePage: React.FC = () => {
             ) : (
                 <div className="text-gray-500 text-sm">Nenhuma conversa ainda.</div>
             )}
-        </div>
-    );
-
-    // Filtrar apenas conexões do tipo 'projeto' OU 'colaborador' para exibir como solicitações amarelas
-    const solicitacoesConexaoProjeto = solicitacoesConexao.filter(sol => sol.connection_type === 'projeto' || sol.connection_type === 'colaborador');
-
-    const renderSolicitacoesConexao = () => (
-        <div className="space-y-3 mb-6">
-            {solicitacoesConexaoProjeto.length > 0 ? (
-                solicitacoesConexaoProjeto.map((sol) => (
-                    <div key={sol.id} className="bg-yellow-200 rounded-2xl p-3 flex items-center gap-3">
-                        <Link to={`/perfil/${sol.sender_id}`} className="flex items-center gap-3">
-                            <img
-                                src={getUserImageUrl(sol.sender_foto)}
-                                alt={sol.sender_nome}
-                                className="w-10 h-10 rounded-full object-cover"
-                            />
-                            <span className="font-semibold mr-2">@{sol.sender_nome}</span>
-                        </Link>
-                        <div className="flex-1">
-                            {sol.connection_type === 'vaga' ? (
-                                <>
-                                    <span>quer se conectar à vaga</span>
-                                    <div className="text-xs text-gray-700 mt-1 italic">{sol.reason}</div>
-                                    {sol.projeto_titulo && sol.projeto_id && (
-                                        <div className="text-xs text-blue-700 mt-1">
-                                            Portfólio escolhido: <Link to={`/portfolio/${sol.projeto_id}`} className="underline font-medium">{sol.projeto_titulo}</Link>
-                                        </div>
-                                    )}
-                                </>
-                            ) : (sol.connection_type === 'projeto' && sol.projeto_titulo && sol.projeto_id) ? (
-                                <>
-                                    <span>convidou você para ser colaborador no projeto <span className="font-semibold">{sol.projeto_titulo}</span></span>
-                                    <div className="text-xs text-gray-700 mt-1 italic">{sol.reason}</div>
-                                </>
-                            ) : (
-                                <>
-                                    <span>@{sol.sender_nome} quer se conectar com você: <span className="font-semibold">{sol.connection_type}</span></span>
-                                    <div className="text-xs text-gray-700 mt-1 italic">{sol.reason}</div>
-                                </>
-                            )}
-                            <div className="flex gap-2 mt-2">
-                                <button
-                                    onClick={() => handleAceitarConexao(sol.id)}
-                                    className="px-3 py-1 bg-green-500 text-white rounded-full text-xs hover:bg-green-600"
-                                >
-                                    Aceitar
-                                </button>
-                                <button
-                                    onClick={() => handleRecusarConexao(sol.id)}
-                                    className="px-3 py-1 bg-red-500 text-white rounded-full text-xs hover:bg-red-600"
-                                >
-                                    Recusar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                ))
-            ) : null}
         </div>
     );
 
