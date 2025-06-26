@@ -104,8 +104,8 @@ const ProfilePage: React.FC = () => {
             apiClient.get(`/chats/user/${userId}`).then(res => {
                 setChats(res.data);
             });
-            apiClient.get(`/usuarios/${userId}/conexoes-recebidas`).then(res => {
-                setSolicitacoesConexao(res.data.filter((c: any) => c.status === 'pendente'));
+            apiClient.get(`/usuarios/${userId}/conexoes-recebidas`).then(response => {
+                setSolicitacoesConexao(response.data.filter((c: any) => c.status === 'pendente'));
             });
         }
     }, [userId, activeTab]);
@@ -177,7 +177,7 @@ const ProfilePage: React.FC = () => {
         try {
             await apiClient.post(`/conexoes/${id}/aceitar`);
             setSolicitacoesConexao(prev => prev.filter(s => s.id !== id));
-            alert('Agora vocês estão conectados');
+            alert('Conexão aceita! Agora vocês estão conectados.');
         } catch (err) {
             alert('Erro ao aceitar conexão.');
         }
