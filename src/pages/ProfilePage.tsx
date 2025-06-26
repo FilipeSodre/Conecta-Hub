@@ -194,10 +194,16 @@ const ProfilePage: React.FC = () => {
         }
     };
 
+    // Filtro para remover notificações duplicadas de conexão de vaga
+    const notificacoesUnicas = notificacoes.filter((notif, idx, arr) =>
+      notif.tipo !== 'conexao' ||
+      arr.findIndex(n => n.tipo === 'conexao' && n.vaga_titulo === notif.vaga_titulo && n.usuario_origem_id === notif.usuario_origem_id) === idx
+    );
+
     const renderNotificacoesRoxas = () => (
         <div className="space-y-3">
-            {notificacoes.length > 0 ? (
-                notificacoes.map((notif) => (
+            {notificacoesUnicas.length > 0 ? (
+                notificacoesUnicas.map((notif) => (
                     <div key={notif.notificacao_id} className="bg-purple-300 rounded-2xl p-3 flex items-center gap-3">
                         <Link to={`/perfil/${notif.usuario_origem_id}`} className="flex items-center gap-3">
                             <img
