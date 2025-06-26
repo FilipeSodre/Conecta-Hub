@@ -328,12 +328,26 @@ const ProfilePage: React.FC = () => {
                             <span className="font-semibold mr-2">@{sol.sender_nome}</span>
                         </Link>
                         <div className="flex-1">
-                            <span>quer se conectar: <span className="font-semibold">{sol.connection_type}</span></span>
-                            <div className="text-xs text-gray-700 mt-1 italic">{sol.reason}</div>
-                            {sol.projeto_titulo && sol.projeto_id && (
-                                <div className="text-xs text-blue-700 mt-1">
-                                    Convidando para o projeto: <Link to={`/portfolio/${sol.projeto_id}`} className="underline font-medium">{sol.projeto_titulo}</Link>
-                                </div>
+                            {sol.connection_type === 'vaga' ? (
+                                <>
+                                    <span>quer se conectar à vaga</span>
+                                    <div className="text-xs text-gray-700 mt-1 italic">{sol.reason}</div>
+                                    {sol.projeto_titulo && sol.projeto_id && (
+                                        <div className="text-xs text-blue-700 mt-1">
+                                            Portfólio escolhido: <Link to={`/portfolio/${sol.projeto_id}`} className="underline font-medium">{sol.projeto_titulo}</Link>
+                                        </div>
+                                    )}
+                                </>
+                            ) : sol.connection_type === 'projeto' && sol.projeto_titulo && sol.projeto_id ? (
+                                <>
+                                    <span>convidou você para ser colaborador no projeto <span className="font-semibold">{sol.projeto_titulo}</span></span>
+                                    <div className="text-xs text-gray-700 mt-1 italic">{sol.reason}</div>
+                                </>
+                            ) : (
+                                <>
+                                    <span>quer se conectar: <span className="font-semibold">{sol.connection_type}</span></span>
+                                    <div className="text-xs text-gray-700 mt-1 italic">{sol.reason}</div>
+                                </>
                             )}
                             <div className="flex gap-2 mt-2">
                                 <button
