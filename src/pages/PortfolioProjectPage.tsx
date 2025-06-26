@@ -814,7 +814,7 @@ const PortfolioProjectPage: React.FC = () => {
                             projetoId: projeto.projeto_id,
                             reason: data.reason,
                             link: data.link,
-                            connectionType: 'colaborador', // sempre colaborador para portfólio
+                            connectionType: 'conexao', // agora sempre 'conexao' para modal de conexão
                         });
                         setIsConnectionModalOpen(false);
                         alert('Solicitação enviada com sucesso!');
@@ -834,7 +834,7 @@ const PortfolioProjectPage: React.FC = () => {
                             projetoId: projeto?.projeto_id,
                             reason: 'Você foi convidado para colaborar neste projeto.',
                             link: '', // pode ser vazio ou um link relevante
-                            connectionType: 'colaborador'
+                            connectionType: 'colaborador' // sempre colaborador para convite
                         });
                         alert(`Convite enviado para ${user.nome}. Ele(a) precisa aceitar para aparecer como colaborador.`);
                     } catch (error: any) {

@@ -266,7 +266,8 @@ const ProfilePage: React.FC = () => {
                                 {notif.tipo === 'conexao' && (notif.mensagem || notif.reason) && (
                                     <div className="text-xs text-gray-700 mt-1 italic">{notif.mensagem || notif.reason}</div>
                                 )}
-                                {(notif.tipo === 'convite_colaborador') && (
+                                {/* Botões de ação por tipo de notificação */}
+                                {notif.tipo === 'convite_colaborador' && (
                                     <div className="flex gap-2 mt-2">
                                         <button
                                             onClick={() => handleAceitarConvite(notif.notificacao_id)}
@@ -282,7 +283,24 @@ const ProfilePage: React.FC = () => {
                                         </button>
                                     </div>
                                 )}
-                                {(notif.tipo === 'curtida' || notif.tipo === 'comentario' || notif.tipo === 'conexao') && (
+                                {notif.tipo === 'conexao' && !notif.vaga_titulo && (
+                                    <div className="flex gap-2 mt-2">
+                                        <button
+                                            onClick={() => handleAceitarConexao(notif.notificacao_id)}
+                                            className="px-3 py-1 bg-green-500 text-white rounded-full text-xs hover:bg-green-600"
+                                        >
+                                            Aceitar
+                                        </button>
+                                        <button
+                                            onClick={() => handleRecusarConexao(notif.notificacao_id)}
+                                            className="px-3 py-1 bg-red-500 text-white rounded-full text-xs hover:bg-red-600"
+                                        >
+                                            Recusar
+                                        </button>
+                                    </div>
+                                )}
+                                {/* Só mostra Visto para vaga ou notificações simples */}
+                                {((notif.tipo === 'conexao' && notif.vaga_titulo) || notif.tipo === 'curtida' || notif.tipo === 'comentario') && (
                                     <div className="flex gap-2 mt-2">
                                         <button
                                             onClick={() => handleVisto(notif.notificacao_id)}
@@ -482,68 +500,83 @@ const ProfilePage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Abas do perfil */}
-            <div className="mt-4 sm:mt-8">
-                <div className="flex gap-2 sm:gap-4 mb-4 sm:mb-6 overflow-x-auto scrollbar-thin scrollbar-thumb-brand-purple/40 scrollbar-track-transparent">
+            {/* Tabs */}
+            <div className="mb-6">
+                <div className="flex gap-4">
                     <button
-                        className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-2xl font-semibold text-sm sm:text-base transition-colors duration-200 ${activeTab === 'portfolio' ? 'bg-brand-purple text-white' : 'bg-gray-200 text-gray-700'}`}
                         onClick={() => setActiveTab('portfolio')}
+                        className={`flex-1 px-4 py-2 rounded-lg font-semibold transition-all flex items-center justify-center gap-2
+                        ${activeTab === 'portfolio' ? 'bg-purple-100 text-purple-700' : 'text-gray-600 hover:bg-purple-50'}`}
                     >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h18M3 12h18M3 21h18" />
+                        </svg>
                         Portfólio
                     </button>
                     <button
-                        className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-2xl font-semibold text-sm sm:text-base transition-colors duration-200 ${activeTab === 'salvos' ? 'bg-brand-purple text-white' : 'bg-gray-200 text-gray-700'}`}
-                        onClick={() => setActiveTab('salvos')}
-                    >
-                        Salvos
-                    </button>
-                    <button
-                        className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-2xl font-semibold text-sm sm:text-base transition-colors duration-200 ${activeTab === 'conexoes' ? 'bg-brand-purple text-white' : 'bg-gray-200 text-gray-700'}`}
                         onClick={() => setActiveTab('conexoes')}
+                        className={`flex-1 px-4 py-2 rounded-lg font-semibold transition-all flex items-center justify-center gap-2
+                        ${activeTab === 'conexoes' ? 'bg-purple-100 text-purple-700' : 'text-gray-600 hover:bg-purple-50'}`}
                     >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.403 1.403A2 2 0 0116 21H8a2 2 0 01-1.597-.724L5 19h5m5-6l6 6m-6-6l-6 6M3 3l18 18" />
+                        </svg>
                         Conexões
                     </button>
-                    <button
-                        className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-2xl font-semibold text-sm sm:text-base transition-colors duration-200 ${activeTab === 'conquistas' ? 'bg-brand-purple text-white' : 'bg-gray-200 text-gray-700'}`}
-                        onClick={() => setActiveTab('conquistas')}
-                    >
-                        Conquistas
-                    </button>
                 </div>
-                {activeTab === 'portfolio' && (
-                    <div className="flex flex-col gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-6 overflow-x-auto scrollbar-thin scrollbar-thumb-brand-purple/40 scrollbar-track-transparent">
-                        {/* Renderização dos projetos do usuário */}
-                        {projetos.map(projeto => (
-                            <div key={projeto.projeto_id} className="min-w-[260px] sm:min-w-0 bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate(`/portfolio/${projeto.projeto_id}`)}>
-                                <img src={getProjectImageUrl(projeto.imagem_capa)} alt={projeto.titulo} className="w-full h-32 sm:h-40 object-cover" />
-                                <div className="p-3 sm:p-4">
-                                    <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 truncate">{projeto.titulo}</h3>
-                                    <p className="text-gray-600 text-xs sm:text-sm line-clamp-2">{projeto.descricao}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-                {activeTab === 'salvos' && (
-                    <div className="text-center text-gray-500 py-8 text-sm sm:text-base">
-                        Funcionalidade em desenvolvimento
-                    </div>
-                )}
-                {activeTab === 'conexoes' && (
-                    <div className="flex flex-col md:flex-row gap-4 sm:gap-8">
-                        <div className="md:w-1/3">{renderMiniChatList()}</div>
-                        <div className="flex-1">
-                            {renderSolicitacoesConexao()}
-                            {renderNotificacoesRoxas()}
-                        </div>
-                    </div>
-                )}
-                {activeTab === 'conquistas' && (
-                    <div className="text-center text-gray-500 py-8 text-sm sm:text-base">
-                        Funcionalidade em desenvolvimento
-                    </div>
-                )}
             </div>
+
+            {/* Conteúdo das Tabs */}
+            {activeTab === 'portfolio' ? (
+                <div>
+                    {/* Projetos */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {projetos.length > 0 ? (
+                            projetos.map(projeto => (
+                                <div key={projeto.projeto_id} className="bg-white rounded-lg shadow p-4 flex flex-col">
+                                    <img
+                                        src={getProjectImageUrl(projeto.imagem_capa)}
+                                        alt={projeto.titulo}
+                                        className="w-full h-32 object-cover rounded-lg mb-4"
+                                    />
+                                    <h3 className="text-lg font-semibold mb-2">{projeto.titulo}</h3>
+                                    <p className="text-gray-700 flex-1 mb-4">{projeto.descricao}</p>
+                                    <div className="flex gap-2">
+                                        <Link to={`/projeto/${projeto.projeto_id}`} className="flex-1 px-4 py-2 bg-brand-purple text-white rounded-lg text-center hover:bg-brand-purple-dark transition-all">
+                                            Ver Projeto
+                                        </Link>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="col-span-1 sm:col-span-2 lg:col-span-3 text-center py-10 text-gray-500">
+                                Nenhum projeto encontrado. Crie um novo projeto para começar.
+                            </div>
+                        )}
+                    </div>
+                </div>
+            ) : (
+                <div>
+                    {/* Notificações e Solicitações de Conexão */}
+                    <div className="mb-6">
+                        <h2 className="text-xl font-bold mb-4">Notificações</h2>
+                        {renderNotificacoesRoxas()}
+                    </div>
+
+                    <div>
+                        <h2 className="text-xl font-bold mb-4">Solicitações de Conexão</h2>
+                        {renderSolicitacoesConexao()}
+                    </div>
+
+                    {/* Mini Chat */}
+                    {chats.length > 0 && (
+                        <div className="mt-8">
+                            <h2 className="text-xl font-bold mb-4">Mini Chat</h2>
+                            {renderMiniChatList()}
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 };

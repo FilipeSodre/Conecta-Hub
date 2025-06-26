@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import apiClient from '../services/api'; // ADICIONADO
 
 const ConexaoPage: React.FC = () => {
   const [connectWith, setConnectWith] = useState('');
@@ -8,12 +9,25 @@ const ConexaoPage: React.FC = () => {
   const [connectionType, setConnectionType] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual connection request logic
-    console.log('Connection request:', { connectWith, reason, projectLink, connectionType });
-    alert('Solicitação de conexão enviada (simulado)!');
-    navigate(-1); // Go back to previous page or to a confirmation page
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      // Aqui você deve buscar o recipientId pelo nome/email, mas para exemplo, vamos simular:
+      // const recipientId = ...
+      // Supondo que connectWith seja o ID ou username resolvido para ID
+      await apiClient.post('/conexoes', {
+        senderId: user.usuario_id,
+        recipientId: connectWith, // Ajuste conforme a lógica real de busca
+        reason,
+        link: projectLink,
+        connectionType: 'conexao', // sempre 'conexao' para este fluxo
+      });
+      alert('Solicitação de conexão enviada!');
+      navigate(-1);
+    } catch (error) {
+      alert('Erro ao enviar solicitação. Tente novamente.');
+    }
   };
 
   const connectionTypes = [

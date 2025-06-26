@@ -12,6 +12,7 @@ interface VagaConnectionModalProps {
     recipientId: number;
     projetos: Projeto[];
     onSend: (data: { recipientId: number; reason: string; projetoId: number }) => void;
+    isLoading?: boolean; // NOVO: indica se está enviando
 }
 
 const VagaConnectionModal: React.FC<VagaConnectionModalProps> = ({
@@ -20,7 +21,8 @@ const VagaConnectionModal: React.FC<VagaConnectionModalProps> = ({
     recipientName,
     recipientId,
     projetos,
-    onSend
+    onSend,
+    isLoading = false // NOVO
 }) => {
     const [reason, setReason] = useState('');
     const [selectedProjectId, setSelectedProjectId] = useState<number | ''>('');
@@ -52,13 +54,13 @@ const VagaConnectionModal: React.FC<VagaConnectionModalProps> = ({
             reason,
             projetoId: Number(selectedProjectId)
         });
-        onClose();
+        // Removido: onClose(); // O fechamento será controlado pelo pai após sucesso
     };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
             <div className="bg-brand-purple-light rounded-3xl p-8 w-full max-w-md shadow-xl relative">
-                <button onClick={onClose} className="absolute top-4 right-4 text-xl font-bold text-white">×</button>
+                <button onClick={onClose} className="absolute top-4 right-4 text-xl font-bold text-white" disabled={isLoading}>×</button>
                 <h2 className="text-2xl font-indie-flower text-brand-purple-dark mb-4 text-center">Conectar com {recipientName}</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
@@ -77,6 +79,7 @@ const VagaConnectionModal: React.FC<VagaConnectionModalProps> = ({
                             onChange={e => setSelectedProjectId(e.target.value ? Number(e.target.value) : '')}
                             required
                             className="w-full rounded-xl px-4 py-2 border border-gray-300 text-gray-700"
+                            disabled={isLoading}
                         >
                             <option value="">Selecione...</option>
                             {projetos && projetos.length > 0 ? (
@@ -97,14 +100,16 @@ const VagaConnectionModal: React.FC<VagaConnectionModalProps> = ({
                             className="w-full rounded-xl px-4 py-2 border border-gray-300 text-gray-700"
                             rows={4}
                             placeholder="Escreva uma mensagem personalizada..."
+                            disabled={isLoading}
                         />
                     </div>
                     {error && <div className="text-red-200 text-sm mb-2">{error}</div>}
                     <button
                         type="submit"
-                        className="w-full bg-brand-purple text-white font-semibold py-3 px-6 rounded-xl hover:bg-brand-purple-dark transition-colors duration-200 mt-4"
+                        className="w-full bg-brand-purple text-white font-semibold py-3 px-6 rounded-xl hover:bg-brand-purple-dark transition-colors duration-200 mt-4 disabled:opacity-60"
+                        disabled={isLoading}
                     >
-                        Enviar Solicitação
+                        {isLoading ? 'Enviando...' : 'Enviar Solicitação'}
                     </button>
                 </form>
             </div>

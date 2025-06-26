@@ -49,6 +49,7 @@ const VagaDetailPage: React.FC = () => {
   const { user } = useUser();
   const [isConnectionModalOpen, setIsConnectionModalOpen] = useState(false);
   const [userProjects, setUserProjects] = useState<any[]>([]);
+  const [isSending, setIsSending] = useState(false); // NOVO: controle de loading
 
   // Buscar projetos do usuário (dono ou colaborador) ao abrir modal
   useEffect(() => {
@@ -143,6 +144,7 @@ const VagaDetailPage: React.FC = () => {
             className="bg-yellow-400 text-brand-purple font-bold py-3 px-12 rounded-2xl hover:bg-yellow-500 transition-colors"
             style={{ fontFamily: 'Roboto, sans-serif', fontWeight: 700 }}
             onClick={() => setIsConnectionModalOpen(true)}
+            disabled={isSending} // desabilita botão durante envio
           >
             Me Conectar!
           </button>
@@ -150,15 +152,19 @@ const VagaDetailPage: React.FC = () => {
         {/* Modal de Conexão customizado para vaga */}
         <VagaConnectionModal
           isOpen={isConnectionModalOpen}
-          onClose={() => setIsConnectionModalOpen(false)}
+          onClose={() => {
+            if (!isSending) setIsConnectionModalOpen(false);
+          }}
           recipientName={vaga?.usuario_nome || ''}
           recipientId={vaga?.usuario_id || 0}
           projetos={userProjects}
+          isLoading={isSending} // NOVO
           onSend={async ({ reason, projetoId }) => {
             if (!user?.usuario_id || !vaga?.usuario_id || !vaga?.vaga_id) {
               alert('Dados insuficientes para enviar a conexão.');
               return;
             }
+            setIsSending(true);
             try {
               await apiClient.post('/conexoes', {
                 senderId: user.usuario_id,
@@ -174,6 +180,8 @@ const VagaDetailPage: React.FC = () => {
             } catch (error) {
               console.error('Erro ao enviar solicitação:', error);
               alert('Erro ao enviar solicitação. Tente novamente.');
+            } finally {
+              setIsSending(false);
             }
           }}
         />
