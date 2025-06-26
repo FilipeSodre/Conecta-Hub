@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../services/api';
 import { getProjectImageUrl } from '../services/imageUtils';
 
 const ChatPage: React.FC = () => {
@@ -14,7 +14,7 @@ const ChatPage: React.FC = () => {
     useEffect(() => {
         const fetchMessages = async () => {
             if (!chatId) return;
-            const res = await axios.get(`/chats/${chatId}/messages`);
+            const res = await apiClient.get(`/chats/${chatId}/messages`);
             setMessages(Array.isArray(res.data) ? res.data : []);
             if (messagesEndRef.current) {
                 messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -28,7 +28,7 @@ const ChatPage: React.FC = () => {
     useEffect(() => {
         const fetchChatInfo = async () => {
             if (!chatId) return;
-            const res = await axios.get(`/chats/${chatId}`);
+            const res = await apiClient.get(`/chats/${chatId}`);
             setChatInfo(res.data);
         };
         fetchChatInfo();
@@ -37,13 +37,14 @@ const ChatPage: React.FC = () => {
     const handleSend = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newMessage.trim()) return;
-        await axios.post(`/chats/${chatId}/messages`, {
+        console.log('Enviando mensagem:', { chatId, sender_id: userId, message: newMessage.trim() });
+        await apiClient.post(`/chats/${chatId}/messages`, {
             sender_id: userId,
             message: newMessage.trim(),
         });
         setNewMessage('');
         // Atualiza imediatamente após enviar
-        const res = await axios.get(`/chats/${chatId}/messages`);
+        const res = await apiClient.get(`/chats/${chatId}/messages`);
         setMessages(Array.isArray(res.data) ? res.data : []);
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
