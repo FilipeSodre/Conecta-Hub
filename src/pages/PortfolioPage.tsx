@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import apiClient from '../services/api';
-import { useUser } from '../context/UserContext';
 
 interface Participante {
   usuario_id: number;
@@ -53,7 +52,6 @@ const PortfolioPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredProjetos, setFilteredProjetos] = useState<Projeto[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { user } = useUser();
 
   useEffect(() => {
     const fetchProjetos = async () => {
@@ -98,13 +96,6 @@ const PortfolioPage: React.FC = () => {
     };
     fetchProjetos();
   }, []);
-
-  useEffect(() => {
-    if (user?.usuario_id) {
-      // Filtra projetos do usuário logado
-      setFilteredProjetos(projetos.filter(p => p.usuario_id === user.usuario_id));
-    }
-  }, [user, projetos]);
 
   // Função para buscar projetos no backend
   const handleSearch = async (term: string) => {
