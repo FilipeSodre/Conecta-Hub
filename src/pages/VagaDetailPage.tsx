@@ -154,7 +154,7 @@ const VagaDetailPage: React.FC = () => {
           recipientName={vaga?.usuario_nome || ''}
           recipientId={vaga?.usuario_id || 0}
           projetos={userProjects}
-          onSend={async ({ recipientId, reason, projetoId }) => {
+          onSend={async ({ reason, projetoId }) => {
             try {
               await apiClient.post(`/conexoes/vagas/${vaga.vaga_id}`, {
                 usuario_id: user?.usuario_id,
