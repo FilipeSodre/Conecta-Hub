@@ -223,7 +223,7 @@ const PortfolioPage: React.FC = () => {
                   console.log('[PortfolioPage] Card clicado! Projeto:', projeto);
                 }}
                 href={`/portfolio/${projeto.projeto_id}`}
-                className="block min-w-[270px] max-w-[350px] w-[85vw] sm:w-auto bg-purple-600 rounded-lg shadow-md overflow-hidden transform transition-transform hover:scale-105 mx-2 sm:mx-0 flex-shrink-0 sm:flex-shrink"
+                className="block min-w-[270px] max-w-[350px] w-[85vw] sm:w-auto bg-purple-600 rounded-lg shadow-md overflow-hidden transform transition-transform hover:scale-105 mx-2 sm:mx-0 flex-shrink-0 sm:flex-shrink-0"
               >
                 {/* Horizontal Image */}
                 <div className="w-full">
