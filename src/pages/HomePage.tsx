@@ -45,8 +45,8 @@ const mockNovidades = [
 //   { id: 3, user: "Caio Junior", userImg: "/fotos/avatar-caio.png", projectTitle: "Desenvolvimento de Aplicativo", projectDesc: "Aplicativo para aulas de tênis.", projectImg: "/fotos/project-tennis.png" },
 //   { id: 4, user: "Prof. Anderson", userImg: "/fotos/avatar-prof.png", projectTitle: "Redesign de Aplicativo", projectDesc: "Novo visual para app educacional.", projectImg: "/fotos/project-redesign.png" },
 //   { id: 5, user: "Julia Silva", userImg: "/fotos/avatar-julia.png", projectTitle: "Projeto de Fotodesign", projectDesc: "Ensaio fotográfico conceitual.", projectImg: "/fotos/project-photodesign.png" },
-//   { id: 6, user: "Nathalia Montenegro", userImg: "/fotos/avatar-nathalia-m.png", projectTitle: "Identidade Visual", projectDesc: "Marca para startup de IA.", projectImg: "/fotos/project-id-visual.png" },
-//   { id: 7, user: "Nathalia Vales Ficher", userImg: "/fotos/avatar-nathalia-f.png", projectTitle: "Campanha de divulgação", projectDesc: "Campanha para marca de moda.", projectImg: "/fotos/project-fashion-camp.png" },
+//   { id: 6, userImg: "/fotos/avatar-nathalia-m.png", projectTitle: "Identidade Visual", projectDesc: "Marca para startup de IA.", projectImg: "/fotos/project-id-visual.png" },
+//   { id: 7, userImg: "/fotos/avatar-nathalia-f.png", projectTitle: "Campanha de divulgação", projectDesc: "Campanha para marca de moda.", projectImg: "/fotos/project-fashion-camp.png" },
 // ];
 
 // Utilitário para padronizar exibição de imagens (Cloudinary, local ou placeholder)
@@ -267,9 +267,9 @@ const HomePage: React.FC = () => {
             </p>
           </div>
           <div className="md:w-1/2 flex items-center justify-center">
-            {/* Ilustração moderna de tecnologia (Unsplash ou SVG) */}
+            {/* Ilustração moderna de tecnologia (imagem local) */}
             <img
-              src="https://undraw.co/api/illustrations/undraw_online_collaboration_re_bkpm.svg"
+              src="/fotos/online-collaborative-learning.png"
               alt="Ilustração de colaboração online"
               className="w-full h-64 object-contain rounded-lg shadow-md bg-white"
               loading="lazy"
@@ -289,9 +289,9 @@ const HomePage: React.FC = () => {
             </Link>
           </div>
           <div className="md:w-1/2 flex items-center justify-center">
-            {/* Ilustração moderna de trabalho em equipe (Unsplash ou SVG) */}
+            {/* Ilustração moderna de trabalho em equipe (imagem local) */}
             <img
-              src="https://undraw.co/api/illustrations/undraw_team_spirit_re_yl1v.svg"
+              src="/fotos/leadership.png"
               alt="Ilustração de trabalho em equipe"
               className="w-full h-64 object-contain rounded-lg shadow-md bg-white"
               loading="lazy"
