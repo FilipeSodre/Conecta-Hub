@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -37,42 +36,42 @@ const AprendizagemPage: React.FC = () => {
   const { banner, mainCategories, subCategories } = mockAprendizagemCategorias;
 
   return (
-    <div className="space-y-8 pb-8">
+    <div className="space-y-8 pb-8 px-2 sm:px-0">
       {/* Hero/Banner Section - Updated Style */}
       <section
-        className="bg-slate-800 text-white p-6 md:p-8 rounded-2xl shadow-xl flex items-center justify-between min-h-[180px] md:min-h-[200px]"
+        className="bg-slate-800 text-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-xl flex flex-col sm:flex-row items-center justify-between min-h-[180px] md:min-h-[200px] gap-4 sm:gap-0"
       >
-        <div className="relative z-10">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2">
+        <div className="relative z-10 text-center sm:text-left w-full sm:w-auto">
+          <h1 className="text-xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2">
             {banner.titleLine1}
           </h1>
           <p className="text-base sm:text-lg md:text-xl text-slate-300">{banner.titleLine2}</p>
         </div>
-        <div className="relative z-10">
+        <div className="relative z-10 flex justify-center w-full sm:w-auto">
           <LayersIcon />
         </div>
       </section>
 
       {/* Main Categories - Updated Style */}
-      <section className="flex justify-center items-center gap-3 sm:gap-4 -mt-12 md:-mt-14 relative z-20">
+      <section className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 -mt-8 sm:-mt-12 md:-mt-14 relative z-20 w-full">
         {mainCategories.map((category) => (
           <Link
             key={category.id}
             to={category.link}
-            className="text-center bg-brand-purple text-white font-semibold py-2.5 px-6 sm:py-3 sm:px-8 rounded-lg hover:bg-brand-purple-dark transition-colors duration-200 shadow-md text-sm sm:text-base"
+            className="text-center bg-brand-purple text-white font-semibold py-2.5 px-6 sm:py-3 sm:px-8 rounded-lg hover:bg-brand-purple-dark transition-colors duration-200 shadow-md text-sm sm:text-base w-full sm:w-auto"
           >
             {category.name}
           </Link>
         ))}
       </section>
 
-      {/* Sub Categories Grid - Updated Style (Larger Buttons with Patrick Hand font) */}
-      <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 pt-4">
+      {/* Sub Categories Grid - responsivo: horizontal scroll no mobile, grid em telas médias+ */}
+      <section className="flex sm:grid sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 pt-4 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0 -mx-2 sm:mx-0">
         {subCategories.map((subCategory) => (
           <Link
             key={subCategory.id}
             to={subCategory.link}
-            className="bg-brand-yellow text-brand-purple-dark font-patrick-hand py-6 px-3 sm:py-8 rounded-2xl shadow-card hover:bg-brand-yellow-dark transition-all duration-200 flex items-center justify-center text-2xl sm:text-3xl hover:scale-105 transform min-h-[100px] sm:min-h-[120px] text-center leading-tight"
+            className="bg-brand-yellow text-brand-purple-dark font-patrick-hand py-6 px-3 sm:py-8 rounded-2xl shadow-card hover:bg-brand-yellow-dark transition-all duration-200 flex items-center justify-center text-xl sm:text-2xl md:text-3xl hover:scale-105 transform min-w-[140px] min-h-[90px] sm:min-w-0 sm:min-h-[120px] text-center leading-tight mx-2 sm:mx-0 flex-shrink-0 sm:flex-shrink"
           >
             {subCategory.name}
           </Link>

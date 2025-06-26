@@ -58,9 +58,9 @@ const HomePage: React.FC = () => {
 
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-12 px-2 sm:px-4 md:px-8 max-w-screen-xl mx-auto w-full">
       {/* Hero Section - based on home_landing.png or first part of home_completa.png */}
-      <section className="relative text-center py-16 md:py-24 bg-gradient-to-br from-brand-purple-light via-brand-purple to-brand-purple-dark rounded-2xl shadow-xl overflow-hidden">
+      <section className="relative text-center py-10 sm:py-16 md:py-24 bg-gradient-to-br from-brand-purple-light via-brand-purple to-brand-purple-dark rounded-2xl shadow-xl overflow-hidden mx-auto w-full">
         <div className="absolute inset-0 opacity-20">
           {/* Background pattern if any - e.g., geometric shapes from header */}
           {/* <img src="/fotos/header-bg-pattern.svg" className="w-full h-full object-cover" /> */}
@@ -86,8 +86,8 @@ const HomePage: React.FC = () => {
 
       {/* Novidades da Plataforma */}
       <section>
-        <h2 className="text-3xl font-bold text-brand-purple-dark mb-6">Novidades da Plataforma</h2>
-        <div ref={sliderRefNovidades} className="keen-slider">
+        <h2 className="text-2xl sm:text-3xl font-bold text-brand-purple-dark mb-4 sm:mb-6">Novidades da Plataforma</h2>
+        <div ref={sliderRefNovidades} className="keen-slider overflow-x-auto">
           {mockNovidades.map((novidade) => (
             <div key={novidade.id} className={`keen-slider__slide ${novidade.bgColor} text-white p-6 rounded-xl shadow-card`}>
               <img src={getProjectImageUrl(novidade.img)} alt={novidade.title} className="w-16 h-16 mb-4 object-contain" />
@@ -101,9 +101,9 @@ const HomePage: React.FC = () => {
       {/* Destaques do mês - dados reais estilizados */}
       <section>
         <div className="w-full flex flex-col items-start justify-center pl-2">
-          <h1 className="text-3xl font-indie-flower text-brand-purple-dark leading-tight" style={{ marginBottom: '-2px' }}>Destaques do mês</h1>
+          <h1 className="text-2xl sm:text-3xl font-indie-flower text-brand-purple-dark leading-tight mb-2">Destaques do mês</h1>
         </div>
-        <div className="flex flex-col md:flex-row justify-center gap-6 md:gap-8">
+        <div className="flex flex-row flex-nowrap overflow-x-auto gap-4 md:gap-8 py-2 md:py-0">
           {[
             {
               nome: 'joao pedro',
@@ -156,7 +156,7 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Desafio de Design da Semana */}
-      <section className="flex flex-col md:flex-row gap-8 items-center bg-slate-800 text-white p-8 md:p-12 rounded-2xl shadow-xl">
+      <section className="flex flex-col md:flex-row gap-4 md:gap-8 items-center bg-slate-800 text-white p-4 sm:p-8 md:p-12 rounded-2xl shadow-xl w-full">
         <div className="md:w-1/2">
           <h2 className="text-3xl font-bold text-brand-yellow mb-4">Desafio de <span className="text-white">Design</span> da Semana</h2>
           <p className="mb-4 text-slate-300">
@@ -176,8 +176,8 @@ const HomePage: React.FC = () => {
 
       {/* Suas Conquistas Recentes */}
       <section>
-        <h2 className="text-3xl font-bold text-brand-purple-dark mb-6">Suas Conquistas Recentes</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        <h2 className="text-2xl sm:text-3xl font-bold text-brand-purple-dark mb-4 sm:mb-6">Suas Conquistas Recentes</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           {/* Placeholder conquista cards */}
           {[
             { title: "Portfólio de Prata", desc: "50 curtidas em projetos", icon: "medal" },
@@ -197,8 +197,8 @@ const HomePage: React.FC = () => {
 
       {/* O que seus amigos estão postando */}
       <section>
-        <h2 className="text-3xl font-bold text-brand-purple-dark mb-6">O que seus amigos estão postando</h2>
-        <div ref={sliderRefAmigos} className="keen-slider">
+        <h2 className="text-2xl sm:text-3xl font-bold text-brand-purple-dark mb-4 sm:mb-6">O que seus amigos estão postando</h2>
+        <div ref={sliderRefAmigos} className="keen-slider overflow-x-auto">
           {mockAmigosPostando.map(post => (
             <div key={post.id} className="keen-slider__slide bg-white rounded-xl shadow-card overflow-hidden">
               <img src={getProjectImageUrl(post.projectImg)} alt={post.projectTitle} className="w-full h-40 object-cover" />
@@ -217,9 +217,9 @@ const HomePage: React.FC = () => {
 
       {/* Rede de Conexões Recentes - dados reais */}
       <section>
-        <h2 className="text-3xl font-bold text-brand-purple-dark mb-6">Rede de Conexões Recentes</h2>
-        <div className="bg-slate-800 p-8 rounded-2xl shadow-xl relative">
-          <div className="flex flex-wrap justify-center items-center gap-4">
+        <h2 className="text-2xl sm:text-3xl font-bold text-brand-purple-dark mb-4 sm:mb-6">Rede de Conexões Recentes</h2>
+        <div className="bg-slate-800 p-4 sm:p-8 rounded-2xl shadow-xl relative w-full">
+          <div className="flex flex-row flex-nowrap overflow-x-auto gap-4 justify-start items-center">
             {[
               { nome: 'joao pedro', img: '/default-profile.png', id: 7 },
               { nome: 'Leo', img: '/default-profile.png', id: 8 },
@@ -238,14 +238,14 @@ const HomePage: React.FC = () => {
               </Link>
             ))}
           </div>
-          <p className="text-center text-slate-300 mt-6">Conecte-se com outros talentos e expanda sua rede!</p>
+          <p className="text-center text-slate-300 mt-4 sm:mt-6">Conecte-se com outros talentos e expanda sua rede!</p>
         </div>
       </section>
 
       {/* "Sobre a plataforma" "Encontre o time ideal" "Por que usar Conecta?" - from home_landing.png */}
-      <section className="py-12 space-y-16">
+      <section className="py-8 sm:py-12 space-y-8 sm:space-y-16">
         {/* Sobre a plataforma */}
-        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12 bg-brand-purple-light p-8 md:p-12 rounded-2xl shadow-card">
+        <div className="flex flex-col md:flex-row items-center gap-4 md:gap-12 bg-brand-purple-light p-4 sm:p-8 md:p-12 rounded-2xl shadow-card w-full">
           <div className="md:w-1/2">
             <h3 className="text-3xl font-bold text-brand-purple-dark mb-4">Sobre a Plataforma</h3>
             <p className="text-brand-text leading-relaxed">
@@ -264,7 +264,7 @@ const HomePage: React.FC = () => {
         </div>
 
         {/* Encontre o time ideal */}
-        <div className="flex flex-col md:flex-row-reverse items-center gap-8 md:gap-12 p-8 md:p-12 rounded-2xl shadow-card">
+        <div className="flex flex-col md:flex-row-reverse items-center gap-4 md:gap-12 p-4 sm:p-8 md:p-12 rounded-2xl shadow-card w-full">
           <div className="md:w-1/2">
             <h3 className="text-3xl font-bold text-brand-purple-dark mb-4">Encontre o Time Ideal para seu Projeto</h3>
             <p className="text-brand-text leading-relaxed">
@@ -283,7 +283,7 @@ const HomePage: React.FC = () => {
         </div>
 
         {/* Por que usar Conecta? */}
-        <div className="flex flex-col md:flex-row items-stretch gap-0 rounded-2xl shadow-card overflow-hidden">
+        <div className="flex flex-col md:flex-row items-stretch gap-0 rounded-2xl shadow-card overflow-hidden w-full">
           <div className="md:w-1/2 bg-slate-800 text-white p-8 md:p-12 flex flex-col justify-center">
             <h3 className="text-3xl md:text-4xl font-bold mb-6">Por que usar o <span className="text-brand-yellow">Conecta</span>?</h3>
           </div>

@@ -166,7 +166,7 @@ const PortfolioPage: React.FC = () => {
   console.log('[PortfolioPage] Renderizou! isLoading:', isLoading, 'searchTerm:', searchTerm);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 px-2 sm:px-0">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="relative w-full sm:w-auto flex-grow">
           <input
@@ -174,7 +174,7 @@ const PortfolioPage: React.FC = () => {
             placeholder="O que você quer espiar? Busque por título, descrição, categoria ou autor..."
             value={searchTerm}
             onChange={handleSearchChange}
-            className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent outline-none shadow-sm font-indie-flower placeholder:font-indie-flower"
+            className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent outline-none shadow-sm font-indie-flower placeholder:font-indie-flower text-sm sm:text-base"
           />
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <SearchIcon />
@@ -189,7 +189,7 @@ const PortfolioPage: React.FC = () => {
           to="/portfolio/novo"
           className="flex items-center justify-center bg-brand-purple text-white font-semibold py-3 px-6 rounded-xl hover:bg-brand-purple-dark transition-colors duration-200 shadow-md w-full sm:w-auto"
         >
-          <PlusIcon /> Novo Projeto
+          <PlusIcon /> <span className="ml-2">Novo Projeto</span>
         </Link>
       </div>
 
@@ -215,7 +215,7 @@ const PortfolioPage: React.FC = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-purple"></div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="sm:grid sm:grid-cols-2 gap-6 flex flex-row sm:flex-row overflow-x-auto sm:overflow-x-visible pb-2 sm:pb-0 -mx-2 sm:mx-0">
             {filteredProjetos.map((projeto) => (
               <a
                 key={projeto.projeto_id}
@@ -223,7 +223,7 @@ const PortfolioPage: React.FC = () => {
                   console.log('[PortfolioPage] Card clicado! Projeto:', projeto);
                 }}
                 href={`/portfolio/${projeto.projeto_id}`}
-                className="block bg-purple-600 rounded-lg shadow-md overflow-hidden transform transition-transform hover:scale-105"
+                className="block min-w-[270px] max-w-[350px] w-[85vw] sm:w-auto bg-purple-600 rounded-lg shadow-md overflow-hidden transform transition-transform hover:scale-105 mx-2 sm:mx-0 flex-shrink-0 sm:flex-shrink"
               >
                 {/* Horizontal Image */}
                 <div className="w-full">
@@ -236,8 +236,8 @@ const PortfolioPage: React.FC = () => {
                 {/* Content Below Image - layout igual ao design */}
                 <div className="flex flex-row bg-purple-700 items-center">
                   {/* Esquerda: Participantes (fotos lado a lado, nomes embaixo) */}
-                  <div className="flex flex-col items-center justify-center py-3 px-4 w-1/3">
-                    <div className="flex flex-row items-center justify-center gap-2 mb-1">
+                  <div className="flex flex-col items-center justify-center py-3 px-2 sm:px-4 w-1/3 min-w-[80px]">
+                    <div className="flex flex-row flex-wrap items-center justify-center gap-1 mb-1">
                       {projeto.participantes && projeto.participantes.length > 0 ? (
                         projeto.participantes.map((p) => (
                           <div key={p.usuario_id} className="flex flex-col items-center">
@@ -252,10 +252,10 @@ const PortfolioPage: React.FC = () => {
                         <span className="text-xs text-white">Sem participantes</span>
                       )}
                     </div>
-                    <div className="flex flex-row items-center justify-center gap-2">
+                    <div className="flex flex-row flex-wrap items-center justify-center gap-1">
                       {projeto.participantes && projeto.participantes.length > 0 && (
                         projeto.participantes.map((p) => (
-                          <span key={p.usuario_id} className="text-xs text-white font-semibold text-center leading-tight max-w-[70px] truncate">
+                          <span key={p.usuario_id} className="text-xs text-white font-semibold text-center leading-tight max-w-[60px] truncate">
                             {p.nome}
                           </span>
                         ))
@@ -263,11 +263,11 @@ const PortfolioPage: React.FC = () => {
                     </div>
                   </div>
                   {/* Linha vertical divisória */}
-                  <div className="h-16 w-px bg-white opacity-40 mx-2"></div>
+                  <div className="h-16 w-px bg-white opacity-40 mx-1 sm:mx-2"></div>
                   {/* Direita: Título e descrição */}
-                  <div className="flex flex-col justify-center w-2/3 px-4 py-3">
-                    <h3 className="text-base font-semibold text-white mb-1 truncate">{projeto.titulo}</h3>
-                    <p className="text-xs text-white font-normal truncate mb-1">{projeto.descricao}</p>
+                  <div className="flex flex-col justify-center w-2/3 px-2 sm:px-4 py-3">
+                    <h3 className="text-base font-semibold text-white mb-1 truncate max-w-full">{projeto.titulo}</h3>
+                    <p className="text-xs text-white font-normal truncate mb-1 max-w-full">{projeto.descricao}</p>
                   </div>
                 </div>
               </a>

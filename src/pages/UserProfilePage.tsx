@@ -128,17 +128,17 @@ const UserProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-6xl">
+    <div className="container mx-auto p-2 sm:p-4 max-w-6xl">
       {/* Card do Perfil com fundo bege claro */}
-      <div className="bg-brand-yellow rounded-2xl p-8 mb-8">
+      <div className="bg-brand-yellow rounded-2xl p-4 sm:p-8 mb-8">
         {/* Cabeçalho do Perfil */}
-        <div className="flex items-start gap-8 mb-8">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-8 mb-8">
           {/* Foto de Perfil */}
           <div className="relative shrink-0">
             <img
               src={normalizeUserImage(usuario.foto_perfil)}
               alt={usuario.nome}
-              className="w-64 h-64 rounded-lg object-cover"
+              className="w-28 h-28 sm:w-64 sm:h-64 rounded-lg object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 if (target.src !== '/default-profile.png') {
@@ -149,15 +149,14 @@ const UserProfilePage: React.FC = () => {
           </div>
 
           {/* Informações do Usuário */}
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold mb-2">{usuario.nome}</h1>
-            <p className="text-gray-600 mb-4">
+          <div className="flex-1 w-full">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2 break-words">{usuario.nome}</h1>
+            <p className="text-gray-600 mb-4 text-sm sm:text-base">
               {usuario.tipo === 'designer' ? 'Designer' :
                 usuario.tipo === 'programador' ? 'Programador(a)' :
                   'Empresário(a)'}
             </p>
-
-            <div className="mb-4">
+            <div className="mb-4 text-sm sm:text-base">
               <p className="text-gray-700 whitespace-pre-wrap">
                 {usuario.descricao || 'Este usuário ainda não adicionou uma descrição.'}
               </p>

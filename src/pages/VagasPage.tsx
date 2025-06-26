@@ -81,24 +81,24 @@ const VagasPage: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50">
         {/* Cabeçalho */}
-        <div className="bg-brand-purple p-8">
-          <div className="container mx-auto">
-            <h1 className="text-2xl font-bold text-white mb-2">Vagas & Briefings</h1>
-            <p className="text-white opacity-90">
+        <div className="bg-brand-purple p-6 sm:p-8">
+          <div className="container mx-auto px-2 sm:px-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">Vagas & Briefings</h1>
+            <p className="text-white opacity-90 text-sm sm:text-base">
               Encontre oportunidades para trabalhar em projetos incríveis ou publique suas próprias vagas.
             </p>
           </div>
         </div>
         {/* Barra de Busca e Botão */}
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex gap-4 items-center">
-            <div className="flex-1 relative">
+        <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center w-full">
+            <div className="w-full sm:flex-1 relative">
               <input
                 type="search"
                 placeholder="Buscar vagas por título, empresa, descrição..."
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-purple focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-purple focus:border-transparent text-sm sm:text-base"
               />
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
                 <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -113,12 +113,12 @@ const VagasPage: React.FC = () => {
             </div>
             <Link
               to="/vagas/criar"
-              className="flex items-center gap-2 bg-brand-purple text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors"
+              className="flex items-center justify-center gap-2 bg-brand-purple text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors w-full sm:w-auto"
             >
               <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
               </svg>
-              Publicar Vaga
+              <span>Publicar Vaga</span>
             </Link>
           </div>
         </div>
@@ -133,24 +133,24 @@ const VagasPage: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50">
         {/* Cabeçalho */}
-        <div className="bg-brand-purple p-8">
-          <div className="container mx-auto">
-            <h1 className="text-2xl font-bold text-white mb-2">Vagas & Briefings</h1>
-            <p className="text-white opacity-90">
+        <div className="bg-brand-purple p-6 sm:p-8">
+          <div className="container mx-auto px-2 sm:px-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">Vagas & Briefings</h1>
+            <p className="text-white opacity-90 text-sm sm:text-base">
               Encontre oportunidades para trabalhar em projetos incríveis ou publique suas próprias vagas.
             </p>
           </div>
         </div>
         {/* Barra de Busca e Botão */}
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex gap-4 items-center">
-            <div className="flex-1 relative">
+        <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center w-full">
+            <div className="w-full sm:flex-1 relative">
               <input
                 type="search"
                 placeholder="Buscar vagas por título, empresa, descrição..."
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-purple focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-purple focus:border-transparent text-sm sm:text-base"
               />
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
                 <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -160,12 +160,12 @@ const VagasPage: React.FC = () => {
             </div>
             <Link
               to="/vagas/criar"
-              className="flex items-center gap-2 bg-brand-purple text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors"
+              className="flex items-center justify-center gap-2 bg-brand-purple text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors w-full sm:w-auto"
             >
               <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
               </svg>
-              Publicar Vaga
+              <span>Publicar Vaga</span>
             </Link>
           </div>
         </div>
@@ -178,25 +178,25 @@ const VagasPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Cabeçalho */}
-      <div className="bg-brand-purple p-8">
-        <div className="container mx-auto">
-          <h1 className="text-2xl font-bold text-white mb-2">Vagas & Briefings</h1>
-          <p className="text-white opacity-90">
+      <div className="bg-brand-purple p-6 sm:p-8">
+        <div className="container mx-auto px-2 sm:px-0">
+          <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">Vagas & Briefings</h1>
+          <p className="text-white opacity-90 text-sm sm:text-base">
             Encontre oportunidades para trabalhar em projetos incríveis ou publique suas próprias vagas.
           </p>
         </div>
       </div>
 
       {/* Barra de Busca e Botão */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex gap-4 items-center">
-          <div className="flex-1 relative">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center w-full">
+          <div className="w-full sm:flex-1 relative">
             <input
               type="search"
               placeholder="Buscar vagas por título, empresa, descrição..."
               value={searchTerm}
               onChange={handleSearchChange}
-              className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-purple focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-purple focus:border-transparent text-sm sm:text-base"
             />
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
               <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -211,12 +211,12 @@ const VagasPage: React.FC = () => {
           </div>
           <Link
             to="/vagas/criar"
-            className="flex items-center gap-2 bg-brand-purple text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors"
+            className="flex items-center justify-center gap-2 bg-brand-purple text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors w-full sm:w-auto"
           >
             <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
             </svg>
-            Publicar Vaga
+            <span>Publicar Vaga</span>
           </Link>
         </div>
 
@@ -233,15 +233,17 @@ const VagasPage: React.FC = () => {
       </div>
 
       {/* Grid de Vagas */}
-      <div className="container mx-auto px-4 pb-8">
+      <div className="container mx-auto px-2 sm:px-4 pb-8">
         {isLoading ? (
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-purple"></div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="sm:grid sm:grid-cols-2 md:grid-cols-3 gap-6 flex flex-row sm:flex-row overflow-x-auto sm:overflow-x-visible pb-2 sm:pb-0 -mx-2 sm:mx-0">
             {filteredVagas.map((vaga) => (
-              <Link key={vaga.vaga_id} to={`/vagas/${vaga.vaga_id}`}>
+              <Link key={vaga.vaga_id} to={`/vagas/${vaga.vaga_id}`}
+                className="block min-w-[270px] max-w-[350px] w-[85vw] sm:w-auto mx-2 sm:mx-0 flex-shrink-0 sm:flex-shrink"
+              >
                 <div className="group relative">
                   {/* Borda roxa superior arredondada */}
                   <div className="absolute top-0 left-0 right-0 h-8 bg-brand-purple rounded-t-xl z-10"></div>
@@ -263,12 +265,12 @@ const VagasPage: React.FC = () => {
                             </span>
                           </div>
                         )}
-                        <div>
-                          <h3 className="text-white font-bold line-clamp-2">{vaga.titulo}</h3>
-                          <p className="text-gray-400 text-sm">{vaga.empresa}</p>
+                        <div className="min-w-0">
+                          <h3 className="text-white font-bold line-clamp-2 truncate max-w-full">{vaga.titulo}</h3>
+                          <p className="text-gray-400 text-sm truncate max-w-full">{vaga.empresa}</p>
                         </div>
                       </div>
-                      <div className="flex gap-2 mt-3">
+                      <div className="flex gap-2 mt-3 flex-wrap">
                         <span className="bg-brand-purple text-white text-xs px-3 py-1 rounded-full">
                           {vaga.tipo_trabalho}
                         </span>

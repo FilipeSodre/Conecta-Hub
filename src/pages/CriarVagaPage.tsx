@@ -131,79 +131,79 @@ const CriarVagaPage: React.FC = () => {
     };
 
     return (
-        <div className="container mx-auto p-4 max-w-4xl">
-            <h1 className="text-3xl font-bold mb-8">Criar Nova Vaga</h1>
-            <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="container mx-auto p-2 sm:p-4 max-w-4xl">
+            <h1 className="text-xl sm:text-3xl font-bold mb-4 sm:mb-8">Criar Nova Vaga</h1>
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 {/* Informações Básicas */}
-                <div className="bg-white rounded-xl shadow-md p-6 space-y-4">
-                    <h2 className="text-xl font-semibold mb-4">Informações Básicas</h2>
+                <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 space-y-2 sm:space-y-4">
+                    <h2 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4">Informações Básicas</h2>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                                 Título da Vaga
                             </label>
                             <input
                                 type="text"
                                 value={formData.titulo}
                                 onChange={e => setFormData(prev => ({ ...prev, titulo: e.target.value }))}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
+                                className="w-full px-2 sm:px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent text-xs sm:text-base"
                                 required
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                                 Empresa
                             </label>
                             <input
                                 type="text"
                                 value={formData.empresa}
                                 onChange={e => setFormData(prev => ({ ...prev, empresa: e.target.value }))}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
+                                className="w-full px-2 sm:px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent text-xs sm:text-base"
                                 required
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                             Logo da Empresa
                         </label>
                         <input
                             type="file"
                             accept="image/*"
                             onChange={handleFileChange}
-                            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
+                            className="w-full px-2 sm:px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
                         />
                     </div>
                 </div>
 
                 {/* Detalhes da Vaga */}
-                <div className="bg-white rounded-xl shadow-md p-6 space-y-4">
-                    <h2 className="text-xl font-semibold mb-4">Detalhes da Vaga</h2>
+                <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 space-y-2 sm:space-y-4">
+                    <h2 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4">Detalhes da Vaga</h2>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                             Descrição Detalhada
                         </label>
                         <textarea
                             value={formData.descricao}
                             onChange={e => setFormData(prev => ({ ...prev, descricao: e.target.value }))}
-                            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
+                            className="w-full px-2 sm:px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
                             rows={6}
                             required
                         />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                                 Tipo de Trabalho
                             </label>
                             <select
                                 value={formData.tipo_trabalho}
                                 onChange={e => setFormData(prev => ({ ...prev, tipo_trabalho: e.target.value }))}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
+                                className="w-full px-2 sm:px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
                                 required
                             >
                                 <option value="">Selecione...</option>
@@ -214,14 +214,14 @@ const CriarVagaPage: React.FC = () => {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                                 Prazo do Projeto
                             </label>
                             <input
                                 type="text"
                                 value={formData.prazo}
                                 onChange={e => setFormData(prev => ({ ...prev, prazo: e.target.value }))}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
+                                className="w-full px-2 sm:px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
                                 placeholder="Ex: 3 meses"
                                 required
                             />
@@ -229,13 +229,13 @@ const CriarVagaPage: React.FC = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                             Formato de Trabalho
                         </label>
                         <select
                             value={formData.formato_trabalho}
                             onChange={e => setFormData(prev => ({ ...prev, formato_trabalho: e.target.value }))}
-                            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
+                            className="w-full px-2 sm:px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
                             required
                         >
                             <option value="">Selecione...</option>
@@ -246,28 +246,28 @@ const CriarVagaPage: React.FC = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                             Duração do Projeto
                         </label>
                         <input
                             type="text"
                             value={formData.duracao_projeto}
                             onChange={e => setFormData(prev => ({ ...prev, duracao_projeto: e.target.value }))}
-                            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
+                            className="w-full px-2 sm:px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
                             placeholder="Ex: 6 meses com possibilidade de extensão"
                             required
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                             Remuneração
                         </label>
                         <input
                             type="text"
                             value={formData.remuneracao}
                             onChange={e => setFormData(prev => ({ ...prev, remuneracao: e.target.value }))}
-                            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
+                            className="w-full px-2 sm:px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
                             placeholder="Ex: R$ 3.000 - R$ 5.000 por mês"
                             required
                         />
@@ -275,11 +275,11 @@ const CriarVagaPage: React.FC = () => {
                 </div>
 
                 {/* Requisitos e Diferenciais */}
-                <div className="bg-white rounded-xl shadow-md p-6 space-y-4">
-                    <h2 className="text-xl font-semibold mb-4">Requisitos e Diferenciais</h2>
+                <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 space-y-2 sm:space-y-4">
+                    <h2 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4">Requisitos e Diferenciais</h2>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                             Requisitos
                         </label>
                         {formData.requisitos.map((requisito, index) => (
@@ -288,7 +288,7 @@ const CriarVagaPage: React.FC = () => {
                                     type="text"
                                     value={requisito}
                                     onChange={e => handleRequisitosChange(index, e.target.value)}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
+                                    className="w-full px-2 sm:px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
                                     placeholder="Adicione um requisito"
                                 />
                             </div>
@@ -296,7 +296,7 @@ const CriarVagaPage: React.FC = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                             Diferenciais
                         </label>
                         {formData.diferenciais.map((diferencial, index) => (
@@ -305,7 +305,7 @@ const CriarVagaPage: React.FC = () => {
                                     type="text"
                                     value={diferencial}
                                     onChange={e => handleDiferenciaisChange(index, e.target.value)}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
+                                    className="w-full px-2 sm:px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-purple focus:border-transparent"
                                     placeholder="Adicione um diferencial"
                                 />
                             </div>

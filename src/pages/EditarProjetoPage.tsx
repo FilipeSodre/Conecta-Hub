@@ -74,13 +74,13 @@ const EditarProjetoPage: React.FC = () => {
     }
 
     return (
-        <div className="container mx-auto p-4 max-w-4xl">
-            <h1 className="text-2xl font-bold mb-6">Editar Projeto</h1>
+        <div className="container mx-auto p-2 sm:p-4 max-w-4xl">
+            <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Editar Projeto</h1>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 {/* Upload de Imagens */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
                         Adicionar Novas Imagens
                     </label>
                     <input
@@ -88,10 +88,10 @@ const EditarProjetoPage: React.FC = () => {
                         multiple
                         accept="image/*"
                         onChange={handleImagensChange}
-                        className="block w-full text-sm text-gray-500
-                     file:mr-4 file:py-2 file:px-4
+                        className="block w-full text-xs sm:text-sm text-gray-500
+                     file:mr-2 sm:file:mr-4 file:py-2 file:px-4
                      file:rounded-full file:border-0
-                     file:text-sm file:font-semibold
+                     file:text-xs sm:file:text-sm file:font-semibold
                      file:bg-brand-purple file:text-white
                      hover:file:bg-brand-purple-dark"
                     />
@@ -99,14 +99,14 @@ const EditarProjetoPage: React.FC = () => {
 
                 {/* Imagens Existentes */}
                 <div>
-                    <h2 className="text-lg font-semibold mb-4">Imagens Atuais</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <h2 className="text-base sm:text-lg font-semibold mb-2 sm:mb-4">Imagens Atuais</h2>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
                         {projeto.imagens?.map((imagem, index) => (
                             <div key={index} className="relative group">
                                 <img
                                     src={getProjectImageUrl(imagem)}
                                     alt={`Imagem ${index + 1}`}
-                                    className="w-full h-48 object-cover rounded-lg"
+                                    className="w-full h-28 sm:h-48 object-cover rounded-lg"
                                 />
                                 <button
                                     type="button"
