@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import apiClient from '../services/api';
+import { useUser } from '../context/UserContext';
 
 interface Participante {
   usuario_id: number;
@@ -52,6 +53,7 @@ const PortfolioPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredProjetos, setFilteredProjetos] = useState<Projeto[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { user } = useUser();
 
   useEffect(() => {
     const fetchProjetos = async () => {
@@ -96,6 +98,13 @@ const PortfolioPage: React.FC = () => {
     };
     fetchProjetos();
   }, []);
+
+  useEffect(() => {
+    if (user?.usuario_id) {
+      // Filtra projetos do usuário logado
+      setFilteredProjetos(projetos.filter(p => p.usuario_id === user.usuario_id));
+    }
+  }, [user, projetos]);
 
   // Função para buscar projetos no backend
   const handleSearch = async (term: string) => {
@@ -219,9 +228,6 @@ const PortfolioPage: React.FC = () => {
             {filteredProjetos.map((projeto) => (
               <a
                 key={projeto.projeto_id}
-                onClick={() => {
-                  console.log('[PortfolioPage] Card clicado! Projeto:', projeto);
-                }}
                 href={`/portfolio/${projeto.projeto_id}`}
                 className="block bg-purple-600 rounded-lg shadow-md overflow-hidden transform transition-transform hover:scale-105 flex-shrink-0"
               >
@@ -272,6 +278,7 @@ const PortfolioPage: React.FC = () => {
                 </div>
               </a>
             ))}
+
           </div>
         )}
 

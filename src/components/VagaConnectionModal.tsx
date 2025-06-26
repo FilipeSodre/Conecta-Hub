@@ -79,9 +79,13 @@ const VagaConnectionModal: React.FC<VagaConnectionModalProps> = ({
                             className="w-full rounded-xl px-4 py-2 border border-gray-300 text-gray-700"
                         >
                             <option value="">Selecione...</option>
-                            {projetos.map(proj => (
+                            {projetos && projetos.length > 0 ? (
+                              projetos.map(proj => (
                                 <option key={proj.projeto_id} value={proj.projeto_id}>{proj.titulo}</option>
-                            ))}
+                              ))
+                            ) : (
+                              <option value="" disabled>Nenhum projeto encontrado</option>
+                            )}
                         </select>
                     </div>
                     <div>

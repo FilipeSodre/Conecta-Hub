@@ -7,6 +7,7 @@ interface ConnectionRequestModalProps {
     recipientId: number;
     connectedProjectId?: number;
     connectedProjectTitle?: string;
+    userProjects?: { projeto_id: number; titulo: string; link_github?: string; link_figma?: string; link_drive?: string }[];
     onSend: (data: { recipientId: number; reason: string; link: string; connectionType: string; projetoId?: number; projetoTitle?: string }) => void;
 }
 
@@ -23,12 +24,14 @@ const ConnectionRequestModal: React.FC<ConnectionRequestModalProps> = ({
     recipientId,
     connectedProjectId,
     connectedProjectTitle,
+    userProjects = [],
     onSend
 }) => {
     const [reason, setReason] = useState('');
     const [portfolioLink, setPortfolioLink] = useState('');
     const [connectionType, setConnectionType] = useState(connectionTypes[0]);
     const [otherType, setOtherType] = useState('');
+    const [selectedProjectId, setSelectedProjectId] = useState<string>('');
 
     useEffect(() => {
         if (isOpen) {
@@ -36,8 +39,19 @@ const ConnectionRequestModal: React.FC<ConnectionRequestModalProps> = ({
             setReason('');
             setConnectionType(connectionTypes[0]);
             setOtherType('');
+            setSelectedProjectId('');
         }
     }, [isOpen, connectedProjectId]);
+
+    // Atualiza o link do portfólio ao selecionar um projeto
+    useEffect(() => {
+        if (selectedProjectId && userProjects.length > 0) {
+            const proj = userProjects.find(p => String(p.projeto_id) === selectedProjectId);
+            if (proj) {
+                setPortfolioLink(proj.link_github || proj.link_figma || proj.link_drive || proj.titulo);
+            }
+        }
+    }, [selectedProjectId, userProjects]);
 
     if (!isOpen) return null;
 
@@ -93,12 +107,25 @@ const ConnectionRequestModal: React.FC<ConnectionRequestModalProps> = ({
                     ) : (
                         <div>
                             <label className="block mb-1">Link do seu Portfólio (Opcional):</label>
+                            {userProjects.length > 0 ? (
+                                <select
+                                    value={selectedProjectId}
+                                    onChange={e => setSelectedProjectId(e.target.value)}
+                                    className="w-full rounded-xl px-4 py-2 border border-gray-300 mb-2"
+                                >
+                                    <option value="">Selecione um projeto do seu portfólio</option>
+                                    {userProjects.map(proj => (
+                                        <option key={proj.projeto_id} value={proj.projeto_id}>{proj.titulo}</option>
+                                    ))}
+                                </select>
+                            ) : null}
                             <input
                                 type="text"
                                 value={portfolioLink}
                                 onChange={e => setPortfolioLink(e.target.value)}
                                 placeholder="Link para seu portfólio ou projeto"
                                 className="w-full rounded-xl px-4 py-2 border border-gray-300"
+                                disabled={!!selectedProjectId}
                             />
                         </div>
                     )}

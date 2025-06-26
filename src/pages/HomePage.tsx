@@ -22,7 +22,7 @@ const RecommendIcon = () => (
   <svg className="w-10 h-10 text-brand-yellow mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 9l-2 2-2-2m0 6l2-2 2 2m-2-2v.01" /></svg>
 );
 const CalendarIcon = () => (
-  <svg className="w-10 h-10 text-brand-yellow mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 2v4M8 2v4M3 10h18" /></svg>
+  <svg className="w-10 h-10 text-brand-yellow mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 2v4M8 2v4M3 10h18" /></svg>
 );
 
 const novidadesIcones = [

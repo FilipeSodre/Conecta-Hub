@@ -79,6 +79,7 @@ const PortfolioProjectPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     // Estado para o usuário dono do projeto
     const [ownerUser, setOwnerUser] = useState<Usuario | null>(null);
+    const [userProjects, setUserProjects] = useState<Projeto[]>([]);
 
     // useEffect principal para buscar o projeto de forma eficiente
     useEffect(() => {
@@ -347,6 +348,22 @@ const PortfolioProjectPage: React.FC = () => {
 
     // Projetos aleatórios (mock, pois não buscamos todos os projetos mais)
     const randomProjetos: Projeto[] = useMemo(() => [], []);
+
+    // Buscar projetos do usuário logado
+    useEffect(() => {
+        const fetchUserProjects = async () => {
+            try {
+                const response = await apiClient.get('/projetos');
+                const allProjects = response.data;
+                const userId = JSON.parse(localStorage.getItem('user') || '{}').usuario_id;
+                const filtered = allProjects.filter((proj: any) => proj.usuario_id === userId);
+                setUserProjects(filtered);
+            } catch (err) {
+                setUserProjects([]);
+            }
+        };
+        fetchUserProjects();
+    }, []);
 
     // Renderização condicional robusta
     if (loading) {
@@ -787,6 +804,7 @@ const PortfolioProjectPage: React.FC = () => {
                 onClose={() => setIsConnectionModalOpen(false)}
                 recipientName={projeto.usuario_nome || 'Usuário'}
                 recipientId={projeto.usuario_id || 0}
+                userProjects={userProjects}
                 onSend={(data: any) => {
                     // Função de envio de conexão
                     console.log('Solicitação de conexão:', data);
