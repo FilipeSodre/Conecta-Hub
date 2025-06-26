@@ -175,15 +175,6 @@ const VagasPage: React.FC = () => {
       </div>
     );
   }
-  if (!filteredVagas || filteredVagas.length === 0) {
-    return (
-      <div className="text-center py-12 text-gray-500 min-h-screen">
-        <p className="text-lg mb-2">Nenhuma vaga disponível no momento</p>
-        <p>Seja o primeiro a publicar uma vaga!</p>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Cabeçalho */}
@@ -290,13 +281,6 @@ const VagasPage: React.FC = () => {
                 </div>
               </Link>
             ))}
-          </div>
-        )}
-
-        {!isLoading && filteredVagas.length === 0 && !searchTerm && (
-          <div className="text-center py-12 text-gray-500">
-            <p className="text-lg mb-2">Nenhuma vaga disponível no momento</p>
-            <p>Seja o primeiro a publicar uma vaga!</p>
           </div>
         )}
       </div>
