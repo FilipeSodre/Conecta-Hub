@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useKeenSlider } from 'keen-slider/react';
 import 'keen-slider/keen-slider.min.css';
 import apiClient from '../services/api';
+import { useUser } from '../context/UserContext';
 
 // Placeholder Icons (replace with actual SVGs or library)
 const ArrowRightIcon = () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 ml-1"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>;
@@ -21,7 +22,7 @@ const RecommendIcon = () => (
   <svg className="w-10 h-10 text-brand-yellow mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 9l-2 2-2-2m0 6l2-2 2 2m-2-2v.01" /></svg>
 );
 const CalendarIcon = () => (
-  <svg className="w-10 h-10 text-brand-yellow mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 2v4M8 2v4M3 10h18" /></svg>
+  <svg className="w-10 h-10 text-brand-yellow mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 2v4M8 2v4M3 10h18" /></svg>
 );
 
 const novidadesIcones = [
@@ -38,27 +39,19 @@ const mockNovidades = [
   { id: 4, title: "Novo Sistema de Agendamento", desc: "Agende conversas em tempo real.", img: "/images/placeholder-calendar.png", bgColor: "bg-sky-700" },
 ];
 
-const mockAmigosPostando = [
-  { id: 1, user: "Maria Lima", userImg: "/fotos/avatar-maria.png", projectTitle: "Desenvolvimento de Aplicativo", projectDesc: "Aplicativo para academia.", projectImg: "/fotos/project-app-fitness.png" },
-  { id: 2, user: "João Gomes", userImg: "/fotos/avatar-joao.png", projectTitle: "FeedUp com treinos e registros", projectDesc: "Interface para app de treinos.", projectImg: "/fotos/project-feedup.png" },
-  { id: 3, user: "Caio Junior", userImg: "/fotos/avatar-caio.png", projectTitle: "Desenvolvimento de Aplicativo", projectDesc: "Aplicativo para aulas de tênis.", projectImg: "/fotos/project-tennis.png" },
-  { id: 4, user: "Prof. Anderson", userImg: "/fotos/avatar-prof.png", projectTitle: "Redesign de Aplicativo", projectDesc: "Novo visual para app educacional.", projectImg: "/fotos/project-redesign.png" },
-  { id: 5, user: "Julia Silva", userImg: "/fotos/avatar-julia.png", projectTitle: "Projeto de Fotodesign", projectDesc: "Ensaio fotográfico conceitual.", projectImg: "/fotos/project-photodesign.png" },
-  { id: 6, user: "Nathalia Montenegro", userImg: "/fotos/avatar-nathalia-m.png", projectTitle: "Identidade Visual", projectDesc: "Marca para startup de IA.", projectImg: "/fotos/project-id-visual.png" },
-  { id: 7, user: "Nathalia Vales Ficher", userImg: "/fotos/avatar-nathalia-f.png", projectTitle: "Campanha de divulgação", projectDesc: "Campanha para marca de moda.", projectImg: "/fotos/project-fashion-camp.png" },
-];
 
 // Utilitário para padronizar exibição de imagens (Cloudinary, local ou placeholder)
-const getProjectImageUrl = (imgPath?: string) => {
-  if (!imgPath) return '/default-profile.png'; // placeholder global
-  if (imgPath.startsWith('http')) return imgPath;
-  if (imgPath.startsWith('/src/assets/')) return imgPath.replace('/src/assets', '');
-  if (imgPath.startsWith('/public/')) return imgPath.replace('/public', '');
-  // Nunca retorna /uploads ou localhost
-  return '/default-profile.png';
-};
+// const getProjectImageUrl = (imgPath?: string) => {
+//   if (!imgPath) return '/default-profile.png'; // placeholder global
+//   if (imgPath.startsWith('http')) return imgPath;
+//   if (imgPath.startsWith('/src/assets/')) return imgPath.replace('/src/assets', '');
+//   if (imgPath.startsWith('/public/')) return imgPath.replace('/public', '');
+//   // Nunca retorna /uploads ou localhost
+//   return '/default-profile.png';
+// };
 
 const HomePage: React.FC = () => {
+  const { user } = useUser();
   const [sliderRefNovidades] = useKeenSlider<HTMLDivElement>({
     loop: true,
     slides: { perView: 1.2, spacing: 15 },
@@ -68,7 +61,9 @@ const HomePage: React.FC = () => {
     },
   });
 
-  const [sliderRefAmigos] = useKeenSlider<HTMLDivElement>({
+  // Destaques do mês - usuários reais
+  const [destaques, setDestaques] = useState<any[]>([]);
+  const [sliderRefDestaques] = useKeenSlider<HTMLDivElement>({
     loop: false,
     slides: { perView: 1.3, spacing: 15 },
     breakpoints: {
@@ -77,9 +72,9 @@ const HomePage: React.FC = () => {
     },
   });
 
-  // Destaques do mês - usuários reais
-  const [destaques, setDestaques] = useState<any[]>([]);
-  const [sliderRefDestaques] = useKeenSlider<HTMLDivElement>({
+  // Conexões recentes do usuário logado
+  const [conexoesRecentes, setConexoesRecentes] = useState<any[]>([]);
+  const [sliderRefConexoes] = useKeenSlider<HTMLDivElement>({
     loop: false,
     slides: { perView: 1.3, spacing: 15 },
     breakpoints: {
@@ -104,6 +99,31 @@ const HomePage: React.FC = () => {
     }
     fetchDestaques();
   }, []);
+
+  useEffect(() => {
+    async function fetchConexoes() {
+      if (!user?.usuario_id) return;
+      try {
+        const res = await apiClient.get(`/usuarios/${user.usuario_id}/conexoes-recebidas`);
+        // Pega até 5 conexões, mostra o outro usuário
+        let conexoes = res.data || [];
+        // Mostra o usuário que não é o logado
+        conexoes = conexoes
+          .map((c: any) => {
+            const outro = c.sender_id === user.usuario_id
+              ? { usuario_id: c.recipient_id, nome: c.sender_nome, foto_perfil: c.sender_foto }
+              : { usuario_id: c.sender_id, nome: c.sender_nome, foto_perfil: c.sender_foto };
+            return outro;
+          })
+          .filter((v: any, i: number, arr: any[]) => arr.findIndex((u: any) => u.usuario_id === v.usuario_id) === i)
+          .slice(0, 5);
+        setConexoesRecentes(conexoes);
+      } catch (e) {
+        setConexoesRecentes([]);
+      }
+    }
+    fetchConexoes();
+  }, [user]);
 
   return (
     <div className="space-y-12 px-2 sm:px-4 md:px-8 max-w-screen-xl mx-auto w-full">
@@ -180,25 +200,6 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Desafio de Design da Semana */}
-      <section className="flex flex-col md:flex-row gap-4 md:gap-8 items-center bg-slate-800 text-white p-4 sm:p-8 md:p-12 rounded-2xl shadow-xl w-full">
-        <div className="md:w-1/2">
-          <h2 className="text-3xl font-bold text-brand-yellow mb-4">Desafio de <span className="text-white">Design</span> da Semana</h2>
-          <p className="mb-4 text-slate-300">
-            Crie um cartaz de divulgação de um festival de música com estética dos anos 1920, período Art Déco. O projeto deve ser inovador e ter uma pegada de revolução cultural.
-          </p>
-          <button className="bg-brand-yellow text-brand-purple-dark font-semibold py-2 px-6 rounded-lg hover:bg-yellow-400 transition-colors">
-            Participar do Desafio
-          </button>
-        </div>
-        <div className="md:w-1/2">
-          {/* Imagem removida: <img src="/fotos/desafio-design-artdeco.png" ... /> */}
-          <div className="w-full h-80 flex items-center justify-center bg-gray-700 rounded-lg text-white text-lg font-bold opacity-60">
-            Imagem do desafio removida
-          </div>
-        </div>
-      </section>
-
       {/* Suas Conquistas Recentes */}
       <section>
         <h2 className="text-2xl sm:text-3xl font-bold text-brand-purple-dark mb-4 sm:mb-6">Suas Conquistas Recentes</h2>
@@ -220,50 +221,29 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* O que seus amigos estão postando */}
-      <section>
-        <h2 className="text-2xl sm:text-3xl font-bold text-brand-purple-dark mb-4 sm:mb-6">O que seus amigos estão postando</h2>
-        <div ref={sliderRefAmigos} className="keen-slider overflow-x-auto">
-          {mockAmigosPostando.map(post => (
-            <div key={post.id} className="keen-slider__slide bg-white rounded-xl shadow-card overflow-hidden">
-              <img src={getProjectImageUrl(post.projectImg)} alt={post.projectTitle} className="w-full h-40 object-cover" />
-              <div className="p-4">
-                <div className="flex items-center mb-2">
-                  <img src={getProjectImageUrl(post.userImg)} alt={post.user} className="w-8 h-8 rounded-full mr-2 object-cover" />
-                  <span className="text-sm font-semibold text-brand-purple-dark">{post.user}</span>
-                </div>
-                <h3 className="font-semibold text-brand-text mb-1 truncate">{post.projectTitle}</h3>
-                <p className="text-xs text-brand-text-secondary truncate">{post.projectDesc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* Rede de Conexões Recentes - dados reais */}
       <section>
         <h2 className="text-2xl sm:text-3xl font-bold text-brand-purple-dark mb-4 sm:mb-6">Rede de Conexões Recentes</h2>
-        <div className="bg-slate-800 p-4 sm:p-8 rounded-2xl shadow-xl relative w-full">
-          <div className="flex flex-row flex-nowrap overflow-x-auto gap-4 justify-start items-center">
-            {[
-              { nome: 'joao pedro', img: '/default-profile.png', id: 7 },
-              { nome: 'Leo', img: '/default-profile.png', id: 8 },
-              { nome: 'teste', img: '/default-profile.png', id: 9 },
-              { nome: 'jaquleine', img: '/default-profile.png', id: 10 },
-              { nome: 'marcello', img: '/default-profile.png', id: 13 },
-              { nome: 'Filipe', img: '/default-profile.png', id: 11 },
-              { nome: 'Filipe', img: '/default-profile.png', id: 12 },
-            ].map(conexao => (
-              <Link key={conexao.img} to={`/perfil/${conexao.id}`} title={conexao.nome}>
-                <img
-                  src={getProjectImageUrl(conexao.img)}
-                  alt={conexao.nome}
-                  className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-4 border-brand-purple-light shadow-md bg-white hover:scale-105 transition-transform"
-                />
-              </Link>
-            ))}
-          </div>
-          <p className="text-center text-slate-300 mt-4 sm:mt-6">Conecte-se com outros talentos e expanda sua rede!</p>
+        <div ref={sliderRefConexoes} className="keen-slider overflow-x-auto">
+          {conexoesRecentes.length === 0 && (
+            <div className="keen-slider__slide bg-white rounded-2xl shadow-card flex items-center justify-center h-[180px] w-[180px] min-w-[180px] max-w-[180px] text-gray-400">
+              Nenhuma conexão encontrada
+            </div>
+          )}
+          {conexoesRecentes.map((conexao) => (
+            <Link key={conexao.usuario_id} to={`/perfil/${conexao.usuario_id}`} title={conexao.nome} className="keen-slider__slide w-full max-w-xs mx-auto">
+              <div className="flex flex-col items-center bg-white rounded-2xl shadow-card p-0 h-[180px] w-[180px] min-w-[180px] max-w-[180px] overflow-hidden">
+                <div className="w-full h-[100px] flex items-center justify-center bg-gray-200 rounded-t-2xl overflow-hidden">
+                  <img src={conexao.foto_perfil || '/default-profile.png'} alt={conexao.nome} className="object-cover w-full h-full" />
+                </div>
+                <div className="w-full bg-brand-purple-light rounded-b-2xl flex flex-col items-center p-2 flex-1 justify-center">
+                  <h3 className="text-base font-indie-flower text-brand-purple-dark text-center mb-1 w-full truncate">
+                    {conexao.nome}
+                  </h3>
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 
