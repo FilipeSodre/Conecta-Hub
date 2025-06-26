@@ -175,7 +175,8 @@ const ProfilePage: React.FC = () => {
 
     const handleAceitarConexao = async (id: number) => {
         try {
-            await apiClient.post(`/conexoes/${id}/aceitar`);
+            // Corrigido: usar endpoint de notificação para aceitar conexão
+            await apiClient.post(`/notificacoes/${id}/aceitar-conexao`);
             setSolicitacoesConexao(prev => prev.filter(s => s.id !== id));
             alert('Conexão aceita! Agora vocês estão conectados.');
         } catch (err) {
@@ -336,8 +337,7 @@ const ProfilePage: React.FC = () => {
                     <div key={sol.id} className="bg-purple-100 rounded-2xl p-3 flex items-center gap-3">
                         <img src={getUserImageUrl(sol.sender_foto)} alt={sol.sender_nome} className="w-10 h-10 rounded-full object-cover" />
                         <div className="flex-1">
-                            <span className="font-semibold mr-2">@{sol.sender_nome}</span>
-                            quer se conectar com você: <span className="font-semibold">{sol.connection_type}</span>
+                            <span className="font-semibold mr-2">@{sol.sender_nome}</span> quer se conectar com você: <span className="font-semibold">{sol.connection_type}</span>
                             {sol.projeto_titulo && (
                                 <div className="text-xs text-blue-700 mt-1">
                                     Portfólio escolhido: <span className="font-medium">{sol.projeto_titulo}</span>
