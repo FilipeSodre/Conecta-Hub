@@ -341,14 +341,14 @@ const ProfilePage: React.FC = () => {
                                         </div>
                                     )}
                                 </>
-                            ) : (sol.connection_type === 'projeto' || sol.connection_type === 'colaborador') && sol.projeto_titulo && sol.projeto_id ? (
+                            ) : (sol.connection_type === 'projeto' && sol.projeto_titulo && sol.projeto_id) ? (
                                 <>
                                     <span>convidou você para ser colaborador no projeto <span className="font-semibold">{sol.projeto_titulo}</span></span>
                                     <div className="text-xs text-gray-700 mt-1 italic">{sol.reason}</div>
                                 </>
                             ) : (
                                 <>
-                                    <span>quer se conectar: <span className="font-semibold">{sol.connection_type}</span></span>
+                                    <span>@{sol.sender_nome} quer se conectar com você: <span className="font-semibold">{sol.connection_type}</span></span>
                                     <div className="text-xs text-gray-700 mt-1 italic">{sol.reason}</div>
                                 </>
                             )}
