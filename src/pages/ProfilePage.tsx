@@ -314,10 +314,13 @@ const ProfilePage: React.FC = () => {
         </div>
     );
 
+    // Filtrar apenas conexões do tipo 'projeto' para exibir como solicitações amarelas
+    const solicitacoesConexaoProjeto = solicitacoesConexao.filter(sol => sol.connection_type === 'projeto');
+
     const renderSolicitacoesConexao = () => (
         <div className="space-y-3 mb-6">
-            {solicitacoesConexao.length > 0 ? (
-                solicitacoesConexao.map((sol) => (
+            {solicitacoesConexaoProjeto.length > 0 ? (
+                solicitacoesConexaoProjeto.map((sol) => (
                     <div key={sol.id} className="bg-yellow-200 rounded-2xl p-3 flex items-center gap-3">
                         <Link to={`/perfil/${sol.sender_id}`} className="flex items-center gap-3">
                             <img
