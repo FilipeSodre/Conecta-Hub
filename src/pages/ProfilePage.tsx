@@ -314,8 +314,8 @@ const ProfilePage: React.FC = () => {
         </div>
     );
 
-    // Filtrar apenas conexões do tipo 'projeto' para exibir como solicitações amarelas
-    const solicitacoesConexaoProjeto = solicitacoesConexao.filter(sol => sol.connection_type === 'projeto');
+    // Filtrar apenas conexões do tipo 'projeto' OU 'colaborador' para exibir como solicitações amarelas
+    const solicitacoesConexaoProjeto = solicitacoesConexao.filter(sol => sol.connection_type === 'projeto' || sol.connection_type === 'colaborador');
 
     const renderSolicitacoesConexao = () => (
         <div className="space-y-3 mb-6">
@@ -341,7 +341,7 @@ const ProfilePage: React.FC = () => {
                                         </div>
                                     )}
                                 </>
-                            ) : sol.connection_type === 'projeto' && sol.projeto_titulo && sol.projeto_id ? (
+                            ) : (sol.connection_type === 'projeto' || sol.connection_type === 'colaborador') && sol.projeto_titulo && sol.projeto_id ? (
                                 <>
                                     <span>convidou você para ser colaborador no projeto <span className="font-semibold">{sol.projeto_titulo}</span></span>
                                     <div className="text-xs text-gray-700 mt-1 italic">{sol.reason}</div>
