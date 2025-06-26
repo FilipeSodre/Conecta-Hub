@@ -350,9 +350,9 @@ app.post('/projetos/:id/imagens', upload.array('imagens'), async (req, res) => {
 app.post('/usuario-projeto', async (req, res) => {
     const { usuario_id, projeto_id, papel, solicitante_id } = req.body;
 
-    console.log('Dados recebidos:', { usuario_id, projeto_id, papel, solicitante_id });
+    // Log detalhado de entrada
+    console.log('[CONVITE] Dados recebidos:', { usuario_id, projeto_id, papel, solicitante_id });
 
-    // Validação dos dados
     if (!usuario_id || !projeto_id || !papel || !solicitante_id) {
         return res.status(400).json({
             error: 'Dados incompletos',
@@ -361,59 +361,35 @@ app.post('/usuario-projeto', async (req, res) => {
     }
 
     try {
-        // Primeiro, verifica se o projeto existe
-        const projectCheck = await pool.query(
-            'SELECT * FROM projeto WHERE projeto_id = $1',
-            [projeto_id]
-        );
-
+        // Verifica se o projeto existe
+        const projectCheck = await pool.query('SELECT * FROM projeto WHERE projeto_id = $1', [projeto_id]);
         if (projectCheck.rows.length === 0) {
-            return res.status(404).json({
-                error: 'Projeto não encontrado'
-            });
+            return res.status(404).json({ error: 'Projeto não encontrado' });
         }
-
         // Verifica se o usuário existe
-        const userCheck = await pool.query(
-            'SELECT * FROM usuario WHERE usuario_id = $1',
-            [usuario_id]
-        );
-
+        const userCheck = await pool.query('SELECT * FROM usuario WHERE usuario_id = $1', [usuario_id]);
         if (userCheck.rows.length === 0) {
-            return res.status(404).json({
-                error: 'Usuário não encontrado'
-            });
+            return res.status(404).json({ error: 'Usuário não encontrado' });
         }
-
         // Verifica se já existe essa relação
-        const existingCheck = await pool.query(
-            'SELECT * FROM usuario_projeto WHERE usuario_id = $1 AND projeto_id = $2',
-            [usuario_id, projeto_id]
-        );
-
+        const existingCheck = await pool.query('SELECT * FROM usuario_projeto WHERE usuario_id = $1 AND projeto_id = $2', [usuario_id, projeto_id]);
         if (existingCheck.rows.length > 0) {
-            return res.status(400).json({
-                error: 'Este usuário já está associado a este projeto'
-            });
+            return res.status(400).json({ error: 'Este usuário já está associado a este projeto' });
         }
-
-        // Em vez de adicionar direto, cria notificação de convite
-        await pool.query(
-            'INSERT INTO notificacoes (tipo, usuario_origem_id, usuario_destino_id, projeto_id, status) VALUES ($1, $2, $3, $4, $5)',
+        // Cria notificação de convite com status 'pendente'
+        const notifResult = await pool.query(
+            'INSERT INTO notificacoes (tipo, usuario_origem_id, usuario_destino_id, projeto_id, status) VALUES ($1, $2, $3, $4, $5) RETURNING *',
             ['convite_colaborador', solicitante_id, usuario_id, projeto_id, 'pendente']
         );
-
-        console.log('Convite de colaborador enviado com sucesso');
-        res.status(201).json({
-            message: 'Convite de colaborador enviado com sucesso'
-        });
+        if (notifResult.rows.length > 0) {
+            console.log('[CONVITE] Notificação criada:', notifResult.rows[0]);
+        } else {
+            console.log('[CONVITE] Falha ao criar notificação:', { solicitante_id, usuario_id, projeto_id });
+        }
+        res.status(201).json({ message: 'Convite de colaborador enviado com sucesso', notificacao: notifResult.rows[0] });
     } catch (error) {
-        console.error('Erro detalhado ao convidar colaborador:', error);
-        res.status(500).json({
-            error: 'Erro ao convidar colaborador',
-            details: error.message,
-            sqlError: error.code
-        });
+        console.error('[CONVITE] Erro detalhado ao convidar colaborador:', error);
+        res.status(500).json({ error: 'Erro ao convidar colaborador', details: error.message, sqlError: error.code });
     }
 });
 
@@ -1299,20 +1275,28 @@ app.post('/notificacoes/:id/aceitar-convite', async (req, res) => {
         }
         const notif = notifRes.rows[0];
         // Verifica se já é colaborador
-        const existing = await pool.query(
-            'SELECT 1 FROM usuario_projeto WHERE usuario_id = $1 AND projeto_id = $2',
-            [notif.usuario_destino_id, notif.projeto_id]
-        );
+        const existing = await pool.query('SELECT 1 FROM usuario_projeto WHERE usuario_id = $1 AND projeto_id = $2', [notif.usuario_destino_id, notif.projeto_id]);
         if (existing.rows.length === 0) {
-            await pool.query(
-                'INSERT INTO usuario_projeto (usuario_id, projeto_id) VALUES ($1, $2)',
-                [notif.usuario_destino_id, notif.projeto_id]
-            );
+            // Buscar o tipo do usuário para preencher o campo papel
+            const userTipoRes = await pool.query('SELECT tipo FROM usuario WHERE usuario_id = $1', [notif.usuario_destino_id]);
+            let papel = 'programador';
+            if (userTipoRes.rows.length > 0 && (userTipoRes.rows[0].tipo === 'designer' || userTipoRes.rows[0].tipo === 'programador')) {
+                papel = userTipoRes.rows[0].tipo;
+            }
+            const insertResult = await pool.query('INSERT INTO usuario_projeto (usuario_id, projeto_id, papel) VALUES ($1, $2, $3) RETURNING *', [notif.usuario_destino_id, notif.projeto_id, papel]);
+            if (insertResult.rows.length > 0) {
+                console.log('[NOTIFICAÇÃO] Colaborador adicionado com sucesso:', insertResult.rows[0]);
+            } else {
+                console.log('[NOTIFICAÇÃO] Falha ao adicionar colaborador:', { usuario_id: notif.usuario_destino_id, projeto_id: notif.projeto_id, papel });
+            }
         }
-        // Remove a notificação
+        // Atualiza status da notificação para 'aceita' antes de remover
+        await pool.query('UPDATE notificacoes SET status = $1 WHERE notificacao_id = $2', ['aceita', id]);
+        // Remove a notificação (ou pode manter para histórico)
         await pool.query('DELETE FROM notificacoes WHERE notificacao_id = $1', [id]);
         res.json({ success: true });
     } catch (error) {
+        console.error('[NOTIFICAÇÃO] Erro ao aceitar convite:', error);
         res.status(500).json({ error: 'Erro ao aceitar convite', details: error.message });
     }
 });
