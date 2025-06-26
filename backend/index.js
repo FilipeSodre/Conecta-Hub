@@ -1268,12 +1268,15 @@ app.get('/chats/:chatId', async (req, res) => {
 app.post('/notificacoes/:id/aceitar-convite', async (req, res) => {
     const { id } = req.params;
     try {
+        console.log('[NOTIFICAÇÃO] Iniciando aceite do convite para notificacao_id:', id);
         // Busca a notificação
         const notifRes = await pool.query('SELECT * FROM notificacoes WHERE notificacao_id = $1', [id]);
         if (notifRes.rows.length === 0) {
+            console.log('[NOTIFICAÇÃO] Notificação não encontrada:', id);
             return res.status(404).json({ error: 'Notificação não encontrada' });
         }
         const notif = notifRes.rows[0];
+        console.log('[NOTIFICAÇÃO] Notificação encontrada:', notif);
         // Verifica se já é colaborador
         const existing = await pool.query('SELECT 1 FROM usuario_projeto WHERE usuario_id = $1 AND projeto_id = $2', [notif.usuario_destino_id, notif.projeto_id]);
         if (existing.rows.length === 0) {
@@ -1289,11 +1292,23 @@ app.post('/notificacoes/:id/aceitar-convite', async (req, res) => {
             } else {
                 console.log('[NOTIFICAÇÃO] Falha ao adicionar colaborador:', { usuario_id: notif.usuario_destino_id, projeto_id: notif.projeto_id, papel });
             }
+        } else {
+            console.log('[NOTIFICAÇÃO] Usuário já é colaborador:', { usuario_id: notif.usuario_destino_id, projeto_id: notif.projeto_id });
         }
         // Atualiza status da notificação para 'aceita' antes de remover
-        await pool.query('UPDATE notificacoes SET status = $1 WHERE notificacao_id = $2', ['aceita', id]);
+        const updateNotif = await pool.query('UPDATE notificacoes SET status = $1 WHERE notificacao_id = $2 RETURNING *', ['aceita', id]);
+        if (updateNotif.rows.length > 0) {
+            console.log('[NOTIFICAÇÃO] Status da notificação atualizado para "aceita":', updateNotif.rows[0]);
+        } else {
+            console.log('[NOTIFICAÇÃO] Falha ao atualizar status da notificação:', id);
+        }
         // Remove a notificação (ou pode manter para histórico)
-        await pool.query('DELETE FROM notificacoes WHERE notificacao_id = $1', [id]);
+        const deleteNotif = await pool.query('DELETE FROM notificacoes WHERE notificacao_id = $1 RETURNING *', [id]);
+        if (deleteNotif.rows.length > 0) {
+            console.log('[NOTIFICAÇÃO] Notificação removida:', deleteNotif.rows[0]);
+        } else {
+            console.log('[NOTIFICAÇÃO] Notificação já removida ou não encontrada para exclusão:', id);
+        }
         res.json({ success: true });
     } catch (error) {
         console.error('[NOTIFICAÇÃO] Erro ao aceitar convite:', error);
