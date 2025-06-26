@@ -166,7 +166,7 @@ const PortfolioPage: React.FC = () => {
   console.log('[PortfolioPage] Renderizou! isLoading:', isLoading, 'searchTerm:', searchTerm);
 
   return (
-    <div className="space-y-8 px-2 sm:px-0">
+    <div className="space-y-8 px-2 sm:px-0 max-w-full xl:max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="relative w-full sm:w-auto flex-grow">
           <input
@@ -215,7 +215,7 @@ const PortfolioPage: React.FC = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-purple"></div>
           </div>
         ) : (
-          <div className="sm:grid sm:grid-cols-2 gap-6 flex flex-row sm:flex-row overflow-x-auto sm:overflow-x-visible pb-2 sm:pb-0 -mx-2 sm:mx-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6">
             {filteredProjetos.map((projeto) => (
               <a
                 key={projeto.projeto_id}
@@ -223,7 +223,7 @@ const PortfolioPage: React.FC = () => {
                   console.log('[PortfolioPage] Card clicado! Projeto:', projeto);
                 }}
                 href={`/portfolio/${projeto.projeto_id}`}
-                className="block min-w-[270px] max-w-[350px] w-[85vw] sm:w-auto bg-purple-600 rounded-lg shadow-md overflow-hidden transform transition-transform hover:scale-105 mx-2 sm:mx-0 flex-shrink-0 sm:flex-shrink-0"
+                className="block bg-purple-600 rounded-lg shadow-md overflow-hidden transform transition-transform hover:scale-105 flex-shrink-0"
               >
                 {/* Horizontal Image */}
                 <div className="w-full">
