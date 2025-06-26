@@ -156,12 +156,14 @@ const VagaDetailPage: React.FC = () => {
           projetos={userProjects}
           onSend={async ({ reason, projetoId }) => {
             try {
-              await apiClient.post(`/conexoes/vagas/${vaga.vaga_id}`, {
-                usuario_id: user?.usuario_id,
-                mensagem: reason,
-                link_portfolio: '',
-                tipo_conexao: 'vaga',
-                projeto_id: projetoId
+              await apiClient.post('/conexoes', {
+                senderId: user?.usuario_id,
+                recipientId: vaga?.usuario_id,
+                projetoId: projetoId,
+                reason: reason,
+                link: '',
+                connectionType: 'vaga',
+                vagaId: vaga?.vaga_id
               });
               setIsConnectionModalOpen(false);
               alert('Solicitação enviada com sucesso!');
