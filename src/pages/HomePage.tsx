@@ -42,7 +42,7 @@ const mockNovidades = [
 //   { id: 5, user: "Julia Silva", userImg: "/fotos/avatar-julia.png", projectTitle: "Projeto de Fotodesign", projectDesc: "Ensaio fotográfico conceitual.", projectImg: "/fotos/project-photodesign.png" },
 //   { id: 6, userImg: "/fotos/avatar-nathalia-m.png", projectTitle: "Identidade Visual", projectDesc: "Marca para startup de IA.", projectImg: "/fotos/project-id-visual.png" },
 //   { id: 7, userImg: "/fotos/avatar-nathalia-f.png", projectTitle: "Campanha de divulgação", projectDesc: "Campanha para marca de moda.", projectImg: "/fotos/project-fashion-camp.png" },
-// ];
+// a];
 
 // Utilitário para padronizar exibição de imagens (Cloudinary, local ou placeholder)
 // const getProjectImageUrl = (imgPath?: string) => {
