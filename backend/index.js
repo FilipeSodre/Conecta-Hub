@@ -1064,12 +1064,20 @@ app.post('/conexoes', async (req, res) => {
                 vagaTitulo = vagaRes.rows[0].titulo;
             }
         }
+        // Determina o connection_type baseado no contexto
+        let actualConnectionType = 'conexao'; // padrão
+        if (vagaId) {
+            actualConnectionType = 'vaga';
+        } else if (projetoId) {
+            actualConnectionType = 'projeto';
+        }
+
         // Cria apenas a notificação de conexão (a roxa)
         const result = await pool.query(
             `INSERT INTO user_connections 
                 (sender_id, recipient_id, projeto_id, reason, link, connection_type, vaga_id, tipo_conexao) 
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-            [senderId, recipientId, projetoId, reason, link, connectionType, vagaId || null, connectionType === 'vaga' ? null : connectionType]
+            [senderId, recipientId, projetoId, reason, link, actualConnectionType, vagaId || null, connectionType]
         );
         // Evitar duplicidade de notificações de conexão
         const notifExists = await pool.query(

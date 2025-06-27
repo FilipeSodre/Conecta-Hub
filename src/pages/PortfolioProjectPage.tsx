@@ -814,7 +814,7 @@ const PortfolioProjectPage: React.FC = () => {
                             projetoId: projeto.projeto_id,
                             reason: data.reason,
                             link: data.link,
-                            connectionType: 'conexao', // agora sempre 'conexao' para modal de conexão
+                            connectionType: data.connectionType, // usa o tipo selecionado no modal
                         });
                         setIsConnectionModalOpen(false);
                         alert('Solicitação enviada com sucesso!');

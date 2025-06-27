@@ -7,10 +7,23 @@ const ConexaoPage: React.FC = () => {
   const [reason, setReason] = useState('');
   const [projectLink, setProjectLink] = useState('');
   const [connectionType, setConnectionType] = useState('');
+  const [otherType, setOtherType] = useState(''); // Para o campo livre
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validação do tipo de conexão
+    if (!connectionType) {
+      alert('Por favor, selecione um tipo de conexão.');
+      return;
+    }
+    
+    if (connectionType === 'Outro (campo livre)' && !otherType.trim()) {
+      alert('Por favor, especifique o tipo de conexão.');
+      return;
+    }
+    
     try {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       // Aqui você deve buscar o recipientId pelo nome/email, mas para exemplo, vamos simular:
@@ -21,7 +34,7 @@ const ConexaoPage: React.FC = () => {
         recipientId: connectWith, // Ajuste conforme a lógica real de busca
         reason,
         link: projectLink,
-        connectionType: 'conexao', // sempre 'conexao' para este fluxo
+        connectionType: connectionType === 'Outro (campo livre)' ? otherType : connectionType, // usa o tipo selecionado no dropdown
       });
       alert('Solicitação de conexão enviada!');
       navigate(-1);
@@ -118,6 +131,8 @@ const ConexaoPage: React.FC = () => {
               <input
                 type="text"
                 placeholder="Especifique o tipo de conexão"
+                value={otherType}
+                onChange={(e) => setOtherType(e.target.value)}
                 className="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-purple bg-white text-brand-text focus:ring-2 focus:ring-brand-yellow outline-none shadow-sm"
               />
             )}
