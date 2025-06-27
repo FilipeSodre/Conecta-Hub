@@ -1009,10 +1009,22 @@ app.get('/usuarios/:id/notificacoes', async (req, res) => {
             JOIN usuario u ON n.usuario_origem_id = u.usuario_id
             LEFT JOIN projeto p ON n.projeto_id = p.projeto_id
             LEFT JOIN vagas v ON n.vaga_id IS NOT NULL AND n.vaga_id = v.vaga_id
-            LEFT JOIN user_connections uc ON n.tipo = 'conexao' AND uc.sender_id = n.usuario_origem_id AND uc.recipient_id = n.usuario_destino_id AND uc.projeto_id = n.projeto_id
+            LEFT JOIN user_connections uc ON n.tipo = 'conexao' 
+                AND uc.sender_id = n.usuario_origem_id 
+                AND uc.recipient_id = n.usuario_destino_id
             WHERE n.usuario_destino_id = $1
             ORDER BY n.data_criacao DESC
         `, [id]);
+        
+        console.log('[DEBUG] Notificações retornadas:', result.rows.map(row => ({
+            notificacao_id: row.notificacao_id,
+            tipo: row.tipo,
+            usuario_nome: row.usuario_nome,
+            tipo_conexao: row.tipo_conexao,
+            mensagem: row.mensagem,
+            reason: row.reason
+        })));
+        
         res.json(result.rows);
     } catch (error) {
         console.error('Erro ao buscar notificações:', error);

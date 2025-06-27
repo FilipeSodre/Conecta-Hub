@@ -87,6 +87,14 @@ const ProfilePage: React.FC = () => {
     useEffect(() => {
         if (userId && activeTab === 'conexoes') {
             apiClient.get(`/usuarios/${userId}/notificacoes`).then(res => {
+                console.log('[DEBUG] Notificações recebidas do backend:', res.data.map((n: Notificacao) => ({
+                    id: n.notificacao_id,
+                    tipo: n.tipo,
+                    usuario_nome: n.usuario_nome,
+                    tipo_conexao: n.tipo_conexao,
+                    mensagem: n.mensagem,
+                    reason: n.reason
+                })));
                 setNotificacoes(res.data);
             });
             apiClient.get(`/chats/user/${userId}`).then(res => {
