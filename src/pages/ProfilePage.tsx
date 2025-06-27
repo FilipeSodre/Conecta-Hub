@@ -144,15 +144,6 @@ const ProfilePage: React.FC = () => {
         }
     };
 
-    const handleVisto = async (id: number) => {
-        try {
-            await apiClient.delete(`/notificacoes/${id}`);
-            setNotificacoes(prev => prev.filter(n => n.notificacao_id !== id));
-        } catch (e) {
-            alert('Erro ao remover notificação');
-        }
-    };
-
     // Handlers para aceitar/recusar convite
     const handleAceitarConvite = async (notificacaoId: number) => {
         try {
