@@ -1032,6 +1032,28 @@ app.delete('/notificacoes/:id', async (req, res) => {
 app.post('/conexoes', async (req, res) => {
     const { senderId, recipientId, projetoId, reason, link, connectionType, vagaId } = req.body;
     try {
+        // Tratamento especial para convite de colaborador
+        if (connectionType === 'colaborador') {
+            // Verifica se já existe esse convite
+            const existingNotif = await pool.query(
+                `SELECT 1 FROM notificacoes WHERE tipo = 'convite_colaborador' AND usuario_origem_id = $1 AND usuario_destino_id = $2 AND projeto_id = $3`,
+                [senderId, recipientId, projetoId]
+            );
+            
+            if (existingNotif.rows.length === 0) {
+                // Cria notificação de convite de colaborador
+                await pool.query(
+                    `INSERT INTO notificacoes 
+                        (tipo, usuario_origem_id, usuario_destino_id, projeto_id, mensagem, status) 
+                     VALUES ($1, $2, $3, $4, $5, $6)`,
+                    ['convite_colaborador', senderId, recipientId, projetoId, reason, 'pendente']
+                );
+            }
+            
+            res.status(201).json({ message: 'Convite de colaborador enviado com sucesso' });
+            return;
+        }
+        
         // Busca o título da vaga se for conexão de vaga
         let vagaTitulo = null;
         if (connectionType === 'vaga' && vagaId) {
