@@ -1003,11 +1003,13 @@ app.get('/usuarios/:id/notificacoes', async (req, res) => {
                    u.nome as usuario_nome, 
                    u.foto_perfil as usuario_foto,
                    p.titulo as projeto_titulo,
-                   v.titulo as vaga_titulo
+                   v.titulo as vaga_titulo,
+                   uc.tipo_conexao
             FROM notificacoes n
             JOIN usuario u ON n.usuario_origem_id = u.usuario_id
             LEFT JOIN projeto p ON n.projeto_id = p.projeto_id
             LEFT JOIN vagas v ON n.vaga_id IS NOT NULL AND n.vaga_id = v.vaga_id
+            LEFT JOIN user_connections uc ON n.tipo = 'conexao' AND uc.sender_id = n.usuario_origem_id AND uc.recipient_id = n.usuario_destino_id AND uc.projeto_id = n.projeto_id
             WHERE n.usuario_destino_id = $1
             ORDER BY n.data_criacao DESC
         `, [id]);
@@ -1065,9 +1067,9 @@ app.post('/conexoes', async (req, res) => {
         // Cria apenas a notificação de conexão (a roxa)
         const result = await pool.query(
             `INSERT INTO user_connections 
-                (sender_id, recipient_id, projeto_id, reason, link, connection_type, vaga_id) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-            [senderId, recipientId, projetoId, reason, link, connectionType, vagaId || null]
+                (sender_id, recipient_id, projeto_id, reason, link, connection_type, vaga_id, tipo_conexao) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+            [senderId, recipientId, projetoId, reason, link, connectionType, vagaId || null, connectionType === 'vaga' ? null : connectionType]
         );
         // Evitar duplicidade de notificações de conexão
         const notifExists = await pool.query(

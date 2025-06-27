@@ -37,6 +37,7 @@ interface Notificacao {
     vaga_titulo?: string; // Título da vaga de onde veio a notificação
     mensagem?: string; // Mensagem enviada na conexão
     reason?: string; // fallback para mensagem
+    tipo_conexao?: string; // Tipo de conexão selecionado no modal (ex: "Trocar ideias / Mentoria")
 }
 
 const ProfilePage: React.FC = () => {
@@ -190,10 +191,10 @@ const ProfilePage: React.FC = () => {
                                 </span>
                             );
                             showAcoes = false;
-                        } else if (notif.mensagem || notif.reason) {
+                        } else if (notif.tipo_conexao || notif.mensagem || notif.reason) {
                             mensagem = (
                                 <span>
-                                    <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite para se conectar - <span className="font-semibold">{notif.mensagem || notif.reason}</span>
+                                    <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite para se conectar - <span className="font-semibold">{notif.tipo_conexao || notif.mensagem || notif.reason}</span>
                                 </span>
                             );
                             showAcoes = true;
