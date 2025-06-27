@@ -191,24 +191,10 @@ const ProfilePage: React.FC = () => {
                                 </span>
                             );
                             showAcoes = false;
-                        } else if (notif.tipo_conexao || notif.mensagem || notif.reason) {
-                            mensagem = (
-                                <span>
-                                    <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite para se conectar - <span className="font-semibold">{notif.tipo_conexao || notif.mensagem || notif.reason}</span>
-                                </span>
-                            );
-                            showAcoes = true;
-                        } else if (notif.projeto_titulo) {
-                            mensagem = (
-                                <span>
-                                    <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite para se conectar - <span className="font-semibold">{notif.tipo_conexao || notif.mensagem || notif.reason}</span>
-                                </span>
-                            );
-                            showAcoes = true;
                         } else {
                             mensagem = (
                                 <span>
-                                    <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite de conexão.
+                                    <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite para se conectar - <span className="font-semibold">{notif.tipo_conexao ? notif.tipo_conexao : 'não informado'}</span>
                                 </span>
                             );
                             showAcoes = true;

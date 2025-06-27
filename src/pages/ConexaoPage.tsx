@@ -12,18 +12,18 @@ const ConexaoPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validação do tipo de conexão
     if (!connectionType) {
       alert('Por favor, selecione um tipo de conexão.');
       return;
     }
-    
+
     if (connectionType === 'Outro (campo livre)' && !otherType.trim()) {
       alert('Por favor, especifique o tipo de conexão.');
       return;
     }
-    
+
     try {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       // Aqui você deve buscar o recipientId pelo nome/email, mas para exemplo, vamos simular:
