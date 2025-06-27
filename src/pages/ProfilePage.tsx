@@ -39,18 +39,6 @@ interface Notificacao {
     reason?: string; // fallback para mensagem
 }
 
-interface SolicitacaoConexao {
-    id: number;
-    sender_id: number;
-    sender_nome: string;
-    sender_foto: string;
-    projeto_id?: number;
-    projeto_titulo?: string;
-    connection_type: string;
-    reason: string;
-    status: 'pendente' | 'aceito' | 'recusado';
-}
-
 const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('portfolio');
@@ -61,7 +49,6 @@ const ProfilePage: React.FC = () => {
     const [newDesc, setNewDesc] = useState('');
     const [notificacoes, setNotificacoes] = useState<Notificacao[]>([]);
     const [chats, setChats] = useState<any[]>([]);
-    const [solicitacoesConexao, setSolicitacoesConexao] = useState<SolicitacaoConexao[]>([]);
     const userId = JSON.parse(localStorage.getItem('user') || '{}').usuario_id;
 
     useEffect(() => {
@@ -103,9 +90,6 @@ const ProfilePage: React.FC = () => {
             });
             apiClient.get(`/chats/user/${userId}`).then(res => {
                 setChats(res.data);
-            });
-            apiClient.get(`/usuarios/${userId}/conexoes-recebidas`).then(response => {
-                setSolicitacoesConexao(response.data.filter((c: any) => c.status === 'pendente'));
             });
         }
     }, [userId, activeTab]);
@@ -161,26 +145,6 @@ const ProfilePage: React.FC = () => {
             alert('Convite recusado.');
         } catch (err) {
             alert('Erro ao recusar convite.');
-        }
-    };
-
-    const handleAceitarConexao = async (id: number) => {
-        try {
-            // O correto para o fluxo de conexão de projeto é:
-            await apiClient.put(`/conexoes/${id}/aceitar`);
-            setSolicitacoesConexao(prev => prev.filter(s => s.id !== id));
-            alert('Conexão aceita! Agora vocês estão conectados.');
-        } catch (err) {
-            alert('Erro ao aceitar conexão.');
-        }
-    };
-    const handleRecusarConexao = async (id: number) => {
-        try {
-            await apiClient.post(`/conexoes/${id}/recusar`);
-            setSolicitacoesConexao(prev => prev.filter(s => s.id !== id));
-            alert('Solicitação recusada.');
-        } catch (err) {
-            alert('Erro ao recusar conexão.');
         }
     };
 
@@ -338,43 +302,6 @@ const ProfilePage: React.FC = () => {
         return <div>Carregando...</div>;
     }
 
-    const renderSolicitacoesConexao = () => (
-        <div className="space-y-3 mb-6">
-            {solicitacoesConexao.length > 0 ? (
-                solicitacoesConexao.map((sol) => (
-                    <div key={sol.id} className="bg-purple-100 rounded-2xl p-3 flex items-center gap-3">
-                        <img src={getUserImageUrl(sol.sender_foto)} alt={sol.sender_nome} className="w-10 h-10 rounded-full object-cover" />
-                        <div className="flex-1">
-                            <span className="font-semibold">@{sol.sender_nome}</span> <span>quer se conectar com você: </span><span className="font-semibold">{sol.connection_type}</span>
-                            {sol.projeto_titulo && (
-                 <div className="text-xs text-blue-700 mt-1">
-                                    Portfólio escolhido: <span className="font-medium">{sol.projeto_titulo}</span>
-                                </div>
-                            )}
-                            <div className="text-xs text-gray-700 mt-1 italic">{sol.reason}</div>
-                            <div className="flex gap-2 mt-2">
-                                <button
-                                    onClick={() => handleAceitarConexao(sol.id)}
-                                    className="px-3 py-1 bg-green-500 text-white rounded-full text-xs hover:bg-green-600"
-                                >
-                                    Aceitar
-                                </button>
-                                <button
-                                    onClick={() => handleRecusarConexao(sol.id)}
-                                    className="px-3 py-1 bg-red-500 text-white rounded-full text-xs hover:bg-red-600"
-                                >
-                                    Recusar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                ))
-            ) : (
-                <div className="text-center py-6 text-gray-500">Nenhuma solicitação de conexão pendente</div>
-            )}
-        </div>
-    );
-
     return (
         <div className="container mx-auto p-2 sm:p-4 max-w-6xl">
             {/* Cabeçalho do Perfil */}
@@ -527,7 +454,6 @@ const ProfilePage: React.FC = () => {
                     <div className="flex flex-col md:flex-row gap-4 sm:gap-8">
                         <div className="md:w-1/3">{renderMiniChatList()}</div>
                         <div className="flex-1">
-                            {renderSolicitacoesConexao()}
                             {renderNotificacoesRoxas()}
                         </div>
                     </div>
