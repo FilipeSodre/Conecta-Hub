@@ -33,7 +33,7 @@ const features = [
 
 const WhyConecta: React.FC = () => {
   return (
-    <div className="w-full max-w-4xl lg:max-w-6xl rounded-2xl shadow-card overflow-hidden flex flex-col sm:flex-row font-nunito mx-auto min-h-[260px] md:min-h-[320px]">
+    <div className="w-full max-w-5xl lg:max-w-7xl rounded-2xl shadow-card overflow-hidden flex flex-col sm:flex-row font-nunito mx-auto min-h-[260px] md:min-h-[320px]">
       <div className="w-full sm:w-2/5 bg-black flex flex-col justify-center items-center p-6 sm:p-8 lg:p-12 text-center">
         <div className="space-y-2">
           <h2 className="font-indie-flower text-2xl sm:text-3xl lg:text-4xl text-white leading-tight">

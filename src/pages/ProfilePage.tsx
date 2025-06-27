@@ -207,29 +207,15 @@ const ProfilePage: React.FC = () => {
                     if (notif.tipo === 'convite_colaborador') {
                         mensagem = (
                             <span>
-                                <span className="font-semibold">@{notif.usuario_nome}</span> enviou um convite para você virar colaborador.
+                                <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite para você virar colaborador para o projeto <span className="font-semibold">@{notif.projeto_titulo}</span>.
                             </span>
                         );
                     } else if (notif.tipo === 'conexao') {
-                        if (notif.vaga_titulo) {
-                            mensagem = (
-                                <span>
-                                    <span className="font-semibold">@{notif.usuario_nome}</span> quer se conectar com <span className="font-semibold">{notif.vaga_titulo}</span>.
-                                </span>
-                            );
-                        } else if (notif.mensagem || notif.reason || notif.projeto_titulo) {
-                            mensagem = (
-                                <span>
-                                    <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite para <span className="font-semibold">{notif.mensagem || notif.reason || notif.projeto_titulo}</span>.
-                                </span>
-                            );
-                        } else {
-                            mensagem = (
-                                <span>
-                                    <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite de conexão.
-                                </span>
-                            );
-                        }
+                        mensagem = (
+                            <span>
+                                <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite para se conectar: <span className="font-semibold">{notif.mensagem || notif.reason || notif.projeto_titulo}</span>.
+                            </span>
+                        );
                     } else if (notif.tipo === 'curtida') {
                         mensagem = (
                             <span>curtiu seu projeto - <span className="font-semibold">{notif.projeto_titulo}</span></span>
@@ -297,9 +283,7 @@ const ProfilePage: React.FC = () => {
                     );
                 })
             ) : (
-                <div className="text-center py-10 text-gray-500">
-                    Nenhuma notificação encontrada
-                </div>
+                <div className="text-gray-500">Nenhuma notificação encontrada.</div>
             )}
         </div>
     );

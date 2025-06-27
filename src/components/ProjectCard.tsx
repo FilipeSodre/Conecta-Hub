@@ -4,7 +4,7 @@ const ProjectCard: React.FC = () => {
   const backgroundImageUrl = 'https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2';
 
   return (
-    <div className="relative w-full max-w-4xl lg:max-w-6xl aspect-[16/6] md:aspect-[16/5] rounded-2xl shadow-card overflow-hidden bg-black flex font-nunito mx-auto min-h-[260px] sm:min-h-[320px]">
+    <div className="relative w-full max-w-5xl lg:max-w-7xl aspect-[16/6] md:aspect-[16/5] rounded-2xl shadow-card overflow-hidden bg-black flex font-nunito mx-auto min-h-[260px] sm:min-h-[320px]">
       {/* Imagem à direita */}
       <div className="hidden sm:block absolute top-0 right-0 h-full w-[45%]">
         <img
