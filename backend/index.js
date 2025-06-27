@@ -264,7 +264,12 @@ app.get('/projetos', async (req, res) => {
 app.get('/projetos/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await pool.query('SELECT * FROM projeto WHERE projeto_id = $1', [id]);
+        const result = await pool.query(`
+            SELECT p.*, u.nome as usuario_nome, u.foto_perfil as usuario_foto
+            FROM projeto p
+            JOIN usuario u ON p.usuario_id = u.usuario_id
+            WHERE p.projeto_id = $1
+        `, [id]);
         if (result.rows.length === 0) {
             return res.status(404).json({ message: 'Projeto não encontrado' });
         }

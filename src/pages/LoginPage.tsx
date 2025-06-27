@@ -39,13 +39,6 @@ const LoginPage: React.FC = () => {
       <div className="bg-brand-yellow p-8 sm:p-12 rounded-3xl shadow-card w-full max-w-md text-center">
         <h1 className="text-4xl font-indie-flower text-brand-purple-dark mb-8">Login</h1>
 
-        {/* Placeholder for laptop illustration */}
-        <img
-          src="/fotos/laptop-login-illustration.png"
-          alt="Ilustração de login"
-          className="w-48 h-auto mx-auto mb-8"
-        />
-
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <input
