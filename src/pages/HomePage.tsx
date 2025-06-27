@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { useKeenSlider } from 'keen-slider/react';
 import 'keen-slider/keen-slider.min.css';
 import apiClient from '../services/api';
-import { useUser } from '../context/UserContext';
 import ProjectCard from '../components/ProjectCard';
 import WhyConecta from '../components/WhyConecta';
 
@@ -56,7 +55,6 @@ const mockNovidades = [
 // };
 
 const HomePage: React.FC = () => {
-  const { user } = useUser();
   const [sliderRefNovidades] = useKeenSlider<HTMLDivElement>({
     loop: true,
     slides: { perView: 1.2, spacing: 15 },
@@ -69,17 +67,6 @@ const HomePage: React.FC = () => {
   // Destaques do mês - usuários reais
   const [destaques, setDestaques] = useState<any[]>([]);
   const [sliderRefDestaques] = useKeenSlider<HTMLDivElement>({
-    loop: false,
-    slides: { perView: 1.3, spacing: 15 },
-    breakpoints: {
-      '(min-width: 640px)': { slides: { perView: 2.5, spacing: 20 } },
-      '(min-width: 1024px)': { slides: { perView: 3.5, spacing: 25 } },
-    },
-  });
-
-  // Conexões recentes do usuário logado
-  const [conexoesRecentes, setConexoesRecentes] = useState<any[]>([]);
-  const [sliderRefConexoes] = useKeenSlider<HTMLDivElement>({
     loop: false,
     slides: { perView: 1.3, spacing: 15 },
     breakpoints: {
@@ -104,31 +91,6 @@ const HomePage: React.FC = () => {
     }
     fetchDestaques();
   }, []);
-
-  useEffect(() => {
-    async function fetchConexoes() {
-      if (!user?.usuario_id) return;
-      try {
-        const res = await apiClient.get(`/usuarios/${user.usuario_id}/conexoes-recebidas`);
-        // Pega até 5 conexões, mostra o outro usuário
-        let conexoes = res.data || [];
-        // Mostra o usuário que não é o logado
-        conexoes = conexoes
-          .map((c: any) => {
-            const outro = c.sender_id === user.usuario_id
-              ? { usuario_id: c.recipient_id, nome: c.sender_nome, foto_perfil: c.sender_foto }
-              : { usuario_id: c.sender_id, nome: c.sender_nome, foto_perfil: c.sender_foto };
-            return outro;
-          })
-          .filter((v: any, i: number, arr: any[]) => arr.findIndex((u: any) => u.usuario_id === v.usuario_id) === i)
-          .slice(0, 5);
-        setConexoesRecentes(conexoes);
-      } catch (e) {
-        setConexoesRecentes([]);
-      }
-    }
-    fetchConexoes();
-  }, [user]);
 
   return (
     <div className="space-y-12 px-2 sm:px-4 md:px-8 max-w-screen-xl mx-auto w-full">
@@ -222,32 +184,6 @@ const HomePage: React.FC = () => {
               <h3 className="text-xl font-semibold text-brand-purple-dark mb-1">{conquista.title}</h3>
               <p className="text-sm text-purple-800">{conquista.desc}</p>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Rede de Conexões Recentes - dados reais */}
-      <section>
-        <h2 className="text-2xl sm:text-3xl font-bold text-brand-purple-dark mb-4 sm:mb-6">Rede de Conexões Recentes</h2>
-        <div ref={sliderRefConexoes} className="keen-slider overflow-x-auto">
-          {conexoesRecentes.length === 0 && (
-            <div className="keen-slider__slide bg-white rounded-2xl shadow-card flex items-center justify-center h-[180px] w-[180px] min-w-[180px] max-w-[180px] text-gray-400">
-              Nenhuma conexão encontrada
-            </div>
-          )}
-          {conexoesRecentes.map((conexao) => (
-            <Link key={conexao.usuario_id} to={`/perfil/${conexao.usuario_id}`} title={conexao.nome} className="keen-slider__slide w-full max-w-xs mx-auto">
-              <div className="flex flex-col items-center bg-white rounded-2xl shadow-card p-0 h-[180px] w-[180px] min-w-[180px] max-w-[180px] overflow-hidden">
-                <div className="w-full h-[100px] flex items-center justify-center bg-gray-200 rounded-t-2xl overflow-hidden">
-                  <img src={conexao.foto_perfil || '/default-profile.png'} alt={conexao.nome} className="object-cover w-full h-full" />
-                </div>
-                <div className="w-full bg-brand-purple-light rounded-b-2xl flex flex-col items-center p-2 flex-1 justify-center">
-                  <h3 className="text-base font-indie-flower text-brand-purple-dark text-center mb-1 w-full truncate">
-                    {conexao.nome}
-                  </h3>
-                </div>
-              </div>
-            </Link>
           ))}
         </div>
       </section>
