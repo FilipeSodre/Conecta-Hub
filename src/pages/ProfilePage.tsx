@@ -275,8 +275,8 @@ const ProfilePage: React.FC = () => {
                                         </button>
                                     </div>
                                 )}
-                                {/* Botão de visto para notificação de vaga */}
-                                {notif.tipo === 'conexao' && notif.vaga_titulo && (
+                                {/* Botão de visto para notificações que não precisam de ação */}
+                                {(notif.tipo === 'conexao' && notif.vaga_titulo) || notif.tipo === 'curtida' || notif.tipo === 'comentario' ? (
                                     <div className="flex gap-2 mt-2">
                                         <button
                                             onClick={() => handleVisto(notif.notificacao_id)}
@@ -285,7 +285,7 @@ const ProfilePage: React.FC = () => {
                                             Visto
                                         </button>
                                     </div>
-                                )}
+                                ) : null}
                             </div>
                         </div>
                     );
