@@ -184,11 +184,18 @@ const ProfilePage: React.FC = () => {
         }
     };
 
-    // Filtro para remover notificações duplicadas de conexão de vaga
-    const notificacoesUnicas = notificacoes.filter((notif, idx, arr) =>
-        notif.tipo !== 'conexao' ||
-        arr.findIndex(n => n.tipo === 'conexao' && n.vaga_titulo === notif.vaga_titulo && n.usuario_origem_id === notif.usuario_origem_id) === idx
-    );
+    // Filtro para remover notificações duplicadas de conexão de vaga e ignorar notificações antigas de vaga sem vaga_titulo
+    const notificacoesUnicas = notificacoes.filter((notif, idx, arr) => {
+        if (notif.tipo === 'conexao' && notif.vaga_titulo) {
+            // Só mantém a notificação de vaga mais recente por usuário e vaga
+            return arr.findIndex(n => n.tipo === 'conexao' && n.vaga_titulo === notif.vaga_titulo && n.usuario_origem_id === notif.usuario_origem_id) === idx;
+        }
+        if (notif.tipo === 'conexao' && !notif.vaga_titulo && notif.mensagem === 'vaga') {
+            // Ignora notificações antigas de vaga sem vaga_titulo
+            return false;
+        }
+        return notif.tipo !== 'conexao' || arr.findIndex(n => n.tipo === 'conexao' && n.vaga_titulo === notif.vaga_titulo && n.usuario_origem_id === notif.usuario_origem_id) === idx;
+    });
 
     const renderNotificacoesRoxas = () => (
         <div className="space-y-3">
@@ -239,6 +246,8 @@ const ProfilePage: React.FC = () => {
                             </>
                         );
                     }
+                    // Só mostra botões de ação para notificações de vaga corretas ou conexões comuns
+                    const showAcoes = (notif.tipo === 'convite_colaborador') || (notif.tipo === 'conexao' && (notif.vaga_titulo || notif.mensagem || notif.reason));
                     return (
                         <div key={notif.notificacao_id} className="bg-purple-300 rounded-2xl p-3 flex items-center gap-3">
                             <Link to={`/perfil/${notif.usuario_origem_id}`} className="flex items-center gap-3">
@@ -263,7 +272,7 @@ const ProfilePage: React.FC = () => {
                                 {notif.tipo === 'conexao' && (notif.mensagem || notif.reason) && (
                                     <div className="text-xs text-gray-700 mt-1 italic">{notif.mensagem || notif.reason}</div>
                                 )}
-                                {(notif.tipo === 'convite_colaborador') && (
+                                {showAcoes && (
                                     <div className="flex gap-2 mt-2">
                                         <button
                                             onClick={() => handleAceitarConvite(notif.notificacao_id)}
