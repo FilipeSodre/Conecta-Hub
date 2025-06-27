@@ -33,25 +33,25 @@ const features = [
 
 const WhyConecta: React.FC = () => {
   return (
-    <div className="w-full max-w-xl rounded-2xl shadow-card overflow-hidden flex flex-col sm:flex-row font-nunito mx-auto">
-      <div className="w-full sm:w-2/5 bg-black flex flex-col justify-center items-center p-6 sm:p-8 text-center">
+    <div className="w-full max-w-4xl lg:max-w-6xl rounded-2xl shadow-card overflow-hidden flex flex-col sm:flex-row font-nunito mx-auto min-h-[260px] md:min-h-[320px]">
+      <div className="w-full sm:w-2/5 bg-black flex flex-col justify-center items-center p-6 sm:p-8 lg:p-12 text-center">
         <div className="space-y-2">
-          <h2 className="font-indie-flower text-2xl sm:text-3xl text-white leading-tight">
+          <h2 className="font-indie-flower text-2xl sm:text-3xl lg:text-4xl text-white leading-tight">
             Por que usar a
           </h2>
-          <h2 className="font-indie-flower text-4xl sm:text-5xl font-bold text-[#FDE047]">
+          <h2 className="font-indie-flower text-4xl sm:text-5xl lg:text-6xl font-bold text-[#FDE047]">
             Conecta?
           </h2>
         </div>
       </div>
-      <div className="w-full sm:w-3/5 bg-[#4F2C7A] flex flex-col justify-center p-6 sm:p-8">
+      <div className="w-full sm:w-3/5 bg-[#4F2C7A] flex flex-col justify-center p-6 sm:p-8 lg:p-12">
         <ul className="space-y-5">
           {features.map((feature, index) => (
             <li key={index} className="flex items-center gap-4">
               <div className="bg-white rounded-xl p-2 flex-shrink-0 shadow-md">
                 {feature.icon}
               </div>
-              <p className="text-white text-base sm:text-lg font-medium font-nunito">
+              <p className="text-white text-base sm:text-lg lg:text-xl font-medium font-nunito">
                 {feature.text}
               </p>
             </li>
