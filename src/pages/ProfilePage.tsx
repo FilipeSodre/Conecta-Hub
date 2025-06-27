@@ -200,6 +200,13 @@ const ProfilePage: React.FC = () => {
                             );
                             showAcoes = false;
                         } else {
+                            console.log('[DEBUG] Renderizando notificação conexão:', {
+                                id: notif.notificacao_id,
+                                tipo_conexao: notif.tipo_conexao,
+                                mensagem: notif.mensagem,
+                                reason: notif.reason,
+                                valorFinal: notif.tipo_conexao ? notif.tipo_conexao : 'não informado'
+                            });
                             mensagem = (
                                 <span>
                                     <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite para se conectar - <span className="font-semibold">{notif.tipo_conexao ? notif.tipo_conexao : 'não informado'}</span>
