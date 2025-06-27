@@ -83,11 +83,11 @@ const VagaConnectionModal: React.FC<VagaConnectionModalProps> = ({
                         >
                             <option value="">Selecione...</option>
                             {projetos && projetos.length > 0 ? (
-                              projetos.map(proj => (
-                                <option key={proj.projeto_id} value={proj.projeto_id}>{proj.titulo}</option>
-                              ))
+                                projetos.map(proj => (
+                                    <option key={proj.projeto_id} value={proj.projeto_id}>{proj.titulo}</option>
+                                ))
                             ) : (
-                              <option value="" disabled>Nenhum projeto encontrado</option>
+                                <option value="" disabled>Nenhum projeto encontrado</option>
                             )}
                         </select>
                     </div>
