@@ -147,6 +147,14 @@ const ProfilePage: React.FC = () => {
             alert('Erro ao recusar convite.');
         }
     };
+    const handleVisto = async (id: number) => {
+        try {
+            await apiClient.delete(`/notificacoes/${id}`);
+            setNotificacoes(prev => prev.filter(n => n.notificacao_id !== id));
+        } catch (e) {
+            alert('Erro ao remover notificação');
+        }
+    };
 
     // Filtro para remover notificações duplicadas de conexão de vaga e ignorar notificações antigas de vaga sem vaga_titulo
     const notificacoesUnicas = notificacoes.filter((notif, idx, arr) => {
@@ -166,12 +174,14 @@ const ProfilePage: React.FC = () => {
             {notificacoesUnicas.length > 0 ? (
                 notificacoesUnicas.map((notif) => {
                     let mensagem = null;
+                    let showAcoes = false;
                     if (notif.tipo === 'convite_colaborador') {
                         mensagem = (
                             <span>
                                 <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite para você virar colaborador para o projeto <span className="font-semibold">{notif.projeto_titulo}</span>.
                             </span>
                         );
+                        showAcoes = true;
                     } else if (notif.tipo === 'conexao') {
                         if (notif.vaga_titulo) {
                             mensagem = (
@@ -179,24 +189,29 @@ const ProfilePage: React.FC = () => {
                                     <span className="font-semibold">@{notif.usuario_nome}</span> quer se conectar a vaga <span className="font-semibold">{notif.vaga_titulo}</span>.
                                 </span>
                             );
+                            // Só mostra botão de visto para notificação de vaga
+                            showAcoes = false;
                         } else if (notif.mensagem || notif.reason) {
                             mensagem = (
                                 <span>
                                     <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite para se conectar: <span className="font-semibold">{notif.mensagem || notif.reason}</span>.
                                 </span>
                             );
+                            showAcoes = true;
                         } else if (notif.projeto_titulo) {
                             mensagem = (
                                 <span>
                                     <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite para se conectar ao projeto <span className="font-semibold">{notif.projeto_titulo}</span>.
                                 </span>
                             );
+                            showAcoes = true;
                         } else {
                             mensagem = (
                                 <span>
                                     <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite de conexão.
                                 </span>
                             );
+                            showAcoes = true;
                         }
                     } else if (notif.tipo === 'curtida') {
                         mensagem = (
@@ -210,8 +225,6 @@ const ProfilePage: React.FC = () => {
                             </>
                         );
                     }
-                    // Só mostra botões de ação para notificações de vaga corretas ou conexões comuns
-                    const showAcoes = (notif.tipo === 'convite_colaborador') || (notif.tipo === 'conexao' && (notif.vaga_titulo || notif.mensagem || notif.reason));
                     return (
                         <div key={notif.notificacao_id} className="bg-purple-300 rounded-2xl p-3 flex items-center gap-3">
                             <Link to={`/perfil/${notif.usuario_origem_id}`} className="flex items-center gap-3">
@@ -236,6 +249,7 @@ const ProfilePage: React.FC = () => {
                                 {notif.tipo === 'conexao' && (notif.mensagem || notif.reason) && (
                                     <div className="text-xs text-gray-700 mt-1 italic">{notif.mensagem || notif.reason}</div>
                                 )}
+                                {/* Botões de ação apenas para convite_colaborador e conexões comuns, não para vaga */}
                                 {showAcoes && (
                                     <div className="flex gap-2 mt-2">
                                         <button
@@ -249,6 +263,17 @@ const ProfilePage: React.FC = () => {
                                             className="px-3 py-1 bg-red-500 text-white rounded-full text-xs hover:bg-red-600"
                                         >
                                             Recusar
+                                        </button>
+                                    </div>
+                                )}
+                                {/* Botão de visto para notificação de vaga */}
+                                {notif.tipo === 'conexao' && notif.vaga_titulo && (
+                                    <div className="flex gap-2 mt-2">
+                                        <button
+                                            onClick={() => handleVisto(notif.notificacao_id)}
+                                            className="px-3 py-1 bg-gray-400 text-white rounded-full text-xs hover:bg-gray-500"
+                                        >
+                                            Visto
                                         </button>
                                     </div>
                                 )}
