@@ -1039,7 +1039,7 @@ app.post('/conexoes', async (req, res) => {
                 `SELECT 1 FROM notificacoes WHERE tipo = 'convite_colaborador' AND usuario_origem_id = $1 AND usuario_destino_id = $2 AND projeto_id = $3`,
                 [senderId, recipientId, projetoId]
             );
-            
+
             if (existingNotif.rows.length === 0) {
                 // Cria notificação de convite de colaborador
                 await pool.query(
@@ -1049,12 +1049,12 @@ app.post('/conexoes', async (req, res) => {
                     ['convite_colaborador', senderId, recipientId, projetoId, reason, 'pendente']
                 );
             }
-            
+
             res.status(201).json({ message: 'Convite de colaborador enviado com sucesso' });
             return;
         }
-        
-        // Busca o título da vaga se for conexão de vaga
+
+        // Busca o título da vaga se for conexão de vaga a
         let vagaTitulo = null;
         if (connectionType === 'vaga' && vagaId) {
             const vagaRes = await pool.query('SELECT titulo FROM vagas WHERE vaga_id = $1', [vagaId]);
