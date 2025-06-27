@@ -1339,24 +1339,49 @@ app.post('/notificacoes/:id/aceitar-convite', async (req, res) => {
         }
         const notif = notifRes.rows[0];
         console.log('[NOTIFICAÇÃO] Notificação encontrada:', notif);
-        // Verifica se já é colaborador
-        const existing = await pool.query('SELECT 1 FROM usuario_projeto WHERE usuario_id = $1 AND projeto_id = $2', [notif.usuario_destino_id, notif.projeto_id]);
-        if (existing.rows.length === 0) {
-            // Buscar o tipo do usuário para preencher o campo papel
-            const userTipoRes = await pool.query('SELECT tipo FROM usuario WHERE usuario_id = $1', [notif.usuario_destino_id]);
-            let papel = 'programador';
-            if (userTipoRes.rows.length > 0 && (userTipoRes.rows[0].tipo === 'designer' || userTipoRes.rows[0].tipo === 'programador')) {
-                papel = userTipoRes.rows[0].tipo;
-            }
-            const insertResult = await pool.query('INSERT INTO usuario_projeto (usuario_id, projeto_id, papel) VALUES ($1, $2, $3) RETURNING *', [notif.usuario_destino_id, notif.projeto_id, papel]);
-            if (insertResult.rows.length > 0) {
-                console.log('[NOTIFICAÇÃO] Colaborador adicionado com sucesso:', insertResult.rows[0]);
+        
+        // Verifica o tipo da notificação
+        if (notif.tipo === 'convite_colaborador') {
+            // Lógica para convite de colaborador (mantém como está)
+            const existing = await pool.query('SELECT 1 FROM usuario_projeto WHERE usuario_id = $1 AND projeto_id = $2', [notif.usuario_destino_id, notif.projeto_id]);
+            if (existing.rows.length === 0) {
+                // Buscar o tipo do usuário para preencher o campo papel
+                const userTipoRes = await pool.query('SELECT tipo FROM usuario WHERE usuario_id = $1', [notif.usuario_destino_id]);
+                let papel = 'programador';
+                if (userTipoRes.rows.length > 0 && (userTipoRes.rows[0].tipo === 'designer' || userTipoRes.rows[0].tipo === 'programador')) {
+                    papel = userTipoRes.rows[0].tipo;
+                }
+                const insertResult = await pool.query('INSERT INTO usuario_projeto (usuario_id, projeto_id, papel) VALUES ($1, $2, $3) RETURNING *', [notif.usuario_destino_id, notif.projeto_id, papel]);
+                if (insertResult.rows.length > 0) {
+                    console.log('[NOTIFICAÇÃO] Colaborador adicionado com sucesso:', insertResult.rows[0]);
+                } else {
+                    console.log('[NOTIFICAÇÃO] Falha ao adicionar colaborador:', { usuario_id: notif.usuario_destino_id, projeto_id: notif.projeto_id, papel });
+                }
             } else {
-                console.log('[NOTIFICAÇÃO] Falha ao adicionar colaborador:', { usuario_id: notif.usuario_destino_id, projeto_id: notif.projeto_id, papel });
+                console.log('[NOTIFICAÇÃO] Usuário já é colaborador:', { usuario_id: notif.usuario_destino_id, projeto_id: notif.projeto_id });
             }
-        } else {
-            console.log('[NOTIFICAÇÃO] Usuário já é colaborador:', { usuario_id: notif.usuario_destino_id, projeto_id: notif.projeto_id });
+        } else if (notif.tipo === 'conexao') {
+            // Nova lógica para conexão - criar chat automaticamente
+            console.log('[CONEXÃO] Processando aceite de conexão entre usuários:', notif.usuario_origem_id, 'e', notif.usuario_destino_id);
+            
+            // Verifica se já existe chat entre os usuários
+            const existingChat = await pool.query(
+                `SELECT * FROM user_chats WHERE (user1_id = $1 AND user2_id = $2) OR (user1_id = $2 AND user2_id = $1)`,
+                [notif.usuario_origem_id, notif.usuario_destino_id]
+            );
+            
+            if (existingChat.rows.length === 0) {
+                // Cria o chat
+                const chatResult = await pool.query(
+                    `INSERT INTO user_chats (user1_id, user2_id) VALUES ($1, $2) RETURNING *`,
+                    [notif.usuario_origem_id, notif.usuario_destino_id]
+                );
+                console.log('[CONEXÃO] Chat criado com sucesso:', chatResult.rows[0]);
+            } else {
+                console.log('[CONEXÃO] Chat já existe entre os usuários:', existingChat.rows[0]);
+            }
         }
+        
         // Atualiza status da notificação para 'aceita' antes de remover
         const updateNotif = await pool.query('UPDATE notificacoes SET status = $1 WHERE notificacao_id = $2 RETURNING *', ['aceita', id]);
         if (updateNotif.rows.length > 0) {
@@ -1371,7 +1396,13 @@ app.post('/notificacoes/:id/aceitar-convite', async (req, res) => {
         } else {
             console.log('[NOTIFICAÇÃO] Notificação já removida ou não encontrada para exclusão:', id);
         }
-        res.json({ success: true });
+        
+        // Retorna resposta diferente baseada no tipo
+        if (notif.tipo === 'conexao') {
+            res.json({ success: true, message: 'Agora vocês estão conectados!', type: 'conexao' });
+        } else {
+            res.json({ success: true, message: 'Convite aceito! Agora você é colaborador do projeto.', type: 'colaborador' });
+        }
     } catch (error) {
         console.error('[NOTIFICAÇÃO] Erro ao aceitar convite:', error);
         res.status(500).json({ error: 'Erro ao aceitar convite', details: error.message });

@@ -140,9 +140,19 @@ const ProfilePage: React.FC = () => {
     // Handlers para aceitar/recusar convite
     const handleAceitarConvite = async (notificacaoId: number) => {
         try {
-            await apiClient.post(`/notificacoes/${notificacaoId}/aceitar-convite`);
+            const response = await apiClient.post(`/notificacoes/${notificacaoId}/aceitar-convite`);
             setNotificacoes(prev => prev.filter(n => n.notificacao_id !== notificacaoId));
-            alert('Convite aceito! Agora você é colaborador do projeto.');
+            
+            // Mensagem baseada no tipo de notificação
+            if (response.data.type === 'conexao') {
+                alert('Agora vocês estão conectados!');
+                // Recarrega os chats para mostrar o novo chat criado
+                apiClient.get(`/chats/user/${userId}`).then(res => {
+                    setChats(res.data);
+                });
+            } else {
+                alert('Convite aceito! Agora você é colaborador do projeto.');
+            }
         } catch (err) {
             alert('Erro ao aceitar convite.');
         }
