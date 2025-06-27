@@ -201,7 +201,7 @@ const ProfilePage: React.FC = () => {
                         } else if (notif.projeto_titulo) {
                             mensagem = (
                                 <span>
-                                    <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite para se conectar ao projeto <span className="font-semibold">{notif.projeto_titulo}</span>.
+                                    <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite para se conectar - <span className="font-semibold">{notif.tipo_conexao || notif.mensagem || notif.reason}</span>
                                 </span>
                             );
                             showAcoes = true;
