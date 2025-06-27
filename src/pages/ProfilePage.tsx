@@ -189,12 +189,11 @@ const ProfilePage: React.FC = () => {
                                     <span className="font-semibold">@{notif.usuario_nome}</span> quer se conectar a vaga <span className="font-semibold">{notif.vaga_titulo}</span>.
                                 </span>
                             );
-                            // Só mostra botão de visto para notificação de vaga
                             showAcoes = false;
                         } else if (notif.mensagem || notif.reason) {
                             mensagem = (
                                 <span>
-                                    <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite para se conectar: <span className="font-semibold">{notif.mensagem || notif.reason}</span>.
+                                    <span className="font-semibold">@{notif.usuario_nome}</span> está mandando um convite para se conectar - <span className="font-semibold">{notif.mensagem || notif.reason}</span>
                                 </span>
                             );
                             showAcoes = true;
@@ -246,9 +245,7 @@ const ProfilePage: React.FC = () => {
                                         Portfólio escolhido: <span className="font-medium">{notif.projeto_titulo}</span>
                                     </div>
                                 )}
-                                {notif.tipo === 'conexao' && (notif.mensagem || notif.reason) && (
-                                    <div className="text-xs text-gray-700 mt-1 italic">{notif.mensagem || notif.reason}</div>
-                                )}
+                                {/* Removido motivo duplicado para conexões comuns */}
                                 {/* Botões de ação apenas para convite_colaborador e conexões comuns, não para vaga */}
                                 {showAcoes && (
                                     <div className="flex gap-2 mt-2">
